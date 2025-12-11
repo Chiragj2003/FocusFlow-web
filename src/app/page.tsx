@@ -13,7 +13,8 @@ import {
   Zap,
   Star,
   ChevronRight,
-  Github
+  Github,
+  Flame
 } from 'lucide-react'
 
 export default async function HomePage() {
