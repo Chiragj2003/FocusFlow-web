@@ -61,7 +61,7 @@ export function Sidebar() {
           {/* Logo */}
           <div className="flex items-center gap-2 px-6 py-5 border-b border-border">
             <Image
-              src={resolvedTheme === 'dark' ? '/light.png' : '/dark.png'}
+              src={resolvedTheme === 'dark' ? '/dark.png' : '/light.png'}
               alt="FocusFlow"
               width={32}
               height={32}

@@ -9,7 +9,7 @@ export default function SignUpPage() {
           <div className="flex justify-center mb-4">
             {/* Light theme logo */}
             <Image
-              src="/dark.png"
+              src="/light.png"
               alt="FocusFlow"
               width={48}
               height={48}
@@ -17,7 +17,7 @@ export default function SignUpPage() {
             />
             {/* Dark theme logo */}
             <Image
-              src="/light.png"
+              src="/dark.png"
               alt="FocusFlow"
               width={48}
               height={48}

@@ -39,14 +39,14 @@ export default async function HomePage() {
         <div className="px-6 py-4 flex items-center justify-between max-w-7xl mx-auto">
           <div className="flex items-center gap-3">
             <Image
-              src="/dark.png"
+              src="/light.png"
               alt="FocusFlow"
               width={40}
               height={40}
               className="rounded-xl shadow-lg shadow-primary/25 dark:hidden"
             />
             <Image
-              src="/light.png"
+              src="/dark.png"
               alt="FocusFlow"
               width={40}
               height={40}
@@ -590,14 +590,14 @@ export default async function HomePage() {
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-3">
               <Image
-                src="/dark.png"
+                src="/light.png"
                 alt="FocusFlow"
                 width={32}
                 height={32}
                 className="rounded-lg dark:hidden"
               />
               <Image
-                src="/light.png"
+                src="/dark.png"
                 alt="FocusFlow"
                 width={32}
                 height={32}

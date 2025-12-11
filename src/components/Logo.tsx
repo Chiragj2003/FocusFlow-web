@@ -12,8 +12,8 @@ interface LogoProps {
 export function Logo({ size = 40, className = '', showText = true }: LogoProps) {
   const { resolvedTheme } = useTheme()
   
-  // Use dark logo for light theme and light logo for dark theme
-  const logoSrc = resolvedTheme === 'dark' ? '/light.png' : '/dark.png'
+  // Use light logo for light theme and dark logo for dark theme
+  const logoSrc = resolvedTheme === 'dark' ? '/dark.png' : '/light.png'
   
   return (
     <div className={`flex items-center gap-3 ${className}`}>
@@ -36,18 +36,18 @@ export function Logo({ size = 40, className = '', showText = true }: LogoProps) 
 export function LogoStatic({ size = 40, className = '', showText = true }: LogoProps) {
   return (
     <div className={`flex items-center gap-3 ${className}`}>
-      {/* Light theme logo (dark.png) - hidden in dark mode */}
+      {/* Light theme logo - hidden in dark mode */}
       <Image
-        src="/dark.png"
+        src="/light.png"
         alt="FocusFlow Logo"
         width={size}
         height={size}
         className="rounded-xl dark:hidden"
         priority
       />
-      {/* Dark theme logo (light.png) - shown only in dark mode */}
+      {/* Dark theme logo - shown only in dark mode */}
       <Image
-        src="/light.png"
+        src="/dark.png"
         alt="FocusFlow Logo"
         width={size}
         height={size}
