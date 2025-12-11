@@ -1,9 +1,11 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { UserButton } from '@clerk/nextjs'
 import { cn } from '@/lib/utils'
+import { useTheme } from '@/lib/theme'
 import {
   LayoutDashboard,
   Grid3X3,
@@ -28,6 +30,7 @@ const navigation = [
 export function Sidebar() {
   const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
+  const { resolvedTheme } = useTheme()
 
   return (
     <>
@@ -57,9 +60,13 @@ export function Sidebar() {
         <div className="flex flex-col h-full">
           {/* Logo */}
           <div className="flex items-center gap-2 px-6 py-5 border-b border-border">
-            <div className="w-8 h-8 rounded-lg bg-linear-to-br from-primary to-accent flex items-center justify-center">
-              <span className="text-white font-bold text-sm">FF</span>
-            </div>
+            <Image
+              src={resolvedTheme === 'dark' ? '/light.png' : '/dark.png'}
+              alt="FocusFlow"
+              width={32}
+              height={32}
+              className="rounded-lg"
+            />
             <span className="font-semibold text-lg text-foreground">FocusFlow</span>
           </div>
 

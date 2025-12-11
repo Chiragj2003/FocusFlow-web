@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { UserButton, useClerk } from '@clerk/nextjs'
-import { User, Globe, Palette, Sun, Moon, Monitor, AlertTriangle, Trash2, Power, Shield } from 'lucide-react'
+import { User, Globe, Palette, Sun, Moon, Monitor, AlertTriangle, Trash2, Power, Shield, LogOut } from 'lucide-react'
 import { useTheme } from '@/lib/theme'
 import { useRouter } from 'next/navigation'
 
@@ -294,6 +294,27 @@ export function SettingsClient({ user, clerkUser }: SettingsClientProps) {
         )}
 
         <div className="space-y-4">
+          {/* Log Out Option */}
+          <div className="flex items-center justify-between p-4 bg-muted rounded-lg border border-border">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <LogOut size={18} className="text-primary" />
+              </div>
+              <div>
+                <p className="font-medium text-card-foreground">Log Out</p>
+                <p className="text-sm text-muted-foreground">
+                  Sign out of your account on this device
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => signOut({ redirectUrl: '/' })}
+              className="px-4 py-2 text-sm font-medium text-primary border border-primary/50 rounded-lg hover:bg-primary/10 transition-colors"
+            >
+              Log Out
+            </button>
+          </div>
+
           {/* Deactivate/Reactivate Option */}
           <div className="flex items-center justify-between p-4 bg-muted rounded-lg border border-border">
             <div className="flex items-center gap-3">
