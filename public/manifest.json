@@ -1,0 +1,26 @@
+{
+  "name": "FocusFlow - Smart Habit Tracker",
+  "short_name": "FocusFlow",
+  "description": "Build lasting habits with FocusFlow. Track daily progress, visualize streaks, and achieve your goals.",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#FAD8CC",
+  "theme_color": "#FAD8CC",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity", "lifestyle", "health"],
+  "lang": "en-US"
+}

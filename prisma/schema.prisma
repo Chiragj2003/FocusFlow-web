@@ -1,0 +1,76 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id // Clerk user ID
+  email     String?  // Optional, fetched from Clerk
+  name      String?
+  timezone  String   @default("UTC")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  habits  Habit[]
+  entries HabitEntry[]
+  badges  Badge[]
+
+  @@map("users")
+}
+
+model Habit {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  title       String
+  description String?
+  category    String?
+  color       String   @default("#FFB4A2")
+  goalType    String   @map("goal_type") // 'binary' | 'duration' | 'quantity'
+  goalTarget  Int?     @map("goal_target")
+  unit        String?  // 'times', 'minutes', 'pages', etc.
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  user    User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entries HabitEntry[]
+
+  @@map("habits")
+}
+
+model HabitEntry {
+  id        String   @id @default(uuid())
+  habitId   String   @map("habit_id")
+  userId    String   @map("user_id")
+  entryDate DateTime @map("entry_date") @db.Date
+  completed Boolean  @default(false)
+  value     Float?   @default(0)
+  notes     String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  habit Habit @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([habitId, userId, entryDate])
+  @@index([userId, entryDate])
+  @@map("habit_entries")
+}
+
+model Badge {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  name      String
+  metadata  Json?
+  awardedAt DateTime @default(now()) @map("awarded_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("badges")
+}
