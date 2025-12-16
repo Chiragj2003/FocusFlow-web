@@ -34,13 +34,13 @@ interface WeeklyBarsProps {
 
 export function WeeklyBars({
   data,
-  color = '#FFB4A2',
+  color = '#ffffff',
   height = 180,
 }: WeeklyBarsProps) {
   if (data.length === 0) {
     return (
       <div
-        className="flex items-center justify-center text-muted-foreground text-sm"
+        className="flex items-center justify-center text-zinc-500 text-sm"
         style={{ height }}
       >
         No weekly data
@@ -54,18 +54,11 @@ export function WeeklyBars({
       {
         label: 'Completion Rate',
         data: data.map((week) => Math.round(week.completionRate * 100)),
-        backgroundColor: data.map(
-          (week) => {
-            const opacity = 0.7 + (week.completionRate * 0.3)
-            // Convert hex to rgba
-            const hex = color.replace('#', '')
-            const r = parseInt(hex.substring(0, 2), 16)
-            const g = parseInt(hex.substring(2, 4), 16)
-            const b = parseInt(hex.substring(4, 6), 16)
-            return `rgba(${r}, ${g}, ${b}, ${opacity})`
-          }
-        ),
-        borderRadius: 6,
+        backgroundColor: data.map((week) => {
+          const opacity = 0.4 + (week.completionRate * 0.6)
+          return `rgba(255, 255, 255, ${opacity})`
+        }),
+        borderRadius: 8,
         borderSkipped: false,
         barThickness: 40,
       },
@@ -80,10 +73,10 @@ export function WeeklyBars({
         display: false,
       },
       tooltip: {
-        backgroundColor: '#fff',
-        titleColor: '#111827',
-        bodyColor: '#6B7280',
-        borderColor: '#E5E7EB',
+        backgroundColor: '#18181b',
+        titleColor: '#fafafa',
+        bodyColor: '#a1a1aa',
+        borderColor: '#27272a',
         borderWidth: 1,
         padding: 12,
         displayColors: false,
@@ -109,7 +102,7 @@ export function WeeklyBars({
           display: false,
         },
         ticks: {
-          color: '#9CA3AF',
+          color: '#71717a',
           font: {
             size: 12,
           },
@@ -123,10 +116,10 @@ export function WeeklyBars({
         max: 100,
         grid: {
           display: true,
-          color: '#E5E7EB',
+          color: '#27272a',
         },
         ticks: {
-          color: '#9CA3AF',
+          color: '#71717a',
           font: {
             size: 12,
           },

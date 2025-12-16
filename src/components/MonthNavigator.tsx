@@ -42,19 +42,19 @@ export function MonthNavigator({ month, year, onChange }: MonthNavigatorProps) {
     <div className="flex items-center gap-2">
       <button
         onClick={goToPrevMonth}
-        className="p-2 rounded-lg hover:bg-muted text-muted-foreground transition-colors"
+        className="p-2 rounded-xl hover:bg-zinc-800 text-zinc-400 hover:text-white transition-colors"
         aria-label="Previous month"
       >
         <ChevronLeft size={20} />
       </button>
 
-      <span className="text-lg font-semibold text-foreground min-w-[180px] text-center">
+      <span className="text-lg font-semibold text-white min-w-[180px] text-center">
         {monthName}
       </span>
 
       <button
         onClick={goToNextMonth}
-        className="p-2 rounded-lg hover:bg-muted text-muted-foreground transition-colors"
+        className="p-2 rounded-xl hover:bg-zinc-800 text-zinc-400 hover:text-white transition-colors"
         aria-label="Next month"
       >
         <ChevronRight size={20} />
@@ -63,7 +63,7 @@ export function MonthNavigator({ month, year, onChange }: MonthNavigatorProps) {
       {!isCurrentMonth && (
         <button
           onClick={goToToday}
-          className="ml-2 px-3 py-1.5 text-sm font-medium text-primary bg-primary/10 rounded-lg hover:bg-primary/20 transition-colors"
+          className="ml-2 px-3 py-1.5 text-sm font-medium text-zinc-900 bg-white rounded-xl hover:bg-zinc-200 transition-colors"
         >
           Today
         </button>

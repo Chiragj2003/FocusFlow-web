@@ -39,7 +39,7 @@ interface ChartLineProps {
 
 export function ChartLine({
   data,
-  color = '#FFB4A2',
+  color = '#ffffff',
   height = 200,
   showGrid = true,
   showArea = true,
@@ -47,7 +47,7 @@ export function ChartLine({
   if (data.length === 0) {
     return (
       <div
-        className="flex items-center justify-center text-muted-foreground text-sm"
+        className="flex items-center justify-center text-zinc-500 text-sm"
         style={{ height }}
       >
         No data to display
@@ -68,12 +68,12 @@ export function ChartLine({
         data: data.map((d) => d.value),
         borderColor: color,
         backgroundColor: showArea 
-          ? `${color}4D` // 30% opacity
+          ? 'rgba(255, 255, 255, 0.1)'
           : 'transparent',
         fill: showArea,
         tension: 0.4,
         pointBackgroundColor: color,
-        pointBorderColor: '#fff',
+        pointBorderColor: '#09090b',
         pointBorderWidth: 2,
         pointRadius: 4,
         pointHoverRadius: 6,
@@ -89,10 +89,10 @@ export function ChartLine({
         display: false,
       },
       tooltip: {
-        backgroundColor: '#fff',
-        titleColor: '#6B7280',
-        bodyColor: '#111827',
-        borderColor: '#E5E7EB',
+        backgroundColor: '#18181b',
+        titleColor: '#a1a1aa',
+        bodyColor: '#fafafa',
+        borderColor: '#27272a',
         borderWidth: 1,
         padding: 12,
         displayColors: false,
@@ -121,7 +121,7 @@ export function ChartLine({
           display: false,
         },
         ticks: {
-          color: '#9CA3AF',
+          color: '#71717a',
           font: {
             size: 12,
           },
@@ -135,10 +135,10 @@ export function ChartLine({
         max: 100,
         grid: {
           display: showGrid,
-          color: '#E5E7EB',
+          color: '#27272a',
         },
         ticks: {
-          color: '#9CA3AF',
+          color: '#71717a',
           font: {
             size: 12,
           },

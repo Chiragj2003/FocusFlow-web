@@ -141,18 +141,18 @@ export function SettingsClient({ user, clerkUser }: SettingsClientProps) {
     <div className="max-w-2xl space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-foreground">Settings</h1>
-        <p className="text-muted-foreground mt-1">Manage your account preferences</p>
+        <h1 className="text-2xl font-bold text-white">Settings</h1>
+        <p className="text-zinc-400 mt-1">Manage your account preferences</p>
       </div>
 
       {/* Profile Section */}
-      <div className="bg-card rounded-xl border border-border p-6">
+      <div className="bg-zinc-900/50 rounded-2xl border border-zinc-800/50 p-6">
         <div className="flex items-center gap-3 mb-6">
-          <User size={20} className="text-muted-foreground" />
-          <h2 className="text-lg font-semibold text-card-foreground">Profile</h2>
+          <User size={20} className="text-zinc-400" />
+          <h2 className="text-lg font-semibold text-white">Profile</h2>
         </div>
 
-        <div className="flex items-center gap-4 p-4 bg-muted rounded-lg">
+        <div className="flex items-center gap-4 p-4 bg-zinc-800/50 rounded-xl">
           <UserButton
             appearance={{
               elements: {
@@ -161,11 +161,11 @@ export function SettingsClient({ user, clerkUser }: SettingsClientProps) {
             }}
           />
           <div>
-            <p className="font-medium text-card-foreground">
+            <p className="font-medium text-white">
               {clerkUser.firstName} {clerkUser.lastName}
             </p>
-            <p className="text-sm text-muted-foreground">{user.email}</p>
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-sm text-zinc-400">{user.email}</p>
+            <p className="text-xs text-zinc-500 mt-1">
               Managed by Clerk — click avatar to edit
             </p>
           </div>
@@ -173,21 +173,21 @@ export function SettingsClient({ user, clerkUser }: SettingsClientProps) {
       </div>
 
       {/* Timezone Section */}
-      <div className="bg-card rounded-xl border border-border p-6">
+      <div className="bg-zinc-900/50 rounded-2xl border border-zinc-800/50 p-6">
         <div className="flex items-center gap-3 mb-6">
-          <Globe size={20} className="text-muted-foreground" />
-          <h2 className="text-lg font-semibold text-card-foreground">Timezone</h2>
+          <Globe size={20} className="text-zinc-400" />
+          <h2 className="text-lg font-semibold text-white">Timezone</h2>
         </div>
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-card-foreground mb-1.5">
+            <label className="block text-sm font-medium text-white mb-1.5">
               Your Timezone
             </label>
             <select
               value={timezone}
               onChange={(e) => setTimezone(e.target.value)}
-              className="w-full px-3 py-2.5 bg-card border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary text-card-foreground"
+              className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-zinc-600 text-white"
             >
               {TIMEZONES.map((tz) => (
                 <option key={tz} value={tz}>
@@ -195,7 +195,7 @@ export function SettingsClient({ user, clerkUser }: SettingsClientProps) {
                 </option>
               ))}
             </select>
-            <p className="mt-1.5 text-sm text-muted-foreground">
+            <p className="mt-1.5 text-sm text-zinc-500">
               Used for accurate date tracking and streak calculations
             </p>
           </div>
@@ -203,7 +203,7 @@ export function SettingsClient({ user, clerkUser }: SettingsClientProps) {
           <button
             onClick={handleSave}
             disabled={isSaving}
-            className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50"
+            className="px-4 py-2 text-sm font-medium text-zinc-900 bg-white rounded-xl hover:bg-zinc-200 transition-colors disabled:opacity-50"
           >
             {isSaving ? 'Saving...' : saved ? 'Saved!' : 'Save Changes'}
           </button>
@@ -211,27 +211,27 @@ export function SettingsClient({ user, clerkUser }: SettingsClientProps) {
       </div>
 
       {/* Preferences Section */}
-      <div className="bg-card rounded-xl border border-border p-6">
+      <div className="bg-zinc-900/50 rounded-2xl border border-zinc-800/50 p-6">
         <div className="flex items-center gap-3 mb-6">
-          <Palette size={20} className="text-muted-foreground" />
-          <h2 className="text-lg font-semibold text-card-foreground">Preferences</h2>
+          <Palette size={20} className="text-zinc-400" />
+          <h2 className="text-lg font-semibold text-white">Preferences</h2>
         </div>
 
         <div className="space-y-4">
-          <div className="p-4 bg-muted rounded-lg">
+          <div className="p-4 bg-zinc-800/50 rounded-xl">
             <div className="flex items-center justify-between mb-3">
               <div>
-                <p className="font-medium text-card-foreground">Theme</p>
-                <p className="text-sm text-muted-foreground">Choose your preferred appearance</p>
+                <p className="font-medium text-white">Theme</p>
+                <p className="text-sm text-zinc-400">Choose your preferred appearance</p>
               </div>
             </div>
             <div className="flex gap-2">
               <button
                 onClick={() => setTheme('light')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
                   theme === 'light'
-                    ? 'bg-primary text-white'
-                    : 'bg-card border border-border text-card-foreground hover:bg-muted'
+                    ? 'bg-white text-zinc-900'
+                    : 'bg-zinc-800 border border-zinc-700 text-white hover:bg-zinc-700'
                 }`}
               >
                 <Sun size={16} />
@@ -239,10 +239,10 @@ export function SettingsClient({ user, clerkUser }: SettingsClientProps) {
               </button>
               <button
                 onClick={() => setTheme('dark')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
                   theme === 'dark'
-                    ? 'bg-primary text-white'
-                    : 'bg-card border border-border text-card-foreground hover:bg-muted'
+                    ? 'bg-white text-zinc-900'
+                    : 'bg-zinc-800 border border-zinc-700 text-white hover:bg-zinc-700'
                 }`}
               >
                 <Moon size={16} />
@@ -250,10 +250,10 @@ export function SettingsClient({ user, clerkUser }: SettingsClientProps) {
               </button>
               <button
                 onClick={() => setTheme('system')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
                   theme === 'system'
-                    ? 'bg-primary text-white'
-                    : 'bg-card border border-border text-card-foreground hover:bg-muted'
+                    ? 'bg-white text-zinc-900'
+                    : 'bg-zinc-800 border border-zinc-700 text-white hover:bg-zinc-700'
                 }`}
               >
                 <Monitor size={16} />
@@ -262,12 +262,12 @@ export function SettingsClient({ user, clerkUser }: SettingsClientProps) {
             </div>
           </div>
 
-          <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
+          <div className="flex items-center justify-between p-4 bg-zinc-800/50 rounded-xl">
             <div>
-              <p className="font-medium text-card-foreground">Notifications</p>
-              <p className="text-sm text-muted-foreground">Daily reminders</p>
+              <p className="font-medium text-white">Notifications</p>
+              <p className="text-sm text-zinc-400">Daily reminders</p>
             </div>
-            <span className="px-3 py-1 text-sm bg-border text-muted-foreground rounded-full">
+            <span className="px-3 py-1 text-sm bg-zinc-700 text-zinc-400 rounded-full">
               Coming Soon
             </span>
           </div>
@@ -275,19 +275,19 @@ export function SettingsClient({ user, clerkUser }: SettingsClientProps) {
       </div>
 
       {/* Account Management */}
-      <div className="bg-card rounded-xl border border-border p-6">
+      <div className="bg-zinc-900/50 rounded-2xl border border-zinc-800/50 p-6">
         <div className="flex items-center gap-3 mb-6">
-          <Shield size={20} className="text-muted-foreground" />
-          <h2 className="text-lg font-semibold text-card-foreground">Account Management</h2>
+          <Shield size={20} className="text-zinc-400" />
+          <h2 className="text-lg font-semibold text-white">Account Management</h2>
         </div>
 
         {isDeactivated && (
-          <div className="mb-4 p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg">
-            <div className="flex items-center gap-2 text-amber-500">
+          <div className="mb-4 p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl">
+            <div className="flex items-center gap-2 text-amber-400">
               <AlertTriangle size={16} />
               <p className="font-medium">Your account is deactivated</p>
             </div>
-            <p className="text-sm text-muted-foreground mt-1">
+            <p className="text-sm text-zinc-400 mt-1">
               Your habits are hidden and tracking is paused. Reactivate to resume.
             </p>
           </div>
@@ -295,37 +295,37 @@ export function SettingsClient({ user, clerkUser }: SettingsClientProps) {
 
         <div className="space-y-4">
           {/* Log Out Option */}
-          <div className="flex items-center justify-between p-4 bg-muted rounded-lg border border-border">
+          <div className="flex items-center justify-between p-4 bg-zinc-800/50 rounded-xl border border-zinc-700/50">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-primary/10 rounded-lg">
-                <LogOut size={18} className="text-primary" />
+              <div className="p-2 bg-white/10 rounded-lg">
+                <LogOut size={18} className="text-white" />
               </div>
               <div>
-                <p className="font-medium text-card-foreground">Log Out</p>
-                <p className="text-sm text-muted-foreground">
+                <p className="font-medium text-white">Log Out</p>
+                <p className="text-sm text-zinc-400">
                   Sign out of your account on this device
                 </p>
               </div>
             </div>
             <button
               onClick={() => signOut({ redirectUrl: '/' })}
-              className="px-4 py-2 text-sm font-medium text-primary border border-primary/50 rounded-lg hover:bg-primary/10 transition-colors"
+              className="px-4 py-2 text-sm font-medium text-white border border-zinc-600 rounded-xl hover:bg-zinc-800 transition-colors"
             >
               Log Out
             </button>
           </div>
 
           {/* Deactivate/Reactivate Option */}
-          <div className="flex items-center justify-between p-4 bg-muted rounded-lg border border-border">
+          <div className="flex items-center justify-between p-4 bg-zinc-800/50 rounded-xl border border-zinc-700/50">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-amber-500/10 rounded-lg">
-                <Power size={18} className="text-amber-500" />
+                <Power size={18} className="text-amber-400" />
               </div>
               <div>
-                <p className="font-medium text-card-foreground">
+                <p className="font-medium text-white">
                   {isDeactivated ? 'Reactivate Account' : 'Deactivate Account'}
                 </p>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-zinc-400">
                   {isDeactivated
                     ? 'Reactivate your account to resume tracking'
                     : 'Temporarily disable your account without losing data'}
@@ -334,10 +334,10 @@ export function SettingsClient({ user, clerkUser }: SettingsClientProps) {
             </div>
             <button
               onClick={() => setShowDeactivateModal(true)}
-              className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+              className={`px-4 py-2 text-sm font-medium rounded-xl transition-colors ${
                 isDeactivated
                   ? 'bg-green-500 text-white hover:bg-green-600'
-                  : 'text-amber-500 border border-amber-500/50 hover:bg-amber-500/10'
+                  : 'text-amber-400 border border-amber-500/50 hover:bg-amber-500/10'
               }`}
             >
               {isDeactivated ? 'Reactivate' : 'Deactivate'}
@@ -345,21 +345,21 @@ export function SettingsClient({ user, clerkUser }: SettingsClientProps) {
           </div>
 
           {/* Delete Account */}
-          <div className="flex items-center justify-between p-4 bg-red-500/5 rounded-lg border border-red-500/30">
+          <div className="flex items-center justify-between p-4 bg-red-500/5 rounded-xl border border-red-500/30">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-red-500/10 rounded-lg">
-                <Trash2 size={18} className="text-red-500" />
+                <Trash2 size={18} className="text-red-400" />
               </div>
               <div>
-                <p className="font-medium text-red-500">Delete Account</p>
-                <p className="text-sm text-muted-foreground">
+                <p className="font-medium text-red-400">Delete Account</p>
+                <p className="text-sm text-zinc-400">
                   Permanently delete your account and all data
                 </p>
               </div>
             </div>
             <button
               onClick={() => setShowDeleteModal(true)}
-              className="px-4 py-2 text-sm font-medium text-red-500 border border-red-500/50 rounded-lg hover:bg-red-500/10 transition-colors"
+              className="px-4 py-2 text-sm font-medium text-red-400 border border-red-500/50 rounded-xl hover:bg-red-500/10 transition-colors"
             >
               Delete Account
             </button>
@@ -369,41 +369,41 @@ export function SettingsClient({ user, clerkUser }: SettingsClientProps) {
 
       {/* Deactivate Modal */}
       {showDeactivateModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-card rounded-xl border border-border p-6 max-w-md w-full">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-zinc-900 rounded-2xl border border-zinc-800 p-6 max-w-md w-full">
             <div className="flex items-center gap-3 mb-4">
               <div className="p-2 bg-amber-500/10 rounded-lg">
-                <Power size={20} className="text-amber-500" />
+                <Power size={20} className="text-amber-400" />
               </div>
-              <h3 className="text-lg font-semibold text-card-foreground">
+              <h3 className="text-lg font-semibold text-white">
                 {isDeactivated ? 'Reactivate Account?' : 'Deactivate Account?'}
               </h3>
             </div>
 
             {isDeactivated ? (
-              <p className="text-muted-foreground mb-6">
+              <p className="text-zinc-400 mb-6">
                 Welcome back! Reactivating your account will restore all your habits and resume tracking.
               </p>
             ) : (
               <div className="space-y-3 mb-6">
-                <p className="text-muted-foreground">
+                <p className="text-zinc-400">
                   Deactivating your account will:
                 </p>
-                <ul className="text-sm text-muted-foreground space-y-2">
+                <ul className="text-sm text-zinc-400 space-y-2">
                   <li className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 bg-amber-500 rounded-full" />
+                    <span className="w-1.5 h-1.5 bg-amber-400 rounded-full" />
                     Pause all habit tracking
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 bg-amber-500 rounded-full" />
+                    <span className="w-1.5 h-1.5 bg-amber-400 rounded-full" />
                     Hide your habits from the dashboard
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 bg-green-500 rounded-full" />
+                    <span className="w-1.5 h-1.5 bg-green-400 rounded-full" />
                     Keep all your data safe
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 bg-green-500 rounded-full" />
+                    <span className="w-1.5 h-1.5 bg-green-400 rounded-full" />
                     Allow reactivation at any time
                   </li>
                 </ul>
@@ -411,7 +411,7 @@ export function SettingsClient({ user, clerkUser }: SettingsClientProps) {
             )}
 
             {accountError && (
-              <p className="text-red-500 text-sm mb-4">{accountError}</p>
+              <p className="text-red-400 text-sm mb-4">{accountError}</p>
             )}
 
             <div className="flex gap-3">
@@ -420,14 +420,14 @@ export function SettingsClient({ user, clerkUser }: SettingsClientProps) {
                   setShowDeactivateModal(false)
                   setAccountError('')
                 }}
-                className="flex-1 px-4 py-2 text-sm font-medium text-card-foreground bg-muted border border-border rounded-lg hover:bg-border transition-colors"
+                className="flex-1 px-4 py-3 text-sm font-medium text-white bg-zinc-800 border border-zinc-700 rounded-xl hover:bg-zinc-700 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleDeactivateAccount}
                 disabled={isDeactivating}
-                className={`flex-1 px-4 py-2 text-sm font-medium rounded-lg transition-colors disabled:opacity-50 ${
+                className={`flex-1 px-4 py-3 text-sm font-medium rounded-xl transition-colors disabled:opacity-50 ${
                   isDeactivated
                     ? 'bg-green-500 text-white hover:bg-green-600'
                     : 'bg-amber-500 text-white hover:bg-amber-600'
@@ -446,51 +446,51 @@ export function SettingsClient({ user, clerkUser }: SettingsClientProps) {
 
       {/* Delete Modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-card rounded-xl border border-red-500/30 p-6 max-w-md w-full">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-zinc-900 rounded-2xl border border-red-500/30 p-6 max-w-md w-full">
             <div className="flex items-center gap-3 mb-4">
               <div className="p-2 bg-red-500/10 rounded-lg">
-                <AlertTriangle size={20} className="text-red-500" />
+                <AlertTriangle size={20} className="text-red-400" />
               </div>
-              <h3 className="text-lg font-semibold text-red-500">Delete Account</h3>
+              <h3 className="text-lg font-semibold text-red-400">Delete Account</h3>
             </div>
 
             <div className="space-y-4 mb-6">
-              <p className="text-muted-foreground">
-                This action is <span className="text-red-500 font-semibold">permanent and irreversible</span>.
+              <p className="text-zinc-400">
+                This action is <span className="text-red-400 font-semibold">permanent and irreversible</span>.
                 Deleting your account will:
               </p>
-              <ul className="text-sm text-muted-foreground space-y-2">
+              <ul className="text-sm text-zinc-400 space-y-2">
                 <li className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 bg-red-500 rounded-full" />
+                  <span className="w-1.5 h-1.5 bg-red-400 rounded-full" />
                   Delete all your habits
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 bg-red-500 rounded-full" />
+                  <span className="w-1.5 h-1.5 bg-red-400 rounded-full" />
                   Delete all tracking history
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 bg-red-500 rounded-full" />
+                  <span className="w-1.5 h-1.5 bg-red-400 rounded-full" />
                   Remove your account permanently
                 </li>
               </ul>
 
-              <div className="pt-4 border-t border-border">
-                <label className="block text-sm font-medium text-card-foreground mb-2">
-                  Type <span className="font-mono text-red-500 bg-red-500/10 px-1 rounded">delete my account</span> to confirm:
+              <div className="pt-4 border-t border-zinc-800">
+                <label className="block text-sm font-medium text-white mb-2">
+                  Type <span className="font-mono text-red-400 bg-red-500/10 px-1 rounded">delete my account</span> to confirm:
                 </label>
                 <input
                   type="text"
                   value={deleteConfirmation}
                   onChange={(e) => setDeleteConfirmation(e.target.value)}
                   placeholder="delete my account"
-                  className="w-full px-3 py-2.5 bg-card border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:border-red-500 text-card-foreground placeholder:text-muted-foreground"
+                  className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:border-red-500 text-white placeholder:text-zinc-500"
                 />
               </div>
             </div>
 
             {accountError && (
-              <p className="text-red-500 text-sm mb-4">{accountError}</p>
+              <p className="text-red-400 text-sm mb-4">{accountError}</p>
             )}
 
             <div className="flex gap-3">
@@ -500,14 +500,14 @@ export function SettingsClient({ user, clerkUser }: SettingsClientProps) {
                   setDeleteConfirmation('')
                   setAccountError('')
                 }}
-                className="flex-1 px-4 py-2 text-sm font-medium text-card-foreground bg-muted border border-border rounded-lg hover:bg-border transition-colors"
+                className="flex-1 px-4 py-3 text-sm font-medium text-white bg-zinc-800 border border-zinc-700 rounded-xl hover:bg-zinc-700 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleDeleteAccount}
                 disabled={isDeleting || deleteConfirmation !== 'delete my account'}
-                className="flex-1 px-4 py-2 text-sm font-medium bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 px-4 py-3 text-sm font-medium bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isDeleting ? 'Deleting...' : 'Delete My Account'}
               </button>

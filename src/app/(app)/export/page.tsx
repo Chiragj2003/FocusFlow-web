@@ -234,21 +234,21 @@ export default function ExportPage() {
     <div className="max-w-2xl space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-foreground">Export Data</h1>
-        <p className="text-muted-foreground mt-1">
+        <h1 className="text-2xl font-bold text-white">Export Data</h1>
+        <p className="text-zinc-400 mt-1">
           Download your habit tracking data in various formats
         </p>
       </div>
 
       {/* PDF Insights Export Card */}
-      <div className="bg-card rounded-xl border border-border p-6">
+      <div className="bg-zinc-900/50 rounded-2xl border border-zinc-800/50 p-6">
         <div className="flex items-start gap-4 mb-6">
-          <div className="p-3 rounded-lg bg-red-500/10 text-red-500">
+          <div className="p-3 rounded-xl bg-red-500/10 text-red-400">
             <FileImage size={24} />
           </div>
           <div>
-            <h2 className="text-lg font-semibold text-card-foreground">Insights PDF Report</h2>
-            <p className="text-sm text-muted-foreground mt-1">
+            <h2 className="text-lg font-semibold text-white">Insights PDF Report</h2>
+            <p className="text-sm text-zinc-400 mt-1">
               Download a beautiful PDF report of your monthly insights including
               charts, streaks, and habit performance.
             </p>
@@ -259,7 +259,7 @@ export default function ExportPage() {
         <button
           onClick={handleExportPdf}
           disabled={isExportingPdf}
-          className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium text-white bg-red-500 rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium text-white bg-red-500 rounded-xl hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isExportingPdf ? (
             <>
@@ -276,14 +276,14 @@ export default function ExportPage() {
       </div>
 
       {/* CSV Export Card */}
-      <div className="bg-card rounded-xl border border-border p-6">
+      <div className="bg-zinc-900/50 rounded-2xl border border-zinc-800/50 p-6">
         <div className="flex items-start gap-4 mb-6">
-          <div className="p-3 rounded-lg bg-primary/10 text-primary">
+          <div className="p-3 rounded-xl bg-white/10 text-white">
             <FileText size={24} />
           </div>
           <div>
-            <h2 className="text-lg font-semibold text-card-foreground">CSV Export</h2>
-            <p className="text-sm text-muted-foreground mt-1">
+            <h2 className="text-lg font-semibold text-white">CSV Export</h2>
+            <p className="text-sm text-zinc-400 mt-1">
               Export your habit entries including dates, completion status,
               values, and notes.
             </p>
@@ -292,25 +292,25 @@ export default function ExportPage() {
 
         {/* Quick Date Selectors */}
         <div className="mb-6">
-          <label className="block text-sm font-medium text-card-foreground mb-2">
+          <label className="block text-sm font-medium text-white mb-2">
             Quick Select
           </label>
           <div className="flex gap-2">
             <button
               onClick={setThisMonth}
-              className="px-3 py-1.5 text-sm font-medium text-muted-foreground bg-muted rounded-lg hover:bg-border transition-colors"
+              className="px-3 py-1.5 text-sm font-medium text-zinc-400 bg-zinc-800 rounded-lg hover:bg-zinc-700 transition-colors"
             >
               This Month
             </button>
             <button
               onClick={setLastMonth}
-              className="px-3 py-1.5 text-sm font-medium text-muted-foreground bg-muted rounded-lg hover:bg-border transition-colors"
+              className="px-3 py-1.5 text-sm font-medium text-zinc-400 bg-zinc-800 rounded-lg hover:bg-zinc-700 transition-colors"
             >
               Last Month
             </button>
             <button
               onClick={setThisYear}
-              className="px-3 py-1.5 text-sm font-medium text-muted-foreground bg-muted rounded-lg hover:bg-border transition-colors"
+              className="px-3 py-1.5 text-sm font-medium text-zinc-400 bg-zinc-800 rounded-lg hover:bg-zinc-700 transition-colors"
             >
               This Year
             </button>
@@ -320,7 +320,7 @@ export default function ExportPage() {
         {/* Date Range */}
         <div className="grid grid-cols-2 gap-4 mb-6">
           <div>
-            <label className="block text-sm font-medium text-card-foreground mb-1.5">
+            <label className="block text-sm font-medium text-white mb-1.5">
               Start Date
             </label>
             <div className="relative">
@@ -328,12 +328,12 @@ export default function ExportPage() {
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="w-full px-3 py-2.5 bg-card border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary text-card-foreground"
+                className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-zinc-600 text-white"
               />
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-card-foreground mb-1.5">
+            <label className="block text-sm font-medium text-white mb-1.5">
               End Date
             </label>
             <div className="relative">
@@ -341,7 +341,7 @@ export default function ExportPage() {
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="w-full px-3 py-2.5 bg-card border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary text-card-foreground"
+                className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-zinc-600 text-white"
               />
             </div>
           </div>
@@ -351,7 +351,7 @@ export default function ExportPage() {
         <button
           onClick={handleExport}
           disabled={isExporting}
-          className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium text-zinc-900 bg-white rounded-xl hover:bg-zinc-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isExporting ? (
             <>
@@ -368,11 +368,11 @@ export default function ExportPage() {
       </div>
 
       {/* Info */}
-      <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4">
-        <h3 className="text-sm font-medium text-blue-600 dark:text-blue-400 mb-1">
+      <div className="bg-blue-500/10 border border-blue-500/30 rounded-2xl p-4">
+        <h3 className="text-sm font-medium text-blue-400 mb-1">
           What&apos;s included in the export?
         </h3>
-        <ul className="text-sm text-blue-600/80 dark:text-blue-400/80 space-y-1">
+        <ul className="text-sm text-blue-400/80 space-y-1">
           <li>• Date of each habit entry</li>
           <li>• Habit name and category</li>
           <li>• Completion status (Yes/No)</li>

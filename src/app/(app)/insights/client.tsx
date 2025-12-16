@@ -36,8 +36,8 @@ export function InsightsClient({
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-foreground">Insights</h1>
-        <p className="text-muted-foreground mt-1">
+        <h1 className="text-2xl font-bold text-white">Insights</h1>
+        <p className="text-zinc-400 mt-1">
           Detailed analytics for {monthName}
         </p>
       </div>
@@ -45,8 +45,8 @@ export function InsightsClient({
       {/* Main Grid */}
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Overall Progress */}
-        <div className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-lg font-semibold text-card-foreground mb-6">
+        <div className="bg-zinc-900/50 rounded-2xl border border-zinc-800/50 p-6">
+          <h2 className="text-lg font-semibold text-white mb-6">
             Monthly Overview
           </h2>
           <div className="flex items-center justify-center gap-8">
@@ -57,20 +57,20 @@ export function InsightsClient({
             />
             <div className="space-y-4">
               <div>
-                <p className="text-sm text-muted-foreground">Completed</p>
-                <p className="text-2xl font-bold text-card-foreground">
+                <p className="text-sm text-zinc-400">Completed</p>
+                <p className="text-2xl font-bold text-white">
                   {insights.totalCompleted}
                 </p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Total Possible</p>
-                <p className="text-2xl font-bold text-card-foreground">
+                <p className="text-sm text-zinc-400">Total Possible</p>
+                <p className="text-2xl font-bold text-white">
                   {insights.totalPossible}
                 </p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Habits Tracked</p>
-                <p className="text-2xl font-bold text-card-foreground">
+                <p className="text-sm text-zinc-400">Habits Tracked</p>
+                <p className="text-2xl font-bold text-white">
                   {habits.length}
                 </p>
               </div>
@@ -79,8 +79,8 @@ export function InsightsClient({
         </div>
 
         {/* Weekly Performance */}
-        <div className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-lg font-semibold text-card-foreground mb-6">
+        <div className="bg-zinc-900/50 rounded-2xl border border-zinc-800/50 p-6">
+          <h2 className="text-lg font-semibold text-white mb-6">
             Weekly Performance
           </h2>
           <WeeklyBars data={insights.weekly} height={220} />
@@ -90,20 +90,20 @@ export function InsightsClient({
       {/* Second Row */}
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Top Habits */}
-        <div className="lg:col-span-2 bg-card rounded-xl border border-border p-6">
-          <h2 className="text-lg font-semibold text-card-foreground mb-4">
+        <div className="lg:col-span-2 bg-zinc-900/50 rounded-2xl border border-zinc-800/50 p-6">
+          <h2 className="text-lg font-semibold text-white mb-4">
             Top Performing Habits
           </h2>
           <TopHabitsList habits={insights.topHabits} showStreaks={true} />
         </div>
 
         {/* Streaks */}
-        <div className="bg-card rounded-xl border border-border p-6">
-          <h2 className="text-lg font-semibold text-card-foreground mb-4">
+        <div className="bg-zinc-900/50 rounded-2xl border border-zinc-800/50 p-6">
+          <h2 className="text-lg font-semibold text-white mb-4">
             Current Streaks
           </h2>
           {topStreaks.length === 0 ? (
-            <p className="text-muted-foreground text-sm text-center py-8">
+            <p className="text-zinc-500 text-sm text-center py-8">
               No active streaks
             </p>
           ) : (
@@ -111,14 +111,14 @@ export function InsightsClient({
               {topStreaks.map((streak) => (
                 <div
                   key={streak.habitId}
-                  className="flex items-center justify-between p-3 rounded-lg bg-muted"
+                  className="flex items-center justify-between p-3 rounded-xl bg-zinc-800/50"
                 >
-                  <span className="text-sm font-medium text-card-foreground truncate">
+                  <span className="text-sm font-medium text-white truncate">
                     {streak.title}
                   </span>
                   <div className="flex items-center gap-2">
-                    <Flame size={14} className="text-orange-500" />
-                    <span className="text-sm font-bold text-card-foreground">
+                    <Flame size={14} className="text-orange-400" />
+                    <span className="text-sm font-bold text-white">
                       {streak.currentStreak}
                     </span>
                   </div>
@@ -130,30 +130,30 @@ export function InsightsClient({
       </div>
 
       {/* Habit Summaries Table */}
-      <div className="bg-card rounded-xl border border-border p-6">
-        <h2 className="text-lg font-semibold text-card-foreground mb-4">
+      <div className="bg-zinc-900/50 rounded-2xl border border-zinc-800/50 p-6">
+        <h2 className="text-lg font-semibold text-white mb-4">
           Habit Details
         </h2>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-border">
-                <th className="text-left py-3 px-4 text-xs font-medium text-muted-foreground uppercase">
+              <tr className="border-b border-zinc-800/50">
+                <th className="text-left py-3 px-4 text-xs font-medium text-zinc-400 uppercase">
                   Habit
                 </th>
-                <th className="text-center py-3 px-4 text-xs font-medium text-muted-foreground uppercase">
+                <th className="text-center py-3 px-4 text-xs font-medium text-zinc-400 uppercase">
                   Days Logged
                 </th>
-                <th className="text-center py-3 px-4 text-xs font-medium text-muted-foreground uppercase">
+                <th className="text-center py-3 px-4 text-xs font-medium text-zinc-400 uppercase">
                   Total Value
                 </th>
-                <th className="text-center py-3 px-4 text-xs font-medium text-muted-foreground uppercase">
+                <th className="text-center py-3 px-4 text-xs font-medium text-zinc-400 uppercase">
                   Avg/Day
                 </th>
-                <th className="text-center py-3 px-4 text-xs font-medium text-muted-foreground uppercase">
+                <th className="text-center py-3 px-4 text-xs font-medium text-zinc-400 uppercase">
                   Current Streak
                 </th>
-                <th className="text-center py-3 px-4 text-xs font-medium text-muted-foreground uppercase">
+                <th className="text-center py-3 px-4 text-xs font-medium text-zinc-400 uppercase">
                   Longest Streak
                 </th>
               </tr>
@@ -166,7 +166,7 @@ export function InsightsClient({
                 return (
                   <tr
                     key={summary.habitId}
-                    className="border-b border-border/50 hover:bg-muted/50"
+                    className="border-b border-zinc-800/30 hover:bg-zinc-800/30"
                   >
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-3">
@@ -174,40 +174,40 @@ export function InsightsClient({
                           className="w-3 h-3 rounded-full"
                           style={{ backgroundColor: habit?.color }}
                         />
-                        <span className="text-sm font-medium text-card-foreground">
+                        <span className="text-sm font-medium text-white">
                           {summary.title}
                         </span>
                       </div>
                     </td>
-                    <td className="py-3 px-4 text-center text-sm text-muted-foreground">
+                    <td className="py-3 px-4 text-center text-sm text-zinc-400">
                       {summary.countLogged}
                     </td>
-                    <td className="py-3 px-4 text-center text-sm text-muted-foreground">
+                    <td className="py-3 px-4 text-center text-sm text-zinc-400">
                       {summary.sumValue > 0 ? summary.sumValue.toFixed(0) : '-'}
                     </td>
-                    <td className="py-3 px-4 text-center text-sm text-muted-foreground">
+                    <td className="py-3 px-4 text-center text-sm text-zinc-400">
                       {summary.avgPerActiveDay > 0
                         ? summary.avgPerActiveDay.toFixed(1)
                         : '-'}
                     </td>
                     <td className="py-3 px-4 text-center">
                       {streak && streak.currentStreak > 0 ? (
-                        <span className="inline-flex items-center gap-1 text-sm font-medium text-orange-500">
+                        <span className="inline-flex items-center gap-1 text-sm font-medium text-orange-400">
                           <Flame size={12} />
                           {streak.currentStreak}
                         </span>
                       ) : (
-                        <span className="text-sm text-muted-foreground">-</span>
+                        <span className="text-sm text-zinc-500">-</span>
                       )}
                     </td>
                     <td className="py-3 px-4 text-center">
                       {streak && streak.longestStreak > 0 ? (
-                        <span className="inline-flex items-center gap-1 text-sm font-medium text-yellow-500">
+                        <span className="inline-flex items-center gap-1 text-sm font-medium text-yellow-400">
                           <Trophy size={12} />
                           {streak.longestStreak}
                         </span>
                       ) : (
-                        <span className="text-sm text-muted-foreground">-</span>
+                        <span className="text-sm text-zinc-500">-</span>
                       )}
                     </td>
                   </tr>

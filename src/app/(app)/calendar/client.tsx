@@ -131,11 +131,11 @@ export function CalendarClient({
 
   // Get progress color based on percentage
   const getProgressColor = (percentage: number) => {
-    if (percentage === 0) return 'bg-muted'
-    if (percentage < 25) return 'bg-red-400'
-    if (percentage < 50) return 'bg-orange-400'
-    if (percentage < 75) return 'bg-yellow-400'
-    if (percentage < 100) return 'bg-green-400'
+    if (percentage === 0) return 'bg-zinc-800'
+    if (percentage < 25) return 'bg-red-500/50'
+    if (percentage < 50) return 'bg-orange-500/50'
+    if (percentage < 75) return 'bg-yellow-500/50'
+    if (percentage < 100) return 'bg-green-500/50'
     return 'bg-green-500'
   }
 
@@ -147,8 +147,8 @@ export function CalendarClient({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Calendar View</h1>
-          <p className="text-muted-foreground mt-1">
+          <h1 className="text-2xl font-bold text-white">Calendar View</h1>
+          <p className="text-zinc-400 mt-1">
             View your yearly habit progress at a glance
           </p>
         </div>
@@ -158,17 +158,17 @@ export function CalendarClient({
           <button
             onClick={() => handleYearChange(-1)}
             disabled={isLoading}
-            className="p-2 hover:bg-muted rounded-lg transition-colors text-muted-foreground hover:text-foreground disabled:opacity-50"
+            className="p-2 hover:bg-zinc-800 rounded-xl transition-colors text-zinc-400 hover:text-white disabled:opacity-50"
           >
             <ChevronLeft size={20} />
           </button>
-          <span className="text-lg font-semibold text-foreground min-w-20 text-center">
+          <span className="text-lg font-semibold text-white min-w-20 text-center">
             {year}
           </span>
           <button
             onClick={() => handleYearChange(1)}
             disabled={isLoading || year >= today.getFullYear()}
-            className="p-2 hover:bg-muted rounded-lg transition-colors text-muted-foreground hover:text-foreground disabled:opacity-50"
+            className="p-2 hover:bg-zinc-800 rounded-xl transition-colors text-zinc-400 hover:text-white disabled:opacity-50"
           >
             <ChevronRight size={20} />
           </button>
@@ -176,32 +176,32 @@ export function CalendarClient({
       </div>
 
       {/* Legend */}
-      <div className="bg-card rounded-xl border border-border p-4">
-        <div className="flex items-center gap-6 text-sm">
-          <span className="text-muted-foreground">Progress:</span>
+      <div className="bg-zinc-900/50 rounded-2xl border border-zinc-800/50 p-4">
+        <div className="flex items-center gap-6 text-sm flex-wrap">
+          <span className="text-zinc-400">Progress:</span>
           <div className="flex items-center gap-1">
-            <div className="w-4 h-4 rounded-full bg-muted" />
-            <span className="text-muted-foreground">0%</span>
+            <div className="w-4 h-4 rounded-full bg-zinc-800" />
+            <span className="text-zinc-500">0%</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-4 h-4 rounded-full bg-red-400" />
-            <span className="text-muted-foreground">1-24%</span>
+            <div className="w-4 h-4 rounded-full bg-red-500/50" />
+            <span className="text-zinc-500">1-24%</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-4 h-4 rounded-full bg-orange-400" />
-            <span className="text-muted-foreground">25-49%</span>
+            <div className="w-4 h-4 rounded-full bg-orange-500/50" />
+            <span className="text-zinc-500">25-49%</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-4 h-4 rounded-full bg-yellow-400" />
-            <span className="text-muted-foreground">50-74%</span>
+            <div className="w-4 h-4 rounded-full bg-yellow-500/50" />
+            <span className="text-zinc-500">50-74%</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-4 h-4 rounded-full bg-green-400" />
-            <span className="text-muted-foreground">75-99%</span>
+            <div className="w-4 h-4 rounded-full bg-green-500/50" />
+            <span className="text-zinc-500">75-99%</span>
           </div>
           <div className="flex items-center gap-1">
             <div className="w-4 h-4 rounded-full bg-green-500" />
-            <span className="text-muted-foreground">100%</span>
+            <span className="text-zinc-500">100%</span>
           </div>
         </div>
       </div>
@@ -217,10 +217,10 @@ export function CalendarClient({
           return (
             <div 
               key={monthName} 
-              className="bg-card rounded-xl border border-border p-4"
+              className="bg-zinc-900/50 rounded-2xl border border-zinc-800/50 p-4"
             >
               {/* Month Header */}
-              <h3 className="text-sm font-semibold text-card-foreground mb-3">
+              <h3 className="text-sm font-semibold text-white mb-3">
                 {monthName}
               </h3>
               
@@ -229,7 +229,7 @@ export function CalendarClient({
                 {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, i) => (
                   <div 
                     key={i} 
-                    className="text-[10px] text-muted-foreground text-center font-medium"
+                    className="text-[10px] text-zinc-500 text-center font-medium"
                   >
                     {day}
                   </div>
@@ -259,9 +259,9 @@ export function CalendarClient({
                       className={cn(
                         "relative w-6 h-6 rounded-full flex items-center justify-center text-[10px] transition-all",
                         isFuture 
-                          ? "text-muted-foreground/30" 
-                          : "text-card-foreground",
-                        isToday && "ring-2 ring-primary ring-offset-1 ring-offset-card"
+                          ? "text-zinc-700" 
+                          : "text-white",
+                        isToday && "ring-2 ring-white ring-offset-1 ring-offset-zinc-900"
                       )}
                       title={progress ? `${progress.completed}/${progress.total} habits (${percentage}%)` : undefined}
                     >
@@ -291,7 +291,7 @@ export function CalendarClient({
                             fill="none"
                             stroke="currentColor"
                             strokeWidth="2"
-                            className="text-primary"
+                            className="text-white"
                             strokeDasharray={`${(percentage / 100) * 62.83} 62.83`}
                           />
                         </svg>
@@ -312,31 +312,31 @@ export function CalendarClient({
 
       {/* Stats Summary */}
       {habits.length > 0 && (
-        <div className="bg-card rounded-xl border border-border p-6">
-          <h3 className="text-lg font-semibold text-card-foreground mb-4">
+        <div className="bg-zinc-900/50 rounded-2xl border border-zinc-800/50 p-6">
+          <h3 className="text-lg font-semibold text-white mb-4">
             {year} Summary
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-muted rounded-lg p-4">
-              <p className="text-2xl font-bold text-card-foreground">
+            <div className="bg-zinc-800/50 rounded-xl p-4">
+              <p className="text-2xl font-black text-white">
                 {Object.keys(dailyProgress).length}
               </p>
-              <p className="text-sm text-muted-foreground">Active Days</p>
+              <p className="text-sm text-zinc-400">Active Days</p>
             </div>
-            <div className="bg-muted rounded-lg p-4">
-              <p className="text-2xl font-bold text-card-foreground">
+            <div className="bg-zinc-800/50 rounded-xl p-4">
+              <p className="text-2xl font-black text-white">
                 {entries.filter(e => e.completed).length}
               </p>
-              <p className="text-sm text-muted-foreground">Habits Completed</p>
+              <p className="text-sm text-zinc-400">Habits Completed</p>
             </div>
-            <div className="bg-muted rounded-lg p-4">
-              <p className="text-2xl font-bold text-card-foreground">
+            <div className="bg-zinc-800/50 rounded-xl p-4">
+              <p className="text-2xl font-black text-white">
                 {Object.values(dailyProgress).filter(p => p.completed === p.total && p.total > 0).length}
               </p>
-              <p className="text-sm text-muted-foreground">Perfect Days</p>
+              <p className="text-sm text-zinc-400">Perfect Days</p>
             </div>
-            <div className="bg-muted rounded-lg p-4">
-              <p className="text-2xl font-bold text-primary">
+            <div className="bg-zinc-800/50 rounded-xl p-4">
+              <p className="text-2xl font-black text-white">
                 {habits.length > 0 && Object.keys(dailyProgress).length > 0
                   ? Math.round(
                       (entries.filter(e => e.completed).length / 
@@ -344,7 +344,7 @@ export function CalendarClient({
                     )
                   : 0}%
               </p>
-              <p className="text-sm text-muted-foreground">Average Completion</p>
+              <p className="text-sm text-zinc-400">Average Completion</p>
             </div>
           </div>
         </div>
@@ -352,9 +352,9 @@ export function CalendarClient({
 
       {/* No habits message */}
       {habits.length === 0 && (
-        <div className="bg-card rounded-xl border border-border p-12 text-center">
-          <p className="text-muted-foreground mb-2">No habits created yet!</p>
-          <a href="/habits" className="text-primary hover:underline">
+        <div className="bg-zinc-900/50 rounded-2xl border border-zinc-800/50 p-12 text-center">
+          <p className="text-zinc-400 mb-2">No habits created yet!</p>
+          <a href="/habits" className="text-white hover:underline">
             Create your first habit
           </a>
         </div>

@@ -24,7 +24,7 @@ export function DonutChart({
   total,
   size = 180,
   showLabel = true,
-  color = '#FFB4A2',
+  color = '#ffffff',
 }: DonutChartProps) {
   const percentage = total > 0 ? Math.round((completed / total) * 100) : 0
   const remaining = total - completed
@@ -34,7 +34,7 @@ export function DonutChart({
     datasets: [
       {
         data: [completed, remaining],
-        backgroundColor: [color, '#E5E7EB'],
+        backgroundColor: [color, '#27272a'],
         borderWidth: 0,
         cutout: '70%',
       },
@@ -49,10 +49,10 @@ export function DonutChart({
         display: false,
       },
       tooltip: {
-        backgroundColor: '#fff',
-        titleColor: '#111827',
-        bodyColor: '#6B7280',
-        borderColor: '#E5E7EB',
+        backgroundColor: '#18181b',
+        titleColor: '#fafafa',
+        bodyColor: '#a1a1aa',
+        borderColor: '#27272a',
         borderWidth: 1,
         padding: 12,
         boxPadding: 4,
@@ -71,8 +71,8 @@ export function DonutChart({
       
       {showLabel && (
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-          <span className="text-3xl font-bold text-card-foreground">{percentage}%</span>
-          <span className="text-sm text-muted-foreground">Complete</span>
+          <span className="text-3xl font-black text-white">{percentage}%</span>
+          <span className="text-sm text-zinc-400">Complete</span>
         </div>
       )}
     </div>

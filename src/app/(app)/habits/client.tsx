@@ -202,8 +202,8 @@ export function HabitsClient({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Habits</h1>
-          <p className="text-muted-foreground mt-1">
+          <h1 className="text-2xl font-bold text-white">Habits</h1>
+          <p className="text-zinc-400 mt-1">
             Track your daily habits and build consistency
           </p>
         </div>

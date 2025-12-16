@@ -1,11 +1,9 @@
 'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { UserButton } from '@clerk/nextjs'
 import { cn } from '@/lib/utils'
-import { useTheme } from '@/lib/theme'
 import {
   LayoutDashboard,
   Grid3X3,
@@ -15,6 +13,7 @@ import {
   Download,
   Menu,
   X,
+  Sparkles,
 } from 'lucide-react'
 import { useState } from 'react'
 
@@ -30,22 +29,21 @@ const navigation = [
 export function Sidebar() {
   const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
-  const { resolvedTheme } = useTheme()
 
   return (
     <>
       {/* Mobile menu button */}
       <button
-        className="fixed top-4 left-4 z-50 lg:hidden p-2 rounded-lg bg-card shadow-md border border-border"
+        className="fixed top-4 left-4 z-50 lg:hidden p-2 rounded-xl bg-zinc-900 border border-zinc-800 shadow-lg"
         onClick={() => setIsOpen(!isOpen)}
       >
-        {isOpen ? <X size={24} className="text-foreground" /> : <Menu size={24} className="text-foreground" />}
+        {isOpen ? <X size={24} className="text-white" /> : <Menu size={24} className="text-white" />}
       </button>
 
       {/* Overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/20 dark:bg-black/50 z-40 lg:hidden"
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
           onClick={() => setIsOpen(false)}
         />
       )}
@@ -53,25 +51,21 @@ export function Sidebar() {
       {/* Sidebar */}
       <aside
         className={cn(
-          'fixed left-0 top-0 z-40 h-screen w-64 bg-card border-r border-border transition-transform lg:translate-x-0',
+          'fixed left-0 top-0 z-40 h-screen w-64 bg-zinc-950 border-r border-zinc-800/50 transition-transform lg:translate-x-0',
           isOpen ? 'translate-x-0' : '-translate-x-full'
         )}
       >
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="flex items-center gap-2 px-6 py-5 border-b border-border">
-            <Image
-              src={resolvedTheme === 'dark' ? '/dark.png' : '/light.png'}
-              alt="FocusFlow"
-              width={32}
-              height={32}
-              className="rounded-lg"
-            />
-            <span className="font-semibold text-lg text-foreground">FocusFlow</span>
+          <div className="flex items-center gap-3 px-6 py-5 border-b border-zinc-800/50">
+            <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center">
+              <Sparkles className="w-5 h-5 text-zinc-900" />
+            </div>
+            <span className="font-bold text-lg text-white">FocusFlow</span>
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 px-4 py-4 space-y-1">
+          <nav className="flex-1 px-4 py-6 space-y-1">
             {navigation.map((item) => {
               const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
               return (
@@ -80,10 +74,10 @@ export function Sidebar() {
                   href={item.href}
                   onClick={() => setIsOpen(false)}
                   className={cn(
-                    'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
+                    'flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200',
                     isActive
-                      ? 'bg-primary/10 text-primary'
-                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                      ? 'bg-white text-zinc-900'
+                      : 'text-zinc-400 hover:bg-zinc-800/50 hover:text-white'
                   )}
                 >
                   <item.icon size={20} />
@@ -94,8 +88,8 @@ export function Sidebar() {
           </nav>
 
           {/* User section */}
-          <div className="p-4 border-t border-border">
-            <div className="flex items-center gap-3 px-3 py-2">
+          <div className="p-4 border-t border-zinc-800/50">
+            <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-zinc-900/50 border border-zinc-800/50">
               <UserButton
                 appearance={{
                   elements: {
@@ -103,7 +97,7 @@ export function Sidebar() {
                   },
                 }}
               />
-              <span className="text-sm text-muted-foreground">Account</span>
+              <span className="text-sm text-zinc-400">Account</span>
             </div>
           </div>
         </div>
