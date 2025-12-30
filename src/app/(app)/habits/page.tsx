@@ -15,11 +15,15 @@ export default async function HabitsPage() {
   const startDate = new Date(now.getFullYear(), now.getMonth(), 1)
   const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0)
 
-  // Fetch habits and entries
-  const [habits, entries] = await Promise.all([
+  // Fetch habits (active and archived) and entries
+  const [habits, archivedHabits, entries] = await Promise.all([
     prisma.habit.findMany({
       where: { userId, active: true },
       orderBy: { createdAt: 'asc' },
+    }),
+    prisma.habit.findMany({
+      where: { userId, active: false },
+      orderBy: { updatedAt: 'desc' },
     }),
     prisma.habitEntry.findMany({
       where: {
@@ -43,12 +47,19 @@ export default async function HabitsPage() {
     updatedAt: e.updatedAt.toISOString(),
   }))
 
+  const serializedArchivedHabits = archivedHabits.map((h) => ({
+    ...h,
+    createdAt: h.createdAt.toISOString(),
+    updatedAt: h.updatedAt.toISOString(),
+  }))
+
   return (
     <HabitsClient
       initialHabits={serializedHabits}
       initialEntries={serializedEntries}
       initialMonth={now.getMonth()}
       initialYear={now.getFullYear()}
+      archivedHabits={serializedArchivedHabits}
     />
   )
 }

@@ -1,7 +1,9 @@
-import { auth } from '@clerk/nextjs/server'
+import { auth, currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import prisma from '@/lib/db'
 import { getInsightsSummary, getAllStreaks } from '@/lib/analytics'
+import { getUserBadges, checkAllBadges, BADGE_DEFINITIONS, awardEarlyBirdBadge } from '@/lib/badges'
+import { getDailyQuote, getDailyStreakMessage } from '@/lib/quotes'
 import { DashboardClient } from './client'
 
 export default async function DashboardPage() {
@@ -13,6 +15,7 @@ export default async function DashboardPage() {
 
   // TypeScript now knows userId is string
   const userId = authUserId
+  const clerkUser = await currentUser()
 
   // Ensure user exists in database (upsert to avoid conflicts)
   await prisma.user.upsert({
@@ -23,6 +26,9 @@ export default async function DashboardPage() {
       timezone: 'UTC',
     },
   })
+  
+  // Award early bird badge for new users
+  await awardEarlyBirdBadge(userId)
 
   // Get current month date range
   const now = new Date()
@@ -80,6 +86,19 @@ export default async function DashboardPage() {
     0
   )
 
+  // Check and award badges
+  await checkAllBadges(userId, {
+    currentStreak: currentBestStreak,
+    longestStreak: bestStreak,
+  })
+
+  // Fetch user badges
+  const badges = await getUserBadges(userId)
+
+  // Get daily quote and streak message
+  const dailyQuote = getDailyQuote()
+  const streakMessage = getDailyStreakMessage(currentBestStreak)
+
   return (
     <DashboardClient
       insights={insights}
@@ -87,6 +106,11 @@ export default async function DashboardPage() {
       bestStreak={bestStreak}
       currentBestStreak={currentBestStreak}
       habitsCount={habitsCount}
+      userName={clerkUser?.firstName || undefined}
+      badges={badges}
+      allBadges={BADGE_DEFINITIONS}
+      dailyQuote={dailyQuote}
+      streakMessage={streakMessage}
     />
   )
 }

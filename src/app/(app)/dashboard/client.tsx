@@ -5,8 +5,12 @@ import { DonutChart } from '@/components/DonutChart'
 import { ChartLine } from '@/components/ChartLine'
 import { WeeklyBars } from '@/components/WeeklyBars'
 import { TopHabitsList, StreakCard } from '@/components/TopHabitsList'
-import { LayoutGrid, Target, Flame, TrendingUp, Plus } from 'lucide-react'
+import { BadgeDisplay } from '@/components/BadgeDisplay'
+import { MotivationalQuote } from '@/components/MotivationalQuote'
+import { LayoutGrid, Target, Flame, TrendingUp, Plus, Award } from 'lucide-react'
 import type { InsightsSummary } from '@/lib/analytics'
+import type { BadgeDefinition } from '@/lib/badges'
+import type { Quote } from '@/lib/quotes'
 import Link from 'next/link'
 
 interface DashboardClientProps {
@@ -16,6 +20,10 @@ interface DashboardClientProps {
   currentBestStreak: number
   habitsCount: number
   userName?: string
+  badges: { name: string; awardedAt: Date; definition?: BadgeDefinition }[]
+  allBadges: BadgeDefinition[]
+  dailyQuote: Quote
+  streakMessage: string
 }
 
 export function DashboardClient({
@@ -25,6 +33,10 @@ export function DashboardClient({
   currentBestStreak,
   habitsCount,
   userName,
+  badges,
+  allBadges,
+  dailyQuote,
+  streakMessage,
 }: DashboardClientProps) {
   const completionPercentage = Math.round(insights.overallCompletionRate * 100)
   const firstName = userName?.split(' ')[0] || 'there'
@@ -47,6 +59,13 @@ export function DashboardClient({
           Add Habit
         </Link>
       </div>
+
+      {/* Motivational Quote */}
+      <MotivationalQuote 
+        quote={dailyQuote} 
+        streakMessage={streakMessage}
+        currentStreak={currentBestStreak}
+      />
 
       {/* Today's Progress Card */}
       <div className="bg-zinc-900/50 rounded-2xl border border-zinc-800/50 p-6 backdrop-blur-sm">
@@ -175,6 +194,14 @@ export function DashboardClient({
             />
           </div>
         </div>
+      </div>
+
+      {/* Badges Section */}
+      <div className="bg-zinc-900/50 rounded-2xl border border-zinc-800/50 p-6 backdrop-blur-sm">
+        <BadgeDisplay 
+          earnedBadges={badges} 
+          allBadges={allBadges}
+        />
       </div>
     </div>
   )

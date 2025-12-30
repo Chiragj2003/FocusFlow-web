@@ -2,7 +2,7 @@
 
 import { cn, formatDate, isToday } from '@/lib/utils'
 import { useState, useCallback } from 'react'
-import { Check, Plus } from 'lucide-react'
+import { Check, Plus, Archive, MoreVertical } from 'lucide-react'
 
 interface Habit {
   id: string
@@ -11,6 +11,7 @@ interface Habit {
   goalType: string
   goalTarget?: number | null
   unit?: string | null
+  category?: string | null
 }
 
 interface Entry {
@@ -29,6 +30,7 @@ interface HabitGridProps {
   year: number
   onToggleEntry: (habitId: string, date: string, completed: boolean) => void
   onAddHabit: () => void
+  onArchiveHabit?: (habitId: string) => void
 }
 
 export function HabitGrid({
@@ -38,8 +40,10 @@ export function HabitGrid({
   year,
   onToggleEntry,
   onAddHabit,
+  onArchiveHabit,
 }: HabitGridProps) {
   const [loadingCells, setLoadingCells] = useState<Set<string>>(new Set())
+  const [menuOpen, setMenuOpen] = useState<string | null>(null)
 
   // Generate days for the month
   const daysInMonth = new Date(year, month + 1, 0).getDate()
@@ -196,7 +200,7 @@ export function HabitGrid({
                           className="w-3 h-3 rounded-full shrink-0"
                           style={{ backgroundColor: habit.color }}
                         />
-                        <div className="min-w-0">
+                        <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-2">
                             <span className="text-sm font-medium text-white truncate max-w-[120px]">
                               {habit.title}
@@ -207,7 +211,45 @@ export function HabitGrid({
                               </span>
                             )}
                           </div>
+                          {habit.category && (
+                            <span className="text-xs text-zinc-500">{habit.category}</span>
+                          )}
                         </div>
+                        {/* Menu button */}
+                        {onArchiveHabit && (
+                          <div className="relative">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                setMenuOpen(menuOpen === habit.id ? null : habit.id)
+                              }}
+                              className="p-1 text-zinc-500 hover:text-white rounded transition-colors"
+                            >
+                              <MoreVertical size={14} />
+                            </button>
+                            {menuOpen === habit.id && (
+                              <>
+                                <div 
+                                  className="fixed inset-0 z-10" 
+                                  onClick={() => setMenuOpen(null)} 
+                                />
+                                <div className="absolute right-0 top-full mt-1 bg-zinc-800 border border-zinc-700 rounded-lg shadow-xl z-20 py-1 min-w-[120px]">
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      onArchiveHabit(habit.id)
+                                      setMenuOpen(null)
+                                    }}
+                                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-zinc-300 hover:bg-zinc-700 hover:text-white transition-colors"
+                                  >
+                                    <Archive size={14} />
+                                    Archive
+                                  </button>
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        )}
                       </div>
                     </td>
                     {days.map((day) => {

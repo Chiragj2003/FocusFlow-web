@@ -123,3 +123,45 @@ export async function DELETE(
     )
   }
 }
+
+// PATCH /api/habits/[id] - Partially update a habit (archive/restore)
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { userId } = await auth()
+    const { id } = await params
+
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const body = await request.json()
+    const { active } = body
+
+    // Verify ownership
+    const existingHabit = await prisma.habit.findFirst({
+      where: { id, userId },
+    })
+
+    if (!existingHabit) {
+      return NextResponse.json({ error: 'Habit not found' }, { status: 404 })
+    }
+
+    const habit = await prisma.habit.update({
+      where: { id },
+      data: {
+        ...(active !== undefined && { active }),
+      },
+    })
+
+    return NextResponse.json(habit)
+  } catch (error) {
+    console.error('Error updating habit:', error)
+    return NextResponse.json(
+      { error: 'Failed to update habit' },
+      { status: 500 }
+    )
+  }
+}
