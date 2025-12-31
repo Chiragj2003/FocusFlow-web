@@ -31,7 +31,8 @@ async function generateHabitWithGemini(userInput: string): Promise<GeneratedHabi
   const apiKey = process.env.GEMINI_API_KEY
   
   if (!apiKey) {
-    throw new Error('Gemini API key not configured')
+    console.error('GEMINI_API_KEY environment variable is not set')
+    throw new Error('AI service not configured. Please contact support.')
   }
 
   const prompt = `You are a habit tracking assistant. Based on the user's description, generate a structured habit for tracking.
