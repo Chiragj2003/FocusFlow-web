@@ -1,7 +1,7 @@
 import { auth, currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import prisma from '@/lib/db'
-import { getInsightsSummary, getAllStreaks } from '@/lib/analytics'
+import { getInsightsSummary, getAllStreaks, type StreakInfo } from '@/lib/analytics'
 import { getUserBadges, checkAllBadges, BADGE_DEFINITIONS, awardEarlyBirdBadge } from '@/lib/badges'
 import { getDailyQuote, getDailyStreakMessage } from '@/lib/quotes'
 import { DashboardClient } from './client'
@@ -78,11 +78,11 @@ export default async function DashboardPage() {
 
   // Best streak across all habits
   const bestStreak = streaks.reduce(
-    (max, s) => (s.longestStreak > max ? s.longestStreak : max),
+    (max: number, s: StreakInfo) => (s.longestStreak > max ? s.longestStreak : max),
     0
   )
   const currentBestStreak = streaks.reduce(
-    (max, s) => (s.currentStreak > max ? s.currentStreak : max),
+    (max: number, s: StreakInfo) => (s.currentStreak > max ? s.currentStreak : max),
     0
   )
 

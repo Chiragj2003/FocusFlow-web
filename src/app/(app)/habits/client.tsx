@@ -7,7 +7,7 @@ import { AddHabitWithAI } from '@/components/AddHabitWithAI'
 import { MonthNavigator } from '@/components/MonthNavigator'
 import { TemplatePicker } from '@/components/TemplatePicker'
 import { useRouter } from 'next/navigation'
-import { Filter, SortAsc, Archive, RotateCcw, Sparkles, X, ChevronDown, Wand2 } from 'lucide-react'
+import { Filter, SortAsc, Archive, RotateCcw, Sparkles, X, Wand2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { HabitTemplate } from '@/lib/templates'
 

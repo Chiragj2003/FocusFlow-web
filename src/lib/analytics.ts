@@ -1,5 +1,9 @@
 import prisma from './db'
 import { startOfWeek, addDays, formatDate } from './utils'
+import type { Habit, HabitEntry } from '@prisma/client'
+
+// Type for habit with entries included
+type HabitWithEntries = Habit & { entries: HabitEntry[] }
 
 export interface InsightsSummary {
   userId: string
@@ -161,7 +165,7 @@ export async function getHabitStreak(
   }
 
   // Convert to date strings for easier comparison
-  const completedDates = entries.map((e) =>
+  const completedDates = entries.map((e: { entryDate: Date }) =>
     formatDate(new Date(e.entryDate))
   )
 
@@ -237,8 +241,8 @@ export async function getTopHabits(
   ) + 1
 
   const habitsWithStats = await Promise.all(
-    habits.map(async (habit) => {
-      const completedCount = habit.entries.filter((e) => e.completed).length
+    habits.map(async (habit: HabitWithEntries) => {
+      const completedCount = habit.entries.filter((e: HabitEntry) => e.completed).length
       const completionRate = completedCount / dayCount
       const streakInfo = await getHabitStreak(habit.id, userId)
 
@@ -254,7 +258,7 @@ export async function getTopHabits(
   )
 
   return habitsWithStats
-    .sort((a, b) => b.completionRate - a.completionRate)
+    .sort((a: TopHabit, b: TopHabit) => b.completionRate - a.completionRate)
     .slice(0, limit)
 }
 
@@ -285,9 +289,9 @@ export async function getInsightsSummary(
     },
   })
 
-  const habitSummaries: HabitSummary[] = habits.map((habit) => {
-    const entries = habit.entries.filter((e) => e.completed)
-    const sumValue = entries.reduce((sum, e) => sum + (e.value || 0), 0)
+  const habitSummaries: HabitSummary[] = habits.map((habit: HabitWithEntries) => {
+    const entries = habit.entries.filter((e: HabitEntry) => e.completed)
+    const sumValue = entries.reduce((sum: number, e: HabitEntry) => sum + (e.value || 0), 0)
     
     return {
       habitId: habit.id,
@@ -320,7 +324,7 @@ export async function getAllStreaks(userId: string): Promise<StreakInfo[]> {
   })
 
   const streaks = await Promise.all(
-    habits.map(async (habit) => {
+    habits.map(async (habit: Habit) => {
       const streakInfo = await getHabitStreak(habit.id, userId)
       const lastEntry = await prisma.habitEntry.findFirst({
         where: { habitId: habit.id, userId, completed: true },
@@ -364,7 +368,7 @@ export async function generateCSVExport(
   })
 
   const headers = ['Date', 'Habit', 'Category', 'Completed', 'Value', 'Notes']
-  const rows = entries.map((entry) => [
+  const rows = entries.map((entry: HabitEntry & { habit: { title: string; category: string | null } }) => [
     formatDate(new Date(entry.entryDate)),
     entry.habit.title,
     entry.habit.category || '',

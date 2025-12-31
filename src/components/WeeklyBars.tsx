@@ -34,7 +34,7 @@ interface WeeklyBarsProps {
 
 export function WeeklyBars({
   data,
-  color = '#ffffff',
+  color: _color = '#ffffff',
   height = 180,
 }: WeeklyBarsProps) {
   if (data.length === 0) {

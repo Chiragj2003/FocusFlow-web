@@ -118,7 +118,7 @@ Examples:
       goalTarget: goalType !== 'binary' && parsed.goalTarget ? Number(parsed.goalTarget) : undefined,
       unit: goalType !== 'binary' && parsed.unit ? String(parsed.unit) : undefined,
     }
-  } catch (parseError) {
+  } catch (_parseError) {
     console.error('Failed to parse Gemini response:', cleanedResponse)
     throw new Error('Failed to parse AI response')
   }

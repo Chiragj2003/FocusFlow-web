@@ -2,6 +2,7 @@ import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import prisma from '@/lib/db'
 import { HabitsClient } from './client'
+import type { Habit, HabitEntry } from '@prisma/client'
 
 export default async function HabitsPage() {
   const { userId } = await auth()
@@ -34,20 +35,20 @@ export default async function HabitsPage() {
   ])
 
   // Convert dates to strings for client
-  const serializedHabits = habits.map((h) => ({
+  const serializedHabits = habits.map((h: Habit) => ({
     ...h,
     createdAt: h.createdAt.toISOString(),
     updatedAt: h.updatedAt.toISOString(),
   }))
 
-  const serializedEntries = entries.map((e) => ({
+  const serializedEntries = entries.map((e: HabitEntry) => ({
     ...e,
     entryDate: e.entryDate.toISOString().split('T')[0],
     createdAt: e.createdAt.toISOString(),
     updatedAt: e.updatedAt.toISOString(),
   }))
 
-  const serializedArchivedHabits = archivedHabits.map((h) => ({
+  const serializedArchivedHabits = archivedHabits.map((h: Habit) => ({
     ...h,
     createdAt: h.createdAt.toISOString(),
     updatedAt: h.updatedAt.toISOString(),

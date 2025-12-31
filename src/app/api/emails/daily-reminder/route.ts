@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
       try {
         // Get user email from Clerk
         let userEmail = user.email
-        let userName = user.name
+        let userName: string | null = user.name
 
         if (!userEmail) {
           // Fetch from Clerk if not stored locally
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
             const client = await clerkClient()
             const clerkUser = await client.users.getUser(user.id)
             userEmail = clerkUser.emailAddresses[0]?.emailAddress
-            userName = clerkUser.firstName || clerkUser.username || undefined
+            userName = clerkUser.firstName || clerkUser.username || null
 
             // Update local user record with email
             if (userEmail) {

@@ -34,7 +34,7 @@ export default async function CalendarPage() {
   ])
 
   // Serialize dates for client component
-  const serializedHabits = habits.map((h) => ({
+  const serializedHabits = habits.map((h: { id: string; title: string; color: string; goalType: string; goalTarget: number | null; unit: string | null }) => ({
     id: h.id,
     title: h.title,
     color: h.color,
@@ -43,7 +43,7 @@ export default async function CalendarPage() {
     unit: h.unit,
   }))
 
-  const serializedEntries = entries.map((e) => ({
+  const serializedEntries = entries.map((e: { id: string; habitId: string; entryDate: Date; completed: boolean; value: number | null }) => ({
     id: e.id,
     habitId: e.habitId,
     entryDate: e.entryDate.toISOString().split('T')[0],

@@ -1,11 +1,9 @@
 import Link from 'next/link'
-import Image from 'next/image'
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import { 
   CheckCircle, 
   BarChart3, 
-  Target, 
   ArrowRight, 
   Sparkles,
   Calendar,
@@ -13,10 +11,8 @@ import {
   Zap,
   Star,
   ChevronRight,
-  Github,
   Flame,
-  TrendingUp,
-  Trophy
+  TrendingUp
 } from 'lucide-react'
 
 export default async function HomePage() {
@@ -213,7 +209,7 @@ export default async function HomePage() {
                   title: 'Export Data',
                   description: 'Download your habit data as CSV or beautiful PDF reports anytime.',
                 },
-              ].map((feature, index) => (
+              ].map((feature, _index) => (
                 <div
                   key={feature.title}
                   className="group relative p-8 bg-zinc-900/50 rounded-2xl border border-zinc-800/50 backdrop-blur-sm transition-all duration-300 hover:border-zinc-700 hover:bg-zinc-900/80 hover:-translate-y-1 card-hover"
