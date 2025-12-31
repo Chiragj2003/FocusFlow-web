@@ -1,5 +1,15 @@
 // Predefined Challenges
 
+export interface ChallengeHabit {
+  title: string
+  description: string
+  category: string
+  color: string
+  goalType: 'binary' | 'duration' | 'quantity'
+  goalTarget?: number
+  unit?: string
+}
+
 export interface ChallengeTemplate {
   id: string
   title: string
@@ -8,15 +18,7 @@ export interface ChallengeTemplate {
   category: string
   difficulty: 'easy' | 'medium' | 'hard'
   icon: string // emoji
-  habits: {
-    title: string
-    description: string
-    category: string
-    color: string
-    goalType: 'binary' | 'duration' | 'quantity'
-    goalTarget?: number
-    unit?: string
-  }[]
+  habits: ChallengeHabit[]
 }
 
 export const CHALLENGE_TEMPLATES: ChallengeTemplate[] = [
