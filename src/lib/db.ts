@@ -1,7 +1,7 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@prisma/client/default'
 import { PrismaNeon } from '@prisma/adapter-neon'
 
-const DATABASE_URL = "postgresql://neondb_owner:npg_hlxMfV69Nqpu@ep-rapid-butterfly-a1nlyakz-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require"
+const DATABASE_URL = process.env.DATABASE_URL || "postgresql://neondb_owner:npg_hlxMfV69Nqpu@ep-rapid-butterfly-a1nlyakz-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require"
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined

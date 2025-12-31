@@ -3,10 +3,11 @@
 import { useState, useCallback, useMemo } from 'react'
 import { HabitGrid } from '@/components/HabitGrid'
 import { AddHabitModal } from '@/components/AddHabitModal'
+import { AddHabitWithAI } from '@/components/AddHabitWithAI'
 import { MonthNavigator } from '@/components/MonthNavigator'
 import { TemplatePicker } from '@/components/TemplatePicker'
 import { useRouter } from 'next/navigation'
-import { Filter, SortAsc, Archive, RotateCcw, Sparkles, X, ChevronDown } from 'lucide-react'
+import { Filter, SortAsc, Archive, RotateCcw, Sparkles, X, ChevronDown, Wand2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { HabitTemplate } from '@/lib/templates'
 
@@ -62,6 +63,7 @@ export function HabitsClient({
   const [month, setMonth] = useState(initialMonth)
   const [year, setYear] = useState(initialYear)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isAIModalOpen, setIsAIModalOpen] = useState(false)
   const [isTemplatePickerOpen, setIsTemplatePickerOpen] = useState(false)
   const [showArchived, setShowArchived] = useState(false)
   
@@ -334,6 +336,15 @@ export function HabitsClient({
 
       {/* Toolbar */}
       <div className="flex flex-wrap items-center gap-3">
+        {/* AI Create Button */}
+        <button
+          onClick={() => setIsAIModalOpen(true)}
+          className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-violet-400 bg-violet-500/10 rounded-lg hover:bg-violet-500/20 transition-colors"
+        >
+          <Wand2 size={16} />
+          Add with AI
+        </button>
+
         {/* Template Button */}
         <button
           onClick={() => setIsTemplatePickerOpen(true)}
@@ -483,6 +494,13 @@ export function HabitsClient({
       <AddHabitModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+        onSubmit={handleAddHabit}
+      />
+
+      {/* AI Habit Creator Modal */}
+      <AddHabitWithAI
+        isOpen={isAIModalOpen}
+        onClose={() => setIsAIModalOpen(false)}
         onSubmit={handleAddHabit}
       />
 
