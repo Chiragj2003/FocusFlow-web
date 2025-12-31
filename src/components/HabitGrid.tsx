@@ -2,7 +2,7 @@
 
 import { cn, formatDate, isToday } from '@/lib/utils'
 import { useState, useCallback } from 'react'
-import { Check, Plus, Archive, MoreVertical } from 'lucide-react'
+import { Check, Plus, Archive, MoreVertical, Trash2, AlertTriangle, X } from 'lucide-react'
 
 interface Habit {
   id: string
@@ -31,6 +31,7 @@ interface HabitGridProps {
   onToggleEntry: (habitId: string, date: string, completed: boolean) => void
   onAddHabit: () => void
   onArchiveHabit?: (habitId: string) => void
+  onDeleteHabit?: (habitId: string) => void
 }
 
 export function HabitGrid({
@@ -41,9 +42,11 @@ export function HabitGrid({
   onToggleEntry,
   onAddHabit,
   onArchiveHabit,
+  onDeleteHabit,
 }: HabitGridProps) {
   const [loadingCells, setLoadingCells] = useState<Set<string>>(new Set())
   const [menuOpen, setMenuOpen] = useState<string | null>(null)
+  const [deleteConfirm, setDeleteConfirm] = useState<{ habitId: string; title: string; hasEntries: boolean } | null>(null)
 
   // Generate days for the month
   const daysInMonth = new Date(year, month + 1, 0).getDate()
@@ -245,6 +248,24 @@ export function HabitGrid({
                                     <Archive size={14} />
                                     Archive
                                   </button>
+                                  {onDeleteHabit && (
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation()
+                                        const habitEntries = entries.filter(en => en.habitId === habit.id && en.completed)
+                                        setDeleteConfirm({
+                                          habitId: habit.id,
+                                          title: habit.title,
+                                          hasEntries: habitEntries.length > 0
+                                        })
+                                        setMenuOpen(null)
+                                      }}
+                                      className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-400 hover:bg-red-500/20 hover:text-red-300 transition-colors"
+                                    >
+                                      <Trash2 size={14} />
+                                      Delete
+                                    </button>
+                                  )}
                                 </div>
                               </>
                             )}
@@ -332,6 +353,74 @@ export function HabitGrid({
                 </div>
               )
             })}
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div 
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => setDeleteConfirm(null)}
+          />
+          <div className="relative bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl max-w-md w-full p-6">
+            <button
+              onClick={() => setDeleteConfirm(null)}
+              className="absolute top-4 right-4 p-1 text-zinc-500 hover:text-white rounded-lg transition-colors"
+            >
+              <X size={20} />
+            </button>
+            
+            <div className="flex items-center gap-3 mb-4">
+              {deleteConfirm.hasEntries ? (
+                <div className="w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center">
+                  <AlertTriangle className="w-6 h-6 text-amber-500" />
+                </div>
+              ) : (
+                <div className="w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center">
+                  <Trash2 className="w-6 h-6 text-red-500" />
+                </div>
+              )}
+              <div>
+                <h3 className="text-lg font-semibold text-white">Delete Habit</h3>
+                <p className="text-sm text-zinc-400">This action cannot be undone</p>
+              </div>
+            </div>
+
+            <div className="mb-6">
+              <p className="text-zinc-300 mb-2">
+                Are you sure you want to delete <span className="font-semibold text-white">&quot;{deleteConfirm.title}&quot;</span>?
+              </p>
+              {deleteConfirm.hasEntries && (
+                <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+                  <p className="text-amber-400 text-sm flex items-center gap-2">
+                    <AlertTriangle size={16} />
+                    <span>This habit has completed entries that will also be deleted!</span>
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setDeleteConfirm(null)}
+                className="flex-1 px-4 py-2.5 text-sm font-medium text-zinc-300 bg-zinc-800 hover:bg-zinc-700 rounded-xl transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  if (onDeleteHabit) {
+                    onDeleteHabit(deleteConfirm.habitId)
+                  }
+                  setDeleteConfirm(null)
+                }}
+                className="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-xl transition-colors"
+              >
+                Delete Habit
+              </button>
+            </div>
           </div>
         </div>
       )}

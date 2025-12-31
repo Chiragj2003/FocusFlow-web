@@ -3,8 +3,16 @@
 import { DonutChart } from '@/components/DonutChart'
 import { WeeklyBars } from '@/components/WeeklyBars'
 import { TopHabitsList } from '@/components/TopHabitsList'
-import { Flame, Trophy } from 'lucide-react'
+import { Heatmap } from '@/components/Heatmap'
+import { DayAnalysis } from '@/components/DayAnalysis'
+import { Flame, Trophy, Calendar, BarChart3 } from 'lucide-react'
 import type { InsightsSummary, StreakInfo } from '@/lib/analytics'
+
+interface HeatmapData {
+  date: string
+  value: number
+  count: number
+}
 
 interface InsightsClientProps {
   insights: InsightsSummary
@@ -12,6 +20,8 @@ interface InsightsClientProps {
   habits: { id: string; title: string; color: string }[]
   month: number
   year: number
+  heatmapData?: HeatmapData[]
+  yearEntries?: { entryDate: string; completed: boolean }[]
 }
 
 export function InsightsClient({
@@ -20,6 +30,8 @@ export function InsightsClient({
   habits,
   month,
   year,
+  heatmapData = [],
+  yearEntries = [],
 }: InsightsClientProps) {
   const monthName = new Date(year, month).toLocaleString('default', {
     month: 'long',
@@ -40,6 +52,17 @@ export function InsightsClient({
         <p className="text-zinc-400 mt-1">
           Detailed analytics for {monthName}
         </p>
+      </div>
+
+      {/* Yearly Heatmap */}
+      <div className="bg-zinc-900/50 rounded-2xl border border-zinc-800/50 p-6">
+        <div className="flex items-center gap-3 mb-6">
+          <Calendar size={20} className="text-green-400" />
+          <h2 className="text-lg font-semibold text-white">
+            {year} Activity
+          </h2>
+        </div>
+        <Heatmap data={heatmapData} year={year} colorScheme="green" />
       </div>
 
       {/* Main Grid */}
@@ -216,6 +239,17 @@ export function InsightsClient({
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Day Analysis */}
+      <div className="bg-zinc-900/50 rounded-2xl border border-zinc-800/50 p-6">
+        <div className="flex items-center gap-3 mb-6">
+          <BarChart3 size={20} className="text-blue-400" />
+          <h2 className="text-lg font-semibold text-white">
+            Best Performing Days
+          </h2>
+        </div>
+        <DayAnalysis entries={yearEntries} habitsCount={habits.length} />
       </div>
     </div>
   )

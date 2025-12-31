@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { habitId, entryDate, completed, value, notes } = body
+    const { habitId, entryDate, completed, value, notes, mood, energy, duration } = body
 
     if (!habitId || !entryDate) {
       return NextResponse.json(
@@ -93,6 +93,9 @@ export async function POST(request: NextRequest) {
         completed: completed ?? false,
         value: value ?? 0,
         notes: notes ?? null,
+        mood: mood ?? null,
+        energy: energy ?? null,
+        duration: duration ?? null,
       },
       create: {
         habitId,
@@ -101,6 +104,9 @@ export async function POST(request: NextRequest) {
         completed: completed ?? false,
         value: value ?? 0,
         notes: notes ?? null,
+        mood: mood ?? null,
+        energy: energy ?? null,
+        duration: duration ?? null,
       },
     })
 

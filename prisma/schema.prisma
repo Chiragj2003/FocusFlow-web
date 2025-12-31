@@ -52,6 +52,9 @@ model HabitEntry {
   completed Boolean  @default(false)
   value     Float?   @default(0)
   notes     String?
+  mood      Int?     // 1-5 scale for mood tracking
+  energy    Int?     // 1-5 scale for energy level
+  duration  Int?     // Actual duration in minutes (for timer tracking)
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -61,6 +64,36 @@ model HabitEntry {
   @@unique([habitId, userId, entryDate])
   @@index([userId, entryDate])
   @@map("habit_entries")
+}
+
+model Challenge {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  duration    Int      @default(30) // Duration in days
+  habits      Json     // Array of habit templates for the challenge
+  category    String?
+  difficulty  String   @default("medium") // easy, medium, hard
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  participants ChallengeParticipant[]
+
+  @@map("challenges")
+}
+
+model ChallengeParticipant {
+  id          String    @id @default(uuid())
+  challengeId String    @map("challenge_id")
+  userId      String    @map("user_id")
+  startedAt   DateTime  @default(now()) @map("started_at")
+  completedAt DateTime? @map("completed_at")
+  progress    Int       @default(0) // Days completed
+
+  challenge Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+
+  @@unique([challengeId, userId])
+  @@map("challenge_participants")
 }
 
 model Badge {

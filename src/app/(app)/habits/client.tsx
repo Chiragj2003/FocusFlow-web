@@ -6,10 +6,13 @@ import { AddHabitModal } from '@/components/AddHabitModal'
 import { AddHabitWithAI } from '@/components/AddHabitWithAI'
 import { MonthNavigator } from '@/components/MonthNavigator'
 import { TemplatePicker } from '@/components/TemplatePicker'
+import { FocusTimer } from '@/components/FocusTimer'
+import { ChallengeBrowser } from '@/components/ChallengeBrowser'
 import { useRouter } from 'next/navigation'
-import { Filter, SortAsc, Archive, RotateCcw, Sparkles, X, Wand2 } from 'lucide-react'
+import { Filter, SortAsc, Archive, RotateCcw, Sparkles, X, Wand2, Timer, Trophy } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { HabitTemplate } from '@/lib/templates'
+import type { ChallengeTemplate } from '@/lib/challenges'
 
 interface Habit {
   id: string
@@ -66,6 +69,9 @@ export function HabitsClient({
   const [isAIModalOpen, setIsAIModalOpen] = useState(false)
   const [isTemplatePickerOpen, setIsTemplatePickerOpen] = useState(false)
   const [showArchived, setShowArchived] = useState(false)
+  const [isTimerOpen, setIsTimerOpen] = useState(false)
+  const [timerHabit, setTimerHabit] = useState<Habit | null>(null)
+  const [isChallengeBrowserOpen, setIsChallengeBrowserOpen] = useState(false)
   
   // Filter and Sort states
   const [sortBy, setSortBy] = useState<SortOption>('newest')
@@ -267,6 +273,50 @@ export function HabitsClient({
     [handleAddHabit]
   )
 
+  // Start a challenge - add all habits from the challenge
+  const handleStartChallenge = useCallback(
+    async (challenge: ChallengeTemplate) => {
+      for (const habit of challenge.habits) {
+        await handleAddHabit({
+          title: habit.title,
+          description: habit.description,
+          category: habit.category,
+          color: habit.color,
+          goalType: habit.goalType,
+          goalTarget: habit.goalTarget,
+          unit: habit.unit,
+        })
+      }
+    },
+    [handleAddHabit]
+  )
+
+  // Handle timer completion
+  const handleTimerComplete = useCallback(
+    async (duration: number) => {
+      if (!timerHabit) return
+      
+      const today = new Date().toISOString().split('T')[0]
+      try {
+        await fetch('/api/entries', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            habitId: timerHabit.id,
+            entryDate: today,
+            completed: true,
+            value: duration,
+            duration: duration,
+          }),
+        })
+        router.refresh()
+      } catch (error) {
+        console.error('Failed to save timer entry:', error)
+      }
+    },
+    [timerHabit, router]
+  )
+
   // Archive habit
   const handleArchiveHabit = useCallback(
     async (habitId: string) => {
@@ -289,6 +339,27 @@ export function HabitsClient({
       }
     },
     [habits]
+  )
+
+  // Delete habit permanently
+  const handleDeleteHabit = useCallback(
+    async (habitId: string) => {
+      try {
+        const response = await fetch(`/api/habits/${habitId}`, {
+          method: 'DELETE',
+        })
+
+        if (response.ok) {
+          setHabits((prev) => prev.filter((h) => h.id !== habitId))
+          setArchivedHabits((prev) => prev.filter((h) => h.id !== habitId))
+          // Also remove entries for this habit from state
+          setEntries((prev) => prev.filter((e) => e.habitId !== habitId))
+        }
+      } catch (error) {
+        console.error('Failed to delete habit:', error)
+      }
+    },
+    []
   )
 
   // Restore habit
@@ -352,6 +423,29 @@ export function HabitsClient({
         >
           <Sparkles size={16} />
           Templates
+        </button>
+
+        {/* Challenges Button */}
+        <button
+          onClick={() => setIsChallengeBrowserOpen(true)}
+          className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-emerald-400 bg-emerald-400/10 rounded-lg hover:bg-emerald-400/20 transition-colors"
+        >
+          <Trophy size={16} />
+          Challenges
+        </button>
+
+        {/* Focus Timer Button */}
+        <button
+          onClick={() => {
+            // Use first duration-based habit or just open generic timer
+            const durationHabit = habits.find(h => h.goalType === 'duration')
+            setTimerHabit(durationHabit || null)
+            setIsTimerOpen(true)
+          }}
+          className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-rose-400 bg-rose-400/10 rounded-lg hover:bg-rose-400/20 transition-colors"
+        >
+          <Timer size={16} />
+          Focus Timer
         </button>
 
         {/* Filter Button */}
@@ -488,6 +582,7 @@ export function HabitsClient({
         onToggleEntry={handleToggleEntry}
         onAddHabit={() => setIsModalOpen(true)}
         onArchiveHabit={handleArchiveHabit}
+        onDeleteHabit={handleDeleteHabit}
       />
 
       {/* Add Habit Modal */}
@@ -509,6 +604,25 @@ export function HabitsClient({
         isOpen={isTemplatePickerOpen}
         onClose={() => setIsTemplatePickerOpen(false)}
         onSelect={handleAddFromTemplate}
+      />
+
+      {/* Focus Timer Modal */}
+      <FocusTimer
+        isOpen={isTimerOpen}
+        onClose={() => {
+          setIsTimerOpen(false)
+          setTimerHabit(null)
+        }}
+        habitId={timerHabit?.id}
+        habitTitle={timerHabit?.title}
+        onComplete={handleTimerComplete}
+      />
+
+      {/* Challenge Browser Modal */}
+      <ChallengeBrowser
+        isOpen={isChallengeBrowserOpen}
+        onClose={() => setIsChallengeBrowserOpen(false)}
+        onStartChallenge={handleStartChallenge}
       />
     </div>
   )
