@@ -1,15 +1,14 @@
 import { PrismaClient } from '@prisma/client'
 import { PrismaNeon } from '@prisma/adapter-neon'
 
-const DATABASE_URL = process.env.DATABASE_URL || "postgresql://neondb_owner:npg_hlxMfV69Nqpu@ep-rapid-butterfly-a1nlyakz-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require"
+const connectionString = process.env.DATABASE_URL!
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
 }
 
 function createPrismaClient(): PrismaClient {
-  // Use PrismaNeon adapter with direct connection string
-  const adapter = new PrismaNeon({ connectionString: DATABASE_URL })
+  const adapter = new PrismaNeon({ connectionString })
   
   return new PrismaClient({
     adapter,
