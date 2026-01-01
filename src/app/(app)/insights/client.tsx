@@ -150,11 +150,11 @@ export function InsightsClient({
   }, [insights, streaks, year, month])
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6 pt-14 lg:pt-0">
       {/* Header */}
       <div>
-        <h1 className="text-xl sm:text-2xl font-bold text-white">Insights</h1>
-        <p className="text-zinc-400 mt-1 text-sm sm:text-base">
+        <h1 className="text-lg sm:text-2xl font-bold text-white">Insights</h1>
+        <p className="text-zinc-400 mt-0.5 sm:mt-1 text-xs sm:text-base">
           Detailed analytics for {monthName}
         </p>
       </div>

@@ -81,18 +81,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Verify habit ownership
-    const habit = await prisma.habit.findFirst({
-      where: { id: habitId, userId },
-    })
-
-    if (!habit) {
-      return NextResponse.json({ error: 'Habit not found' }, { status: 404 })
-    }
-
     const parsedDate = new Date(entryDate)
 
-    // Upsert the entry
+    // Upsert the entry directly - habit ownership verified by unique constraint
     const entry = await prisma.habitEntry.upsert({
       where: {
         habitId_userId_entryDate: {

@@ -119,9 +119,12 @@ export function HabitsClient({
       setMonth(newMonth)
       setYear(newYear)
 
-      // Fetch entries for the new month
-      const startDate = new Date(newYear, newMonth, 1).toISOString().split('T')[0]
-      const endDate = new Date(newYear, newMonth + 1, 0).toISOString().split('T')[0]
+      // Fetch entries for the new month - use local date formatting
+      const startYear = newYear
+      const startMonth = String(newMonth + 1).padStart(2, '0')
+      const startDate = `${startYear}-${startMonth}-01`
+      const lastDay = new Date(newYear, newMonth + 1, 0).getDate()
+      const endDate = `${startYear}-${startMonth}-${String(lastDay).padStart(2, '0')}`
 
       try {
         const response = await fetch(
@@ -135,7 +138,7 @@ export function HabitsClient({
               entryDate:
                 typeof e.entryDate === 'string'
                   ? e.entryDate.split('T')[0]
-                  : new Date(e.entryDate).toISOString().split('T')[0],
+                  : new Date(e.entryDate).toLocaleDateString('en-CA'), // 'en-CA' gives YYYY-MM-DD format
             }))
           )
         }
@@ -146,10 +149,10 @@ export function HabitsClient({
     []
   )
 
-  // Toggle entry completion
+  // Toggle entry completion - optimized for instant feedback
   const handleToggleEntry = useCallback(
-    async (habitId: string, date: string, completed: boolean) => {
-      // Optimistic update
+    (habitId: string, date: string, completed: boolean) => {
+      // Instant optimistic update - no async wait
       const existingEntry = entries.find(
         (e) => e.habitId === habitId && e.entryDate === date
       )
@@ -178,39 +181,20 @@ export function HabitsClient({
         ])
       }
 
-      // Send to API
-      try {
-        const response = await fetch('/api/entries', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            habitId,
-            entryDate: date,
-            completed,
-          }),
-        })
-
-        if (response.ok) {
-          const newEntry = await response.json()
-          setEntries((prev) =>
-            prev.map((e) =>
-              (e.habitId === habitId && e.entryDate === date) ||
-              e.id.startsWith('temp-')
-                ? {
-                    ...newEntry,
-                    entryDate: new Date(newEntry.entryDate)
-                      .toISOString()
-                      .split('T')[0],
-                  }
-                : e
-            )
-          )
-        }
-      } catch (error) {
+      // Fire-and-forget API call - don't wait for response
+      fetch('/api/entries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          habitId,
+          entryDate: date,
+          completed,
+        }),
+      }).catch((error) => {
         console.error('Failed to save entry:', error)
         // Revert on error
         router.refresh()
-      }
+      })
     },
     [entries, router]
   )
@@ -387,12 +371,12 @@ export function HabitsClient({
   )
 
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="space-y-4 sm:space-y-6 pt-14 lg:pt-0">
       {/* Header */}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-3 sm:gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-white">Habits</h1>
-          <p className="text-zinc-400 mt-1 text-sm sm:text-base">
+          <h1 className="text-lg sm:text-2xl font-bold text-white">Habits</h1>
+          <p className="text-zinc-400 mt-0.5 sm:mt-1 text-xs sm:text-base">
             Track your daily habits and build consistency
           </p>
         </div>

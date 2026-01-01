@@ -143,64 +143,64 @@ export function CalendarClient({
   const todayStr = formatDate(today)
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6 pt-14 lg:pt-0">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white">Calendar View</h1>
-          <p className="text-zinc-400 mt-1">
+          <h1 className="text-lg sm:text-2xl font-bold text-white">Calendar View</h1>
+          <p className="text-zinc-400 mt-0.5 sm:mt-1 text-xs sm:text-base">
             View your yearly habit progress at a glance
           </p>
         </div>
         
         {/* Year Navigator */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3 sm:gap-4">
           <button
             onClick={() => handleYearChange(-1)}
             disabled={isLoading}
-            className="p-2 hover:bg-zinc-800 rounded-xl transition-colors text-zinc-400 hover:text-white disabled:opacity-50"
+            className="p-1.5 sm:p-2 hover:bg-zinc-800 rounded-lg sm:rounded-xl transition-colors text-zinc-400 hover:text-white disabled:opacity-50"
           >
-            <ChevronLeft size={20} />
+            <ChevronLeft size={18} className="sm:w-5 sm:h-5" />
           </button>
-          <span className="text-lg font-semibold text-white min-w-20 text-center">
+          <span className="text-base sm:text-lg font-semibold text-white min-w-16 sm:min-w-20 text-center">
             {year}
           </span>
           <button
             onClick={() => handleYearChange(1)}
             disabled={isLoading || year >= today.getFullYear()}
-            className="p-2 hover:bg-zinc-800 rounded-xl transition-colors text-zinc-400 hover:text-white disabled:opacity-50"
+            className="p-1.5 sm:p-2 hover:bg-zinc-800 rounded-lg sm:rounded-xl transition-colors text-zinc-400 hover:text-white disabled:opacity-50"
           >
-            <ChevronRight size={20} />
+            <ChevronRight size={18} className="sm:w-5 sm:h-5" />
           </button>
         </div>
       </div>
 
       {/* Legend */}
-      <div className="bg-zinc-900/50 rounded-2xl border border-zinc-800/50 p-4">
-        <div className="flex items-center gap-6 text-sm flex-wrap">
+      <div className="bg-zinc-900/50 rounded-xl sm:rounded-2xl border border-zinc-800/50 p-3 sm:p-4">
+        <div className="flex items-center gap-2 sm:gap-4 text-[10px] sm:text-sm flex-wrap">
           <span className="text-zinc-400">Progress:</span>
           <div className="flex items-center gap-1">
-            <div className="w-4 h-4 rounded-full bg-zinc-800" />
+            <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-zinc-800" />
             <span className="text-zinc-500">0%</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-4 h-4 rounded-full bg-red-500/50" />
+            <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-red-500/50" />
             <span className="text-zinc-500">1-24%</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-4 h-4 rounded-full bg-orange-500/50" />
+            <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-orange-500/50" />
             <span className="text-zinc-500">25-49%</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-4 h-4 rounded-full bg-yellow-500/50" />
+            <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-yellow-500/50" />
             <span className="text-zinc-500">50-74%</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-4 h-4 rounded-full bg-green-500/50" />
+            <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-green-500/50" />
             <span className="text-zinc-500">75-99%</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-4 h-4 rounded-full bg-green-500" />
+            <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-green-500" />
             <span className="text-zinc-500">100%</span>
           </div>
         </div>
@@ -208,7 +208,7 @@ export function CalendarClient({
 
       {/* Year Calendar Grid */}
       <div className={cn(
-        "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4",
+        "grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-4",
         isLoading && "opacity-50"
       )}>
         {MONTHS.map((monthName, monthIndex) => {
@@ -217,7 +217,7 @@ export function CalendarClient({
           return (
             <div 
               key={monthName} 
-              className="bg-zinc-900/50 rounded-2xl border border-zinc-800/50 p-4"
+              className="bg-zinc-900/50 rounded-xl sm:rounded-2xl border border-zinc-800/50 p-2 sm:p-4"
             >
               {/* Month Header */}
               <h3 className="text-sm font-semibold text-white mb-3">

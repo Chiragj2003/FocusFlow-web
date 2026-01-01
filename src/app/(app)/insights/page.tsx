@@ -4,6 +4,9 @@ import prisma from '@/lib/db'
 import { getInsightsSummary, getAllStreaks } from '@/lib/analytics'
 import { InsightsClient } from './client'
 
+// Revalidate every 60 seconds for faster loads
+export const revalidate = 60
+
 export default async function InsightsPage() {
   const { userId } = await auth()
 
@@ -16,10 +19,10 @@ export default async function InsightsPage() {
   const startDate = new Date(now.getFullYear(), now.getMonth(), 1)
   const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0)
   
-  // Get year start for heatmap
-  const yearStart = new Date(now.getFullYear(), 0, 1)
+  // Get 6 months ago for heatmap (faster than full year)
+  const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1)
 
-  // Fetch insights and streaks
+  // Fetch all data in parallel for maximum speed
   const [insights, streaks, habits, yearEntries] = await Promise.all([
     getInsightsSummary(userId, startDate, endDate),
     getAllStreaks(userId),
@@ -30,7 +33,7 @@ export default async function InsightsPage() {
     prisma.habitEntry.findMany({
       where: {
         userId,
-        entryDate: { gte: yearStart, lte: endDate },
+        entryDate: { gte: sixMonthsAgo, lte: endDate },
         completed: true,
       },
       select: { entryDate: true },

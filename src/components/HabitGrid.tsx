@@ -44,7 +44,6 @@ export function HabitGrid({
   onArchiveHabit,
   onDeleteHabit,
 }: HabitGridProps) {
-  const [loadingCells, setLoadingCells] = useState<Set<string>>(new Set())
   const [menuOpen, setMenuOpen] = useState<string | null>(null)
   const [menuPosition, setMenuPosition] = useState<{ top: number; left: number } | null>(null)
   const [deleteConfirm, setDeleteConfirm] = useState<{ habitId: string; title: string; hasEntries: boolean } | null>(null)
@@ -61,18 +60,22 @@ export function HabitGrid({
     (habitId: string, date: Date) => {
       const dateStr = formatDate(date)
       return entries.find(
-        (e) =>
-          e.habitId === habitId &&
-          formatDate(new Date(e.entryDate)) === dateStr
+        (e) => {
+          if (e.habitId !== habitId) return false
+          // Handle both string and Date types for entryDate
+          const entryDateStr = typeof e.entryDate === 'string'
+            ? e.entryDate.split('T')[0]  // Handle ISO string or date string
+            : formatDate(new Date(e.entryDate))
+          return entryDateStr === dateStr
+        }
       )
     },
     [entries]
   )
 
-  // Handle cell click
-  const handleCellClick = async (habitId: string, date: Date) => {
+  // Handle cell click - instant, no loading state
+  const handleCellClick = (habitId: string, date: Date) => {
     const dateStr = formatDate(date)
-    const cellKey = `${habitId}-${dateStr}`
 
     // Don't allow future dates
     if (date > new Date()) return
@@ -80,17 +83,8 @@ export function HabitGrid({
     const entry = getEntry(habitId, date)
     const newCompleted = !entry?.completed
 
-    setLoadingCells((prev) => new Set(prev).add(cellKey))
-
-    try {
-      await onToggleEntry(habitId, dateStr, newCompleted)
-    } finally {
-      setLoadingCells((prev) => {
-        const next = new Set(prev)
-        next.delete(cellKey)
-        return next
-      })
-    }
+    // Call toggle immediately - no loading state needed
+    onToggleEntry(habitId, dateStr, newCompleted)
   }
 
   // Calculate weekly completion for a habit
@@ -252,9 +246,6 @@ export function HabitGrid({
                     </td>
                     {days.map((day) => {
                       const entry = getEntry(habit.id, day)
-                      const dateStr = formatDate(day)
-                      const cellKey = `${habit.id}-${dateStr}`
-                      const isLoading = loadingCells.has(cellKey)
                       const isFuture = day > new Date()
                       const today = isToday(day)
 
@@ -271,18 +262,17 @@ export function HabitGrid({
                             onClick={(e) => {
                               e.preventDefault()
                               e.stopPropagation()
-                              if (!isFuture && !isLoading) {
+                              if (!isFuture) {
                                 handleCellClick(habit.id, day)
                               }
                             }}
-                            disabled={isFuture || isLoading}
+                            disabled={isFuture}
                             className={cn(
-                              'w-5 h-5 sm:w-6 sm:h-6 rounded-md flex items-center justify-center transition-all mx-auto touch-manipulation',
+                              'w-5 h-5 sm:w-6 sm:h-6 rounded-md flex items-center justify-center transition-colors mx-auto touch-manipulation active:scale-90',
                               entry?.completed
                                 ? 'text-zinc-900'
-                                : 'border border-zinc-700 hover:border-zinc-500 active:scale-95',
+                                : 'border border-zinc-700 hover:border-zinc-500',
                               isFuture && 'opacity-30 cursor-not-allowed',
-                              isLoading && 'animate-pulse',
                               !isFuture && !entry?.completed && 'hover:bg-zinc-800/50 cursor-pointer'
                             )}
                             style={{

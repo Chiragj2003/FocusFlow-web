@@ -14,6 +14,8 @@ const nextConfig: NextConfig = {
         '*.vercel.app',
       ],
     },
+    // Enable optimizations
+    optimizePackageImports: ['lucide-react', '@clerk/nextjs', 'recharts'],
   },
 
   // Performance optimizations

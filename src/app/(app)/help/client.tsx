@@ -188,25 +188,25 @@ export function HelpClient() {
   }
 
   return (
-    <div className="min-h-screen p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen pt-14 lg:pt-0">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-6 sm:mb-8">
           <Link 
             href="/settings" 
-            className="inline-flex items-center gap-2 text-zinc-400 hover:text-white transition-colors mb-4"
+            className="inline-flex items-center gap-2 text-zinc-400 hover:text-white transition-colors mb-3 sm:mb-4 text-sm"
           >
-            <ArrowLeft size={16} />
+            <ArrowLeft size={14} className="sm:w-4 sm:h-4" />
             Back to Settings
           </Link>
           
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-violet-500 to-purple-600 rounded-xl">
-              <HelpCircle size={28} className="text-white" />
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="p-2.5 sm:p-3 bg-gradient-to-br from-violet-500 to-purple-600 rounded-lg sm:rounded-xl">
+              <HelpCircle size={22} className="sm:w-7 sm:h-7 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-white">Help & Support</h1>
-              <p className="text-zinc-400">Find answers or get in touch with us</p>
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white">Help & Support</h1>
+              <p className="text-zinc-400 text-xs sm:text-base">Find answers or get in touch with us</p>
             </div>
           </div>
         </div>

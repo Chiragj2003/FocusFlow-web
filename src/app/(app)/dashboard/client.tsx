@@ -42,18 +42,18 @@ export function DashboardClient({
   const firstName = userName?.split(' ')[0] || 'there'
 
   return (
-    <div className="space-y-4 sm:space-y-6 lg:space-y-8">
+    <div className="space-y-4 sm:space-y-6 lg:space-y-8 pt-14 lg:pt-0">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-black text-white">Welcome back, {firstName}!</h1>
-          <p className="text-zinc-400 mt-1 text-sm sm:text-base">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+        <div className="min-w-0 flex-1">
+          <h1 className="text-lg sm:text-2xl lg:text-3xl font-black text-white truncate">Welcome back, {firstName}!</h1>
+          <p className="text-zinc-400 mt-0.5 sm:mt-1 text-xs sm:text-base">
             Track your progress and stay motivated
           </p>
         </div>
         <Link
           href="/habits"
-          className="inline-flex items-center justify-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 text-sm font-bold text-zinc-900 bg-white rounded-lg sm:rounded-xl hover:bg-zinc-100 transition-all hover:-translate-y-0.5 w-full sm:w-auto"
+          className="inline-flex items-center justify-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 text-sm font-bold text-zinc-900 bg-white rounded-lg sm:rounded-xl hover:bg-zinc-100 transition-all hover:-translate-y-0.5 w-full sm:w-auto shrink-0"
         >
           <Plus size={16} className="sm:w-[18px] sm:h-[18px]" />
           Add Habit

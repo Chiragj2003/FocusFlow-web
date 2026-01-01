@@ -9,7 +9,7 @@ export default function AppLayout({
     <div className="min-h-screen bg-zinc-950">
       <Sidebar />
       <main className="lg:ml-64 min-h-screen">
-        <div className="p-4 sm:p-6 lg:p-8">{children}</div>
+        <div className="px-4 pb-4 sm:p-6 lg:p-8">{children}</div>
       </main>
     </div>
   )

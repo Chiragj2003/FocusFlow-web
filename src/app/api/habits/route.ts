@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import prisma from '@/lib/db'
 
+// Force dynamic rendering for auth
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 // GET /api/habits - List all habits for the current user
 export async function GET(request: NextRequest) {
   try {
@@ -30,7 +34,10 @@ export async function GET(request: NextRequest) {
       orderBy: { createdAt: 'desc' },
     })
 
-    return NextResponse.json(habits)
+    // Add cache headers for faster subsequent requests
+    const response = NextResponse.json(habits)
+    response.headers.set('Cache-Control', 'private, max-age=10, stale-while-revalidate=30')
+    return response
   } catch (error) {
     console.error('Error fetching habits:', error)
     return NextResponse.json(

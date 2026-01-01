@@ -138,11 +138,11 @@ export function SettingsClient({ user, clerkUser }: SettingsClientProps) {
   }
 
   return (
-    <div className="max-w-2xl space-y-6">
+    <div className="max-w-2xl space-y-4 sm:space-y-6 pt-14 lg:pt-0">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-white">Settings</h1>
-        <p className="text-zinc-400 mt-1">Manage your account preferences</p>
+        <h1 className="text-lg sm:text-2xl font-bold text-white">Settings</h1>
+        <p className="text-zinc-400 mt-0.5 sm:mt-1 text-xs sm:text-base">Manage your account preferences</p>
       </div>
 
       {/* Profile Section */}

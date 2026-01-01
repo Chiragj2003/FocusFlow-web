@@ -6,6 +6,9 @@ import { getUserBadges, checkAllBadges, BADGE_DEFINITIONS, awardEarlyBirdBadge }
 import { getDailyQuote, getDailyStreakMessage } from '@/lib/quotes'
 import { DashboardClient } from './client'
 
+// Optimize with ISR - revalidate every 60 seconds
+export const revalidate = 60
+
 export default async function DashboardPage() {
   const { userId: authUserId } = await auth()
 
@@ -13,43 +16,35 @@ export default async function DashboardPage() {
     redirect('/sign-in')
   }
 
-  // TypeScript now knows userId is string
   const userId = authUserId
-  const clerkUser = await currentUser()
-
-  // Ensure user exists in database (upsert to avoid conflicts)
-  await prisma.user.upsert({
-    where: { id: userId },
-    update: {}, // No update needed, just ensure exists
-    create: {
-      id: userId,
-      timezone: 'UTC',
-    },
-  })
-  
-  // Award early bird badge for new users
-  await awardEarlyBirdBadge(userId)
 
   // Get current month date range
   const now = new Date()
   const startDate = new Date(now.getFullYear(), now.getMonth(), 1)
   const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0)
 
-  // Fetch insights and streaks
-  const [insights, streaks, habitsCount] = await Promise.all([
+  // Run ALL queries in parallel for maximum speed
+  const [clerkUser, _, insights, streaks, habitsCount, entries, badges] = await Promise.all([
+    currentUser(),
+    // Ensure user exists (fire and forget style)
+    prisma.user.upsert({
+      where: { id: userId },
+      update: {},
+      create: { id: userId, timezone: 'UTC' },
+    }).then(() => awardEarlyBirdBadge(userId)),
     getInsightsSummary(userId, startDate, endDate),
     getAllStreaks(userId),
     prisma.habit.count({ where: { userId, active: true } }),
+    prisma.habitEntry.findMany({
+      where: {
+        userId,
+        entryDate: { gte: startDate, lte: endDate },
+      },
+      select: { entryDate: true, completed: true }, // Only select needed fields
+      orderBy: { entryDate: 'asc' },
+    }),
+    getUserBadges(userId),
   ])
-
-  // Calculate daily data for the line chart
-  const entries = await prisma.habitEntry.findMany({
-    where: {
-      userId,
-      entryDate: { gte: startDate, lte: endDate },
-    },
-    orderBy: { entryDate: 'asc' },
-  })
 
   // Group by date for line chart
   const dateMap = new Map<string, { completed: number; total: number }>()
@@ -86,16 +81,13 @@ export default async function DashboardPage() {
     0
   )
 
-  // Check and award badges
-  await checkAllBadges(userId, {
+  // Check and award badges in background (don't await)
+  checkAllBadges(userId, {
     currentStreak: currentBestStreak,
     longestStreak: bestStreak,
-  })
+  }).catch(console.error)
 
-  // Fetch user badges
-  const badges = await getUserBadges(userId)
-
-  // Get daily quote and streak message
+  // Get daily quote and streak message (sync - very fast)
   const dailyQuote = getDailyQuote()
   const streakMessage = getDailyStreakMessage(currentBestStreak)
 
