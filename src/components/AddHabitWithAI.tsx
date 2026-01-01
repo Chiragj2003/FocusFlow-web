@@ -119,7 +119,7 @@ export function AddHabitWithAI({ isOpen, onClose, onSubmit }: AddHabitWithAIProp
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/70 backdrop-blur-sm"
@@ -127,30 +127,30 @@ export function AddHabitWithAI({ isOpen, onClose, onSubmit }: AddHabitWithAIProp
       />
 
       {/* Modal */}
-      <div className="relative bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto border border-zinc-800">
+      <div className="relative bg-zinc-900 rounded-xl sm:rounded-2xl shadow-2xl w-full max-w-lg mx-2 sm:mx-4 max-h-[90vh] overflow-y-auto border border-zinc-800">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-800">
-          <div className="flex items-center gap-2">
-            <div className="p-2 bg-gradient-to-br from-violet-500 to-purple-600 rounded-lg">
-              <Wand2 className="w-5 h-5 text-white" />
+        <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-zinc-800">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="p-1.5 sm:p-2 bg-gradient-to-br from-violet-500 to-purple-600 rounded-lg">
+              <Wand2 className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-white">AI Habit Creator</h2>
-              <p className="text-xs text-zinc-500">Describe your habit and let AI do the rest</p>
+              <h2 className="text-base sm:text-lg font-semibold text-white">AI Habit Creator</h2>
+              <p className="text-[10px] sm:text-xs text-zinc-500">Describe your habit and let AI do the rest</p>
             </div>
           </div>
           <button
             onClick={handleClose}
-            className="p-2 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-800 transition-colors"
+            className="p-1.5 sm:p-2 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-800 transition-colors"
           >
-            <X size={20} />
+            <X size={18} className="sm:w-5 sm:h-5" />
           </button>
         </div>
 
-        <div className="p-6 space-y-5">
+        <div className="p-4 sm:p-6 space-y-4 sm:space-y-5">
           {/* Input Section */}
           <div>
-            <label className="block text-sm font-medium text-white mb-2">
+            <label className="block text-xs sm:text-sm font-medium text-white mb-2">
               Describe your habit
             </label>
             <div className="relative">
@@ -168,36 +168,36 @@ export function AddHabitWithAI({ isOpen, onClose, onSubmit }: AddHabitWithAIProp
                 }}
                 placeholder="e.g., I want to drink 8 glasses of water every day..."
                 rows={3}
-                className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500 transition-colors resize-none text-white placeholder:text-zinc-500"
+                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-zinc-800 border border-zinc-700 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500 transition-colors resize-none text-sm sm:text-base text-white placeholder:text-zinc-500"
               />
-              <div className="absolute bottom-3 right-3">
+              <div className="absolute bottom-2 sm:bottom-3 right-2 sm:right-3">
                 <button
                   onClick={handleGenerate}
                   disabled={!prompt.trim() || isGenerating}
                   className={cn(
-                    'p-2 rounded-lg transition-all',
+                    'p-1.5 sm:p-2 rounded-lg transition-all',
                     prompt.trim() && !isGenerating
                       ? 'bg-violet-600 text-white hover:bg-violet-500'
                       : 'bg-zinc-700 text-zinc-500 cursor-not-allowed'
                   )}
                 >
                   {isGenerating ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin" />
                   ) : (
-                    <Sparkles className="w-4 h-4" />
+                    <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   )}
                 </button>
               </div>
             </div>
             {error && (
-              <p className="mt-2 text-sm text-red-400">{error}</p>
+              <p className="mt-2 text-xs sm:text-sm text-red-400">{error}</p>
             )}
           </div>
 
           {/* Example Prompts */}
           {!generatedHabit && (
             <div>
-              <p className="text-xs text-zinc-500 mb-2">Try these examples:</p>
+              <p className="text-[10px] sm:text-xs text-zinc-500 mb-2">Try these examples:</p>
               <div className="flex flex-wrap gap-2">
                 {EXAMPLE_PROMPTS.slice(0, 4).map((example, idx) => (
                   <button

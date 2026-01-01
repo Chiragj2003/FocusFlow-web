@@ -387,16 +387,16 @@ export function HabitsClient({
   )
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white">Habits</h1>
-          <p className="text-zinc-400 mt-1">
+          <h1 className="text-xl sm:text-2xl font-bold text-white">Habits</h1>
+          <p className="text-zinc-400 mt-1 text-sm sm:text-base">
             Track your daily habits and build consistency
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center">
           <MonthNavigator
             month={month}
             year={year}
@@ -406,32 +406,32 @@ export function HabitsClient({
       </div>
 
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="flex flex-wrap items-center gap-2 sm:gap-3">
         {/* AI Create Button */}
         <button
           onClick={() => setIsAIModalOpen(true)}
-          className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-violet-400 bg-violet-500/10 rounded-lg hover:bg-violet-500/20 transition-colors"
+          className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-violet-400 bg-violet-500/10 rounded-lg hover:bg-violet-500/20 transition-colors"
         >
-          <Wand2 size={16} />
-          Add with AI
+          <Wand2 size={14} className="sm:w-4 sm:h-4" />
+          <span className="hidden xs:inline">Add with</span> AI
         </button>
 
         {/* Template Button */}
         <button
           onClick={() => setIsTemplatePickerOpen(true)}
-          className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-amber-400 bg-amber-400/10 rounded-lg hover:bg-amber-400/20 transition-colors"
+          className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-amber-400 bg-amber-400/10 rounded-lg hover:bg-amber-400/20 transition-colors"
         >
-          <Sparkles size={16} />
-          Templates
+          <Sparkles size={14} className="sm:w-4 sm:h-4" />
+          <span className="hidden sm:inline">Templates</span>
         </button>
 
         {/* Challenges Button */}
         <button
           onClick={() => setIsChallengeBrowserOpen(true)}
-          className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-emerald-400 bg-emerald-400/10 rounded-lg hover:bg-emerald-400/20 transition-colors"
+          className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-emerald-400 bg-emerald-400/10 rounded-lg hover:bg-emerald-400/20 transition-colors"
         >
-          <Trophy size={16} />
-          Challenges
+          <Trophy size={14} className="sm:w-4 sm:h-4" />
+          <span className="hidden sm:inline">Challenges</span>
         </button>
 
         {/* Focus Timer Button */}
@@ -442,26 +442,26 @@ export function HabitsClient({
             setTimerHabit(durationHabit || null)
             setIsTimerOpen(true)
           }}
-          className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-rose-400 bg-rose-400/10 rounded-lg hover:bg-rose-400/20 transition-colors"
+          className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-rose-400 bg-rose-400/10 rounded-lg hover:bg-rose-400/20 transition-colors"
         >
-          <Timer size={16} />
-          Focus Timer
+          <Timer size={14} className="sm:w-4 sm:h-4" />
+          <span className="hidden sm:inline">Timer</span>
         </button>
 
         {/* Filter Button */}
         <button
           onClick={() => setShowFilters(!showFilters)}
           className={cn(
-            'inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-colors',
+            'inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium rounded-lg transition-colors',
             showFilters || filterCategory
               ? 'text-white bg-zinc-700'
               : 'text-zinc-400 bg-zinc-800 hover:text-white'
           )}
         >
-          <Filter size={16} />
-          Filter
+          <Filter size={14} className="sm:w-4 sm:h-4" />
+          <span className="hidden sm:inline">Filter</span>
           {filterCategory && (
-            <span className="px-1.5 py-0.5 text-xs bg-white/20 rounded">1</span>
+            <span className="px-1 sm:px-1.5 py-0.5 text-[10px] sm:text-xs bg-white/20 rounded">1</span>
           )}
         </button>
 
@@ -473,10 +473,10 @@ export function HabitsClient({
               const currentIndex = options.indexOf(sortBy)
               setSortBy(options[(currentIndex + 1) % options.length])
             }}
-            className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-zinc-400 bg-zinc-800 rounded-lg hover:text-white transition-colors"
+            className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-zinc-400 bg-zinc-800 rounded-lg hover:text-white transition-colors"
           >
-            <SortAsc size={16} />
-            {sortBy.charAt(0).toUpperCase() + sortBy.slice(1)}
+            <SortAsc size={14} className="sm:w-4 sm:h-4" />
+            <span className="hidden sm:inline">{sortBy.charAt(0).toUpperCase() + sortBy.slice(1)}</span>
           </button>
         </div>
 
@@ -484,25 +484,25 @@ export function HabitsClient({
         <button
           onClick={() => setShowArchived(!showArchived)}
           className={cn(
-            'inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-colors',
+            'inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium rounded-lg transition-colors',
             showArchived
               ? 'text-white bg-zinc-700'
               : 'text-zinc-400 bg-zinc-800 hover:text-white'
           )}
         >
-          <Archive size={16} />
-          Archived ({archivedHabits.length})
+          <Archive size={14} className="sm:w-4 sm:h-4" />
+          <span className="hidden sm:inline">Archived</span> ({archivedHabits.length})
         </button>
       </div>
 
       {/* Filter Options */}
       {showFilters && (
-        <div className="flex flex-wrap items-center gap-2 p-4 bg-zinc-900/50 rounded-xl border border-zinc-800">
-          <span className="text-sm text-zinc-400">Category:</span>
+        <div className="flex flex-wrap items-center gap-2 p-3 sm:p-4 bg-zinc-900/50 rounded-xl border border-zinc-800">
+          <span className="text-xs sm:text-sm text-zinc-400">Category:</span>
           <button
             onClick={() => setFilterCategory(null)}
             className={cn(
-              'px-3 py-1 text-sm rounded-lg transition-colors',
+              'px-2 sm:px-3 py-1 text-xs sm:text-sm rounded-lg transition-colors',
               !filterCategory
                 ? 'bg-white text-zinc-900'
                 : 'bg-zinc-800 text-zinc-400 hover:text-white'
@@ -515,7 +515,7 @@ export function HabitsClient({
               key={cat}
               onClick={() => setFilterCategory(cat)}
               className={cn(
-                'px-3 py-1 text-sm rounded-lg transition-colors',
+                'px-2 sm:px-3 py-1 text-xs sm:text-sm rounded-lg transition-colors',
                 filterCategory === cat
                   ? 'bg-white text-zinc-900'
                   : 'bg-zinc-800 text-zinc-400 hover:text-white'
@@ -529,7 +529,7 @@ export function HabitsClient({
               onClick={() => setFilterCategory(null)}
               className="p-1 text-zinc-500 hover:text-white transition-colors"
             >
-              <X size={16} />
+              <X size={14} className="sm:w-4 sm:h-4" />
             </button>
           )}
         </div>
@@ -537,35 +537,35 @@ export function HabitsClient({
 
       {/* Archived Habits Section */}
       {showArchived && archivedHabits.length > 0 && (
-        <div className="bg-zinc-900/50 rounded-xl border border-zinc-800 p-4">
-          <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-            <Archive size={18} />
+        <div className="bg-zinc-900/50 rounded-xl border border-zinc-800 p-3 sm:p-4">
+          <h3 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4 flex items-center gap-2">
+            <Archive size={16} className="sm:w-[18px] sm:h-[18px]" />
             Archived Habits
           </h3>
           <div className="space-y-2">
             {archivedHabits.map((habit) => (
               <div
                 key={habit.id}
-                className="flex items-center justify-between p-3 bg-zinc-800/50 rounded-lg"
+                className="flex items-center justify-between p-2 sm:p-3 bg-zinc-800/50 rounded-lg gap-2"
               >
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 sm:gap-3 min-w-0">
                   <div
-                    className="w-3 h-3 rounded-full"
+                    className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full shrink-0"
                     style={{ backgroundColor: habit.color }}
                   />
-                  <span className="text-zinc-300">{habit.title}</span>
+                  <span className="text-xs sm:text-sm text-zinc-300 truncate">{habit.title}</span>
                   {habit.category && (
-                    <span className="text-xs text-zinc-500 px-2 py-0.5 bg-zinc-800 rounded">
+                    <span className="hidden sm:inline text-xs text-zinc-500 px-2 py-0.5 bg-zinc-800 rounded shrink-0">
                       {habit.category}
                     </span>
                   )}
                 </div>
                 <button
                   onClick={() => handleRestoreHabit(habit.id)}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm text-green-400 hover:text-green-300 bg-green-400/10 hover:bg-green-400/20 rounded-lg transition-colors"
+                  className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm text-green-400 hover:text-green-300 bg-green-400/10 hover:bg-green-400/20 rounded-lg transition-colors shrink-0"
                 >
-                  <RotateCcw size={14} />
-                  Restore
+                  <RotateCcw size={12} className="sm:w-[14px] sm:h-[14px]" />
+                  <span className="hidden sm:inline">Restore</span>
                 </button>
               </div>
             ))}

@@ -80,3 +80,38 @@ export function getColorWithOpacity(hexColor: string, opacity: number): string {
   const b = parseInt(hexColor.slice(5, 7), 16)
   return `rgba(${r}, ${g}, ${b}, ${opacity})`
 }
+
+// Debounce function for reducing API calls
+export function debounce<T extends (...args: Parameters<T>) => ReturnType<T>>(
+  func: T,
+  wait: number
+): (...args: Parameters<T>) => void {
+  let timeoutId: ReturnType<typeof setTimeout> | null = null
+  
+  return (...args: Parameters<T>) => {
+    if (timeoutId) {
+      clearTimeout(timeoutId)
+    }
+    timeoutId = setTimeout(() => {
+      func(...args)
+    }, wait)
+  }
+}
+
+// Throttle function for rate-limiting
+export function throttle<T extends (...args: Parameters<T>) => ReturnType<T>>(
+  func: T,
+  limit: number
+): (...args: Parameters<T>) => void {
+  let inThrottle = false
+  
+  return (...args: Parameters<T>) => {
+    if (!inThrottle) {
+      func(...args)
+      inThrottle = true
+      setTimeout(() => {
+        inThrottle = false
+      }, limit)
+    }
+  }
+}

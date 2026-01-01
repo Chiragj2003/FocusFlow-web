@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { UserButton, useClerk } from '@clerk/nextjs'
-import { User, Globe, Palette, Sun, Moon, Monitor, AlertTriangle, Trash2, Power, Shield, LogOut } from 'lucide-react'
+import { User, Globe, Palette, Sun, Moon, Monitor, AlertTriangle, Trash2, Power, Shield, LogOut, HelpCircle, MessageSquare } from 'lucide-react'
 import { useTheme } from '@/lib/theme'
 import { useRouter } from 'next/navigation'
 
@@ -364,6 +364,47 @@ export function SettingsClient({ user, clerkUser }: SettingsClientProps) {
               Delete Account
             </button>
           </div>
+        </div>
+      </div>
+
+      {/* Help & Feedback Section */}
+      <div className="bg-zinc-900/50 rounded-2xl border border-zinc-800/50 p-6">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="p-2 bg-violet-500/10 rounded-lg">
+            <HelpCircle size={20} className="text-violet-400" />
+          </div>
+          <div>
+            <h2 className="text-lg font-semibold text-white">Help & Support</h2>
+            <p className="text-sm text-zinc-400">Get help or send us feedback</p>
+          </div>
+        </div>
+
+        <div className="grid sm:grid-cols-2 gap-4">
+          <button
+            onClick={() => router.push('/help')}
+            className="flex items-center gap-4 p-4 bg-zinc-800/50 rounded-xl border border-zinc-700/50 hover:bg-zinc-800 hover:border-violet-500/50 transition-all group"
+          >
+            <div className="p-3 bg-violet-500/10 rounded-lg group-hover:bg-violet-500/20 transition-colors">
+              <HelpCircle size={24} className="text-violet-400" />
+            </div>
+            <div className="text-left">
+              <p className="font-medium text-white">Help Center</p>
+              <p className="text-sm text-zinc-400">FAQs & documentation</p>
+            </div>
+          </button>
+
+          <button
+            onClick={() => router.push('/help?tab=feedback')}
+            className="flex items-center gap-4 p-4 bg-zinc-800/50 rounded-xl border border-zinc-700/50 hover:bg-zinc-800 hover:border-emerald-500/50 transition-all group"
+          >
+            <div className="p-3 bg-emerald-500/10 rounded-lg group-hover:bg-emerald-500/20 transition-colors">
+              <MessageSquare size={24} className="text-emerald-400" />
+            </div>
+            <div className="text-left">
+              <p className="font-medium text-white">Send Feedback</p>
+              <p className="text-sm text-zinc-400">We&apos;d love to hear from you</p>
+            </div>
+          </button>
         </div>
       </div>
 

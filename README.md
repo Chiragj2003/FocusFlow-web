@@ -9,9 +9,10 @@
 [![Next.js](https://img.shields.io/badge/Next.js-15.5-black?style=flat-square&logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.0-38B2AC?style=flat-square&logo=tailwind-css)](https://tailwindcss.com/)
-[![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748?style=flat-square&logo=prisma)](https://www.prisma.io/)
+[![Prisma](https://img.shields.io/badge/Prisma-7.0-2D3748?style=flat-square&logo=prisma)](https://www.prisma.io/)
+[![Clerk](https://img.shields.io/badge/Clerk-Auth-6C47FF?style=flat-square)](https://clerk.com/)
 
-[Features](#-features) • [Demo](#-demo) • [Installation](#-installation) • [Tech Stack](#-tech-stack) • [Screenshots](#-screenshots)
+[Features](#-features) • [Demo](#-live-demo) • [Installation](#-installation) • [Tech Stack](#-tech-stack)
 
 </div>
 
@@ -24,112 +25,205 @@
 - **Multiple Goal Types** - Binary (Yes/No), Duration (minutes), Quantity (count)
 - **Quick Toggle** - One-click habit completion for any day
 - **Weekly Progress** - See completion percentages for each week
+- **Archive & Delete** - Manage habits with archive/restore functionality
+- **Custom Categories** - Health, Fitness, Mindfulness, Learning, Productivity, Finance, Social, Creativity
+
+### 🤖 AI-Powered Features
+- **AI Habit Generator** - Describe what you want to achieve and AI creates the perfect habit
+- **Smart Suggestions** - Intelligent habit recommendations based on your goals
+- **Local Fallback** - Works even without API key using smart pattern matching
+
+### ⏱️ Focus Timer (Pomodoro)
+- **Pomodoro Technique** - 25-minute focus sessions with breaks
+- **Multiple Modes** - Focus (25 min), Short Break (5 min), Long Break (15 min)
+- **Session Tracking** - Track total focus time and completed sessions
+- **Sound Notifications** - Audio alerts when timer completes
+- **Habit Integration** - Link timer sessions to specific habits
 
 ### 📈 Analytics & Insights
-- **Donut Charts** - Monthly completion overview
+- **Completion Donut Chart** - Monthly completion overview
 - **Weekly Bar Charts** - Performance trends across weeks
+- **30-Day Trend Line** - Track progress with 7-day moving average
+- **Category Radar Chart** - Performance breakdown by habit category
+- **Progress Rings** - Visual circular progress indicators
 - **Streak Tracking** - Current and longest streaks for each habit
-- **Top Performers** - See your best habits ranked by completion rate
-- **Habit Summaries** - Detailed statistics for each habit
+- **Day Analysis** - See best and worst performing days
+- **Top Performers** - Habits ranked by completion rate
+- **Heatmap View** - GitHub-style activity visualization
+
+### 🏆 Gamification & Badges
+50+ achievement badges across multiple categories:
+
+**Streak Badges**
+- 🔥 Week Warrior (7 days)
+- ⚡ Fortnight Fighter (14 days)
+- 🏆 Monthly Master (30 days)
+- 💎 Habit Hero (60 days)
+- 👑 Century Champion (100 days)
+- 🌟 Year Legend (365 days)
+
+**Completion Badges**
+- ✨ Perfect Week
+- 🌙 Perfect Month
+- 🎊 Weekend Warrior
+- 💫 Perfect Quarter
+
+**Milestone Badges**
+- 🚀 First Step (1st habit)
+- 🎯 Habit Builder (5 habits)
+- 🏗️ Habit Architect (10 habits)
+- 💯 Centurion (100 completions)
+- 🎖️ Dedication (500 completions)
+- 🏅 Habit Master (1000 completions)
+
+**Special Badges**
+- 🌱 Early Bird (joined early)
+- 💪 Health Enthusiast
+- 🏃 Fitness Fanatic
+- 🧘 Mindfulness Master
+- 📚 Learning Lover
+- ⚡ Productivity Pro
+- 🌅 Early Riser
+- 🦉 Night Owl
 
 ### 📅 Calendar View
 - **Year Overview** - 12-month calendar with daily progress circles
 - **Color-coded Progress** - Visual indicators for completion levels
 - **Yearly Statistics** - Total completions, entries, and averages
+- **Month Navigation** - Easy navigation between months
+
+### 📝 Habit Templates
+Pre-built habits you can add with one click:
+
+**Health**
+- 💧 Drink Water (8 glasses)
+- 💊 Take Vitamins
+- 😴 Sleep by 11 PM
+- 🥗 No Junk Food
+
+**Fitness**
+- 🏃 Morning Run
+- 💪 Strength Training
+- 🧘 Yoga/Stretching
+- 🚶 10,000 Steps
+
+**Mindfulness**
+- 🧘 Meditation
+- 📓 Journaling
+- 🙏 Gratitude Practice
+- 📵 Digital Detox
+
+**Learning**
+- 📚 Read 30 Minutes
+- 🎓 Online Course
+- 💻 Coding Practice
+- 🗣️ Language Learning
+
+**Productivity**
+- ✅ Plan Tomorrow
+- 📧 Inbox Zero
+- 🎯 Deep Work Session
+- 📱 No Social Media
+
+### 🏅 Challenges
+Pre-built challenge programs to kickstart your journey:
+
+- **30-Day Fitness Challenge** - Build a consistent exercise routine
+- **Mindfulness Journey** - Develop mental clarity and peace
+- **Productivity Bootcamp** - Optimize your daily workflow
+- **21-Day Habit Builder** - Form new habits with science-backed methods
+- **Morning Routine Challenge** - Create an energizing start to your day
+- **Digital Wellness Reset** - Balance your relationship with technology
 
 ### 📤 Data Export
-- **CSV Export** - Download your habit data in spreadsheet format
-- **PDF Reports** - Generate beautiful PDF insights reports
+- **CSV Export** - Download habit data in spreadsheet format
+- **PDF Reports** - Generate beautiful insights reports
 - **Date Range Selection** - Export specific months or custom ranges
 
 ### 🎨 Customization
 - **Dark/Light Mode** - Full theme support with system preference detection
-- **Custom Colors** - 8 preset colors for habits
-- **Categories** - Organize habits by Health, Fitness, Mindfulness, etc.
+- **8 Custom Colors** - Personalize each habit with beautiful colors
+- **Categories** - Organize habits by type
 - **Timezone Support** - Accurate tracking across timezones
 
-### 🔐 Account Management
-- **Secure Authentication** - Powered by Clerk
-- **Account Deactivation** - Pause tracking without losing data
-- **Safe Deletion** - Type confirmation required to delete account
-- **Profile Management** - Easy profile updates via Clerk
+### 📱 Mobile Responsive
+- **Fully Responsive** - Works perfectly on all devices
+- **Touch Optimized** - Smooth interactions on mobile
+- **PWA Ready** - Install as a native-like app
+
+### 💬 Motivational Features
+- **Daily Quotes** - Inspiring quotes on your dashboard
+- **Streak Messages** - Personalized motivation based on your streaks
+- **Progress Celebrations** - Visual feedback on achievements
 
 ---
 
-## 🚀 Demo
+## 🛠️ Tech Stack
 
-Experience FocusFlow live: [Coming Soon]
+| Technology | Purpose |
+|------------|---------|
+| **Next.js 15** | React framework with App Router |
+| **TypeScript** | Type-safe development |
+| **Tailwind CSS 4** | Utility-first styling |
+| **Prisma 7** | Database ORM |
+| **Neon PostgreSQL** | Serverless database |
+| **Clerk** | Authentication & user management |
+| **Chart.js** | Interactive charts and graphs |
+| **Lucide Icons** | Beautiful icon library |
+| **Google Gemini** | AI habit generation |
 
 ---
 
-## 🛠 Installation
+## 🚀 Installation
 
 ### Prerequisites
-
-- Node.js 18.17 or later
-- PostgreSQL database (or Neon serverless)
+- Node.js 18+
+- npm or pnpm
+- PostgreSQL database (or Neon account)
 - Clerk account for authentication
 
-### Quick Start
+### 1. Clone the repository
+```bash
+git clone https://github.com/yourusername/focusflow.git
+cd focusflow
+```
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/Chiragj2003/FocusFlow-web.git
-   cd FocusFlow-web
-   ```
+### 2. Install dependencies
+```bash
+npm install
+# or
+pnpm install
+```
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+### 3. Set up environment variables
+Create a `.env` file in the root directory:
 
-3. **Set up environment variables**
-   
-   Create a `.env` file in the root directory:
+```env
+# Database
+DATABASE_URL="postgresql://..."
 
-   ```env
-   # Database
-   DATABASE_URL="your-postgresql-connection-string"
-   
-   # Clerk Authentication
-   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_xxxxx
-   CLERK_SECRET_KEY=sk_xxxxx
-   NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
-   NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
-   NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/dashboard
-   NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/dashboard
-   ```
+# Clerk Authentication
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_...
+CLERK_SECRET_KEY=sk_...
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
 
-4. **Set up the database**
-   ```bash
-   npx prisma generate
-   npx prisma db push
-   ```
+# AI (Optional - for AI habit generation)
+GEMINI_API_KEY=your_gemini_api_key
+```
 
-5. **Run the development server**
-   ```bash
-   npm run dev
-   ```
+### 4. Set up the database
+```bash
+npx prisma generate
+npx prisma db push
+```
 
-6. **Open your browser**
-   
-   Navigate to [http://localhost:3000](http://localhost:3000)
+### 5. Run the development server
+```bash
+npm run dev
+```
 
----
-
-## 🏗 Tech Stack
-
-| Category | Technology |
-|----------|------------|
-| **Framework** | [Next.js 15](https://nextjs.org/) with App Router |
-| **Language** | [TypeScript](https://www.typescriptlang.org/) |
-| **Styling** | [Tailwind CSS v4](https://tailwindcss.com/) |
-| **Database** | [PostgreSQL](https://www.postgresql.org/) with [Neon](https://neon.tech/) |
-| **ORM** | [Prisma](https://www.prisma.io/) |
-| **Authentication** | [Clerk](https://clerk.com/) |
-| **Charts** | [Chart.js](https://www.chartjs.org/) + [react-chartjs-2](https://react-chartjs-2.js.org/) |
-| **PDF Generation** | [jsPDF](https://github.com/parallax/jsPDF) + [jspdf-autotable](https://github.com/simonbengtsson/jsPDF-AutoTable) |
-| **Icons** | [Lucide React](https://lucide.dev/) |
+Open [http://localhost:3000](http://localhost:3000) to see your app.
 
 ---
 
@@ -139,105 +233,68 @@ Experience FocusFlow live: [Coming Soon]
 focusflow/
 ├── prisma/
 │   ├── schema.prisma      # Database schema
-│   └── seed.ts            # Seed data
+│   └── seed.ts            # Database seeding
 ├── public/
-│   └── manifest.json      # PWA manifest
+│   ├── manifest.json      # PWA manifest
+│   └── sw.js              # Service worker
 ├── src/
 │   ├── app/
 │   │   ├── (app)/         # Protected app routes
 │   │   │   ├── dashboard/ # Main dashboard
-│   │   │   ├── habits/    # Habit tracking grid
-│   │   │   ├── insights/  # Analytics & charts
-│   │   │   ├── calendar/  # Year calendar view
-│   │   │   ├── export/    # Data export
-│   │   │   └── settings/  # User settings
+│   │   │   ├── habits/    # Habit management
+│   │   │   ├── calendar/  # Calendar view
+│   │   │   ├── insights/  # Analytics page
+│   │   │   ├── settings/  # User settings
+│   │   │   └── export/    # Data export
 │   │   ├── api/           # API routes
-│   │   │   ├── habits/    # Habit CRUD
-│   │   │   ├── entries/   # Entry management
-│   │   │   ├── insights/  # Analytics endpoints
-│   │   │   ├── exports/   # CSV/PDF export
-│   │   │   └── account/   # Account management
+│   │   │   ├── entries/   # Habit entries CRUD
+│   │   │   ├── habits/    # Habits CRUD + AI
+│   │   │   ├── badges/    # Badge system
+│   │   │   └── insights/  # Analytics data
 │   │   ├── sign-in/       # Auth pages
 │   │   └── sign-up/
-│   ├── components/        # Reusable components
-│   │   ├── HabitGrid.tsx
-│   │   ├── DonutChart.tsx
-│   │   ├── WeeklyBars.tsx
-│   │   ├── Sidebar.tsx
+│   ├── components/        # React components
+│   │   ├── HabitGrid.tsx  # Main habit grid
+│   │   ├── FocusTimer.tsx # Pomodoro timer
+│   │   ├── DonutChart.tsx # Charts
+│   │   ├── Heatmap.tsx    # Activity heatmap
 │   │   └── ...
 │   └── lib/               # Utilities
-│       ├── analytics.ts   # Insights calculations
-│       ├── db.ts          # Prisma client
-│       ├── theme.tsx      # Theme provider
-│       └── utils.ts       # Helper functions
-└── package.json
+│       ├── badges.ts      # Badge definitions
+│       ├── templates.ts   # Habit templates
+│       ├── challenges.ts  # Challenge templates
+│       ├── quotes.ts      # Motivational quotes
+│       └── analytics.ts   # Analytics helpers
+├── package.json
+└── README.md
 ```
 
 ---
 
-## 📸 Screenshots
+## 🔧 Configuration
 
-### Dashboard
-The main dashboard shows your daily summary, streaks, and recent activity.
+### Database Indexes
+For optimal performance, the following indexes are configured:
+- `habits(userId, active)` - Fast active habit queries
+- `habits(userId, createdAt)` - Efficient sorting
+- `habit_entries(userId, entryDate)` - Quick date range queries
+- `badges(userId)` - Fast badge lookups
 
-### Habits Grid
-Track habits with an intuitive monthly grid - click to toggle completion.
-
-### Insights
-Visualize your progress with charts, completion rates, and streak information.
-
-### Calendar
-View the entire year at a glance with progress circles for each day.
-
-### Dark Mode
-Full dark mode support for comfortable tracking at night.
+### Performance Optimizations
+- Dynamic imports for chart components
+- API response caching
+- Modular Lucide icon imports
+- Image optimization with AVIF/WebP
 
 ---
 
-## 🔧 API Endpoints
+## 📱 PWA Support
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/habits` | List all habits |
-| POST | `/api/habits` | Create a new habit |
-| PUT | `/api/habits/[id]` | Update a habit |
-| DELETE | `/api/habits/[id]` | Delete a habit |
-| GET | `/api/entries` | Get entries for date range |
-| POST | `/api/entries` | Create/update an entry |
-| GET | `/api/insights/summary` | Get analytics summary |
-| GET | `/api/insights/streaks` | Get streak information |
-| GET | `/api/exports/csv` | Download CSV export |
-| GET | `/api/exports/insights` | Get data for PDF export |
+FocusFlow can be installed as a Progressive Web App:
 
----
-
-## 🎨 Customization
-
-### Adding New Colors
-
-Edit `src/components/AddHabitModal.tsx`:
-
-```typescript
-const PRESET_COLORS = [
-  '#FFB4A2', // Peach (Primary)
-  '#CDE7E4', // Teal (Accent)
-  '#E2D6FF', // Lavender
-  // Add more colors here
-]
-```
-
-### Adding Categories
-
-Edit `src/components/AddHabitModal.tsx`:
-
-```typescript
-const CATEGORIES = [
-  'Health',
-  'Fitness',
-  'Mindfulness',
-  // Add more categories here
-]
-```
+1. Open the app in Chrome/Edge
+2. Click the install icon in the address bar
+3. Enjoy native-like experience!
 
 ---
 
@@ -259,67 +316,22 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-## 👤 Author
-
-**Chirag**
-
-- GitHub: [@Chiragj2003](https://github.com/Chiragj2003)
-
----
-
 ## 🙏 Acknowledgments
 
-- [Next.js](https://nextjs.org/) for the amazing framework
-- [Clerk](https://clerk.com/) for authentication
-- [Neon](https://neon.tech/) for serverless PostgreSQL
-- [Vercel](https://vercel.com/) for hosting
-- [Lucide](https://lucide.dev/) for beautiful icons
+- [Next.js](https://nextjs.org/) - The React Framework
+- [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS
+- [Prisma](https://www.prisma.io/) - Next-generation ORM
+- [Clerk](https://clerk.com/) - Authentication
+- [Neon](https://neon.tech/) - Serverless Postgres
+- [Chart.js](https://www.chartjs.org/) - JavaScript charts
+- [Lucide](https://lucide.dev/) - Beautiful icons
 
 ---
 
 <div align="center">
 
-**⭐ Star this repo if you found it helpful!**
+**Built with ❤️ for better habits**
 
-Made with ❤️ by Chirag
+[⬆ Back to Top](#-focusflow)
 
 </div>
-
-## API Endpoints
-
-### Habits
-- `GET /api/habits` - List all habits
-- `POST /api/habits` - Create a habit
-- `PUT /api/habits/[id]` - Update a habit
-- `DELETE /api/habits/[id]` - Delete a habit
-
-### Entries
-- `GET /api/entries` - Get entries (with date filters)
-- `POST /api/entries` - Create/update an entry
-
-### Analytics
-- `GET /api/insights/summary` - Get analytics summary
-- `GET /api/insights/streaks` - Get streak information
-- `GET /api/exports/csv` - Export data as CSV
-
-## Design Tokens
-
-| Token | Value |
-|-------|-------|
-| Primary | `#FFB4A2` (Peach) |
-| Accent | `#CDE7E4` (Teal) |
-| Background | `#FAFAFA` |
-| Text | `#111827` |
-
-## Deployment
-
-### Vercel (Recommended)
-
-1. Push your code to GitHub
-2. Import the project in Vercel
-3. Add environment variables
-4. Deploy!
-
-## License
-
-MIT License - feel free to use this for your own projects!

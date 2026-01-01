@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { getInsightsSummary } from '@/lib/analytics'
 
+// Force dynamic rendering for this API route
+export const dynamic = 'force-dynamic'
+
 // GET /api/insights/summary - Get analytics summary
 export async function GET(request: NextRequest) {
   try {

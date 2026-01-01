@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 
-// AI-powered habit generation using Google Gemini
+// AI-powered habit generation using Google Gemini with local fallback
 
 interface GeneratedHabit {
   title: string
@@ -25,6 +25,219 @@ const CATEGORY_COLORS: Record<string, string> = {
   Finance: '#14b8a6',
   Nutrition: '#84cc16',
   Other: '#71717a',
+}
+
+// Local fallback templates for common habit patterns
+const HABIT_PATTERNS: { 
+  keywords: string[]
+  habit: GeneratedHabit 
+}[] = [
+  {
+    keywords: ['water', 'drink', 'hydrate', 'hydration'],
+    habit: {
+      title: 'Stay Hydrated',
+      description: 'Drink enough water to keep your body healthy and energized',
+      category: 'Health',
+      color: CATEGORY_COLORS.Health,
+      goalType: 'quantity',
+      goalTarget: 8,
+      unit: 'glasses',
+    },
+  },
+  {
+    keywords: ['meditate', 'meditation', 'mindful', 'calm', 'peace'],
+    habit: {
+      title: 'Daily Meditation',
+      description: 'Take time to calm your mind and practice mindfulness',
+      category: 'Mindfulness',
+      color: CATEGORY_COLORS.Mindfulness,
+      goalType: 'duration',
+      goalTarget: 10,
+      unit: 'minutes',
+    },
+  },
+  {
+    keywords: ['read', 'book', 'reading', 'literature'],
+    habit: {
+      title: 'Read Daily',
+      description: 'Expand your knowledge through consistent reading',
+      category: 'Learning',
+      color: CATEGORY_COLORS.Learning,
+      goalType: 'duration',
+      goalTarget: 30,
+      unit: 'minutes',
+    },
+  },
+  {
+    keywords: ['exercise', 'workout', 'gym', 'fitness', 'train'],
+    habit: {
+      title: 'Daily Exercise',
+      description: 'Stay fit and healthy with regular physical activity',
+      category: 'Fitness',
+      color: CATEGORY_COLORS.Fitness,
+      goalType: 'duration',
+      goalTarget: 30,
+      unit: 'minutes',
+    },
+  },
+  {
+    keywords: ['walk', 'steps', 'walking', 'stroll'],
+    habit: {
+      title: 'Daily Walk',
+      description: 'Get moving with a refreshing daily walk',
+      category: 'Fitness',
+      color: CATEGORY_COLORS.Fitness,
+      goalType: 'quantity',
+      goalTarget: 10000,
+      unit: 'steps',
+    },
+  },
+  {
+    keywords: ['sleep', 'rest', 'bed', 'early'],
+    habit: {
+      title: 'Quality Sleep',
+      description: 'Prioritize rest for better health and productivity',
+      category: 'Health',
+      color: CATEGORY_COLORS.Health,
+      goalType: 'duration',
+      goalTarget: 8,
+      unit: 'hours',
+    },
+  },
+  {
+    keywords: ['journal', 'write', 'diary', 'gratitude', 'reflect'],
+    habit: {
+      title: 'Daily Journaling',
+      description: 'Reflect on your day and cultivate gratitude',
+      category: 'Mindfulness',
+      color: CATEGORY_COLORS.Mindfulness,
+      goalType: 'binary',
+    },
+  },
+  {
+    keywords: ['yoga', 'stretch', 'flexibility'],
+    habit: {
+      title: 'Practice Yoga',
+      description: 'Improve flexibility and mental clarity through yoga',
+      category: 'Fitness',
+      color: CATEGORY_COLORS.Fitness,
+      goalType: 'duration',
+      goalTarget: 20,
+      unit: 'minutes',
+    },
+  },
+  {
+    keywords: ['learn', 'study', 'course', 'skill', 'language'],
+    habit: {
+      title: 'Learn Something New',
+      description: 'Invest in yourself by learning daily',
+      category: 'Learning',
+      color: CATEGORY_COLORS.Learning,
+      goalType: 'duration',
+      goalTarget: 15,
+      unit: 'minutes',
+    },
+  },
+  {
+    keywords: ['code', 'program', 'develop', 'coding'],
+    habit: {
+      title: 'Code Daily',
+      description: 'Build your programming skills with daily practice',
+      category: 'Learning',
+      color: CATEGORY_COLORS.Learning,
+      goalType: 'duration',
+      goalTarget: 30,
+      unit: 'minutes',
+    },
+  },
+  {
+    keywords: ['save', 'money', 'budget', 'invest'],
+    habit: {
+      title: 'Track Finances',
+      description: 'Stay on top of your financial goals',
+      category: 'Finance',
+      color: CATEGORY_COLORS.Finance,
+      goalType: 'binary',
+    },
+  },
+  {
+    keywords: ['healthy', 'eat', 'nutrition', 'vegetable', 'fruit', 'diet'],
+    habit: {
+      title: 'Eat Healthy',
+      description: 'Nourish your body with nutritious food choices',
+      category: 'Nutrition',
+      color: CATEGORY_COLORS.Nutrition,
+      goalType: 'quantity',
+      goalTarget: 5,
+      unit: 'servings',
+    },
+  },
+  {
+    keywords: ['social', 'friend', 'family', 'call', 'connect'],
+    habit: {
+      title: 'Stay Connected',
+      description: 'Maintain meaningful relationships with loved ones',
+      category: 'Social',
+      color: CATEGORY_COLORS.Social,
+      goalType: 'binary',
+    },
+  },
+  {
+    keywords: ['art', 'draw', 'paint', 'create', 'creative', 'music'],
+    habit: {
+      title: 'Creative Practice',
+      description: 'Express yourself through creative activities',
+      category: 'Creative',
+      color: CATEGORY_COLORS.Creative,
+      goalType: 'duration',
+      goalTarget: 20,
+      unit: 'minutes',
+    },
+  },
+  {
+    keywords: ['focus', 'productive', 'work', 'task', 'deep'],
+    habit: {
+      title: 'Deep Focus Work',
+      description: 'Accomplish more with dedicated focus time',
+      category: 'Productivity',
+      color: CATEGORY_COLORS.Productivity,
+      goalType: 'duration',
+      goalTarget: 60,
+      unit: 'minutes',
+    },
+  },
+]
+
+// Local fallback generator when API is unavailable
+function generateHabitLocally(userInput: string): GeneratedHabit {
+  const lowerInput = userInput.toLowerCase()
+  
+  // Try to match with known patterns
+  for (const pattern of HABIT_PATTERNS) {
+    if (pattern.keywords.some(keyword => lowerInput.includes(keyword))) {
+      // Customize the title if we can extract numbers
+      const numberMatch = userInput.match(/(\d+)/g)
+      if (numberMatch && pattern.habit.goalTarget) {
+        return {
+          ...pattern.habit,
+          goalTarget: parseInt(numberMatch[0], 10),
+        }
+      }
+      return pattern.habit
+    }
+  }
+  
+  // Default fallback - create a generic habit
+  const capitalizedInput = userInput.charAt(0).toUpperCase() + userInput.slice(1).toLowerCase()
+  const shortTitle = capitalizedInput.split(' ').slice(0, 4).join(' ')
+  
+  return {
+    title: shortTitle.length > 30 ? shortTitle.slice(0, 30) + '...' : shortTitle,
+    description: `Make "${userInput}" a daily habit`,
+    category: 'Other',
+    color: CATEGORY_COLORS.Other,
+    goalType: 'binary',
+  }
 }
 
 async function generateHabitWithGemini(userInput: string): Promise<GeneratedHabit> {
@@ -119,7 +332,7 @@ Examples:
       goalTarget: goalType !== 'binary' && parsed.goalTarget ? Number(parsed.goalTarget) : undefined,
       unit: goalType !== 'binary' && parsed.unit ? String(parsed.unit) : undefined,
     }
-  } catch (_parseError) {
+  } catch {
     console.error('Failed to parse Gemini response:', cleanedResponse)
     throw new Error('Failed to parse AI response')
   }
@@ -151,8 +364,23 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Generate habit using Gemini AI
-    const generatedHabit = await generateHabitWithGemini(trimmedPrompt)
+    let generatedHabit: GeneratedHabit
+
+    // Try AI generation first, fall back to local if it fails
+    const apiKey = process.env.GEMINI_API_KEY
+    
+    if (apiKey) {
+      try {
+        generatedHabit = await generateHabitWithGemini(trimmedPrompt)
+      } catch (aiError) {
+        console.warn('AI generation failed, using local fallback:', aiError)
+        generatedHabit = generateHabitLocally(trimmedPrompt)
+      }
+    } else {
+      // No API key configured, use local fallback
+      console.info('GEMINI_API_KEY not configured, using local habit generation')
+      generatedHabit = generateHabitLocally(trimmedPrompt)
+    }
 
     return NextResponse.json(generatedHabit)
   } catch (error) {

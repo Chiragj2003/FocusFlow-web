@@ -10,12 +10,14 @@ datasource db {
 }
 
 model User {
-  id        String   @id // Clerk user ID
-  email     String?  // Optional, fetched from Clerk
-  name      String?
-  timezone  String   @default("UTC")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id            String    @id // Clerk user ID
+  email         String?   // Optional, fetched from Clerk
+  name          String?
+  timezone      String    @default("UTC")
+  lastEmailSent DateTime? @map("last_email_sent") // For weekly email rate limiting
+  emailOptOut   Boolean   @default(false) @map("email_opt_out") // User can opt out of emails
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
 
   habits  Habit[]
   entries HabitEntry[]
@@ -41,6 +43,8 @@ model Habit {
   user    User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   entries HabitEntry[]
 
+  @@index([userId, active]) // Speed up active habit queries
+  @@index([userId, createdAt]) // Speed up sorting queries
   @@map("habits")
 }
 
@@ -105,5 +109,6 @@ model Badge {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([userId]) // Speed up badge lookups
   @@map("badges")
 }

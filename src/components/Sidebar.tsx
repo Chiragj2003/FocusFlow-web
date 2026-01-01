@@ -14,6 +14,7 @@ import {
   Menu,
   X,
   Sparkles,
+  HelpCircle,
 } from 'lucide-react'
 import { useState } from 'react'
 
@@ -24,6 +25,7 @@ const navigation = [
   { name: 'Calendar', href: '/calendar', icon: Calendar },
   { name: 'Export', href: '/export', icon: Download },
   { name: 'Settings', href: '/settings', icon: Settings },
+  { name: 'Help', href: '/help', icon: HelpCircle },
 ]
 
 export function Sidebar() {

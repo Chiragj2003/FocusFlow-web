@@ -1,7 +1,7 @@
 'use client'
 
 import { cn, formatDate, isToday } from '@/lib/utils'
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import { Check, Plus, Archive, MoreVertical, Trash2, AlertTriangle, X } from 'lucide-react'
 
 interface Habit {
@@ -46,7 +46,9 @@ export function HabitGrid({
 }: HabitGridProps) {
   const [loadingCells, setLoadingCells] = useState<Set<string>>(new Set())
   const [menuOpen, setMenuOpen] = useState<string | null>(null)
+  const [menuPosition, setMenuPosition] = useState<{ top: number; left: number } | null>(null)
   const [deleteConfirm, setDeleteConfirm] = useState<{ habitId: string; title: string; hasEntries: boolean } | null>(null)
+  const menuButtonRefs = useRef<Map<string, HTMLButtonElement>>(new Map())
 
   // Generate days for the month
   const daysInMonth = new Date(year, month + 1, 0).getDate()
@@ -125,46 +127,46 @@ export function HabitGrid({
   }
 
   return (
-    <div className="bg-zinc-900/50 rounded-2xl border border-zinc-800/50 overflow-hidden">
+    <div className="bg-zinc-900/50 rounded-xl sm:rounded-2xl border border-zinc-800/50 overflow-hidden">
       {/* Header */}
-      <div className="px-6 py-4 border-b border-zinc-800/50 flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-white">
+      <div className="px-3 sm:px-6 py-3 sm:py-4 border-b border-zinc-800/50 flex items-center justify-between gap-2">
+        <h2 className="text-base sm:text-lg font-semibold text-white">
           {monthName} {year}
         </h2>
         <button
           onClick={onAddHabit}
-          className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-white text-zinc-900 hover:bg-zinc-200 rounded-xl transition-colors"
+          className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium bg-white text-zinc-900 hover:bg-zinc-200 rounded-lg sm:rounded-xl transition-colors"
         >
-          <Plus size={16} />
-          Add Habit
+          <Plus size={14} className="sm:w-4 sm:h-4" />
+          <span className="hidden xs:inline">Add</span> Habit
         </button>
       </div>
 
       {/* Grid */}
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[800px]">
+        <table className="w-full min-w-[600px] sm:min-w-[800px]">
           <thead>
             <tr className="border-b border-zinc-800/50">
-              <th className="sticky left-0 bg-zinc-900/50 backdrop-blur-sm px-4 py-3 text-left text-xs font-medium text-zinc-400 uppercase tracking-wide w-56">
+              <th className="sticky left-0 bg-zinc-900/50 backdrop-blur-sm px-2 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-zinc-400 uppercase tracking-wide w-40 sm:w-56 z-20">
                 Habit
               </th>
               {days.map((day) => (
                 <th
                   key={day.toISOString()}
                   className={cn(
-                    'px-1 py-2 text-center text-xs font-medium w-8',
+                    'px-0.5 sm:px-1 py-1.5 sm:py-2 text-center text-[10px] sm:text-xs font-medium w-6 sm:w-8',
                     isToday(day)
                       ? 'text-white bg-white/10'
                       : 'text-zinc-500'
                   )}
                 >
                   <div>{day.getDate()}</div>
-                  <div className="text-[10px] uppercase">
+                  <div className="text-[8px] sm:text-[10px] uppercase">
                     {day.toLocaleDateString('en', { weekday: 'narrow' })}
                   </div>
                 </th>
               ))}
-              <th className="px-4 py-3 text-center text-xs font-medium text-zinc-400 uppercase tracking-wide">
+              <th className="px-2 sm:px-4 py-2 sm:py-3 text-center text-xs font-medium text-zinc-400 uppercase tracking-wide">
                 Total
               </th>
             </tr>
@@ -197,78 +199,53 @@ export function HabitGrid({
                     key={habit.id}
                     className="border-b border-zinc-800/30 hover:bg-zinc-800/30"
                   >
-                    <td className="sticky left-0 bg-zinc-900/50 backdrop-blur-sm px-4 py-3">
-                      <div className="flex items-center gap-3">
+                    <td className="sticky left-0 bg-zinc-900/50 backdrop-blur-sm px-2 sm:px-4 py-2 sm:py-3 z-10">
+                      <div className="flex items-center gap-2 sm:gap-3">
                         <div
-                          className="w-3 h-3 rounded-full shrink-0"
+                          className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full shrink-0"
                           style={{ backgroundColor: habit.color }}
                         />
                         <div className="min-w-0 flex-1">
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm font-medium text-white truncate max-w-[120px]">
+                          <div className="flex items-center gap-1 sm:gap-2">
+                            <span className="text-xs sm:text-sm font-medium text-white truncate max-w-[80px] sm:max-w-[120px]">
                               {habit.title}
                             </span>
                             {goalDisplay && (
-                              <span className="text-xs px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400 shrink-0">
+                              <span className="text-[10px] sm:text-xs px-1 sm:px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400 shrink-0 hidden sm:inline">
                                 {goalDisplay}
                               </span>
                             )}
                           </div>
                           {habit.category && (
-                            <span className="text-xs text-zinc-500">{habit.category}</span>
+                            <span className="text-[10px] sm:text-xs text-zinc-500 hidden sm:block">{habit.category}</span>
                           )}
                         </div>
                         {/* Menu button */}
                         {onArchiveHabit && (
                           <div className="relative">
                             <button
+                              ref={(el) => {
+                                if (el) menuButtonRefs.current.set(habit.id, el)
+                              }}
                               onClick={(e) => {
                                 e.stopPropagation()
-                                setMenuOpen(menuOpen === habit.id ? null : habit.id)
+                                e.preventDefault()
+                                if (menuOpen === habit.id) {
+                                  setMenuOpen(null)
+                                  setMenuPosition(null)
+                                } else {
+                                  const rect = e.currentTarget.getBoundingClientRect()
+                                  setMenuPosition({
+                                    top: rect.bottom + 4,
+                                    left: rect.right - 140
+                                  })
+                                  setMenuOpen(habit.id)
+                                }
                               }}
-                              className="p-1 text-zinc-500 hover:text-white rounded transition-colors"
+                              className="p-1.5 text-zinc-500 hover:text-white hover:bg-zinc-700 rounded-lg transition-colors"
                             >
-                              <MoreVertical size={14} />
+                              <MoreVertical size={16} />
                             </button>
-                            {menuOpen === habit.id && (
-                              <>
-                                <div 
-                                  className="fixed inset-0 z-10" 
-                                  onClick={() => setMenuOpen(null)} 
-                                />
-                                <div className="absolute right-0 top-full mt-1 bg-zinc-800 border border-zinc-700 rounded-lg shadow-xl z-20 py-1 min-w-[120px]">
-                                  <button
-                                    onClick={(e) => {
-                                      e.stopPropagation()
-                                      onArchiveHabit(habit.id)
-                                      setMenuOpen(null)
-                                    }}
-                                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-zinc-300 hover:bg-zinc-700 hover:text-white transition-colors"
-                                  >
-                                    <Archive size={14} />
-                                    Archive
-                                  </button>
-                                  {onDeleteHabit && (
-                                    <button
-                                      onClick={(e) => {
-                                        e.stopPropagation()
-                                        const habitEntries = entries.filter(en => en.habitId === habit.id && en.completed)
-                                        setDeleteConfirm({
-                                          habitId: habit.id,
-                                          title: habit.title,
-                                          hasEntries: habitEntries.length > 0
-                                        })
-                                        setMenuOpen(null)
-                                      }}
-                                      className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-400 hover:bg-red-500/20 hover:text-red-300 transition-colors"
-                                    >
-                                      <Trash2 size={14} />
-                                      Delete
-                                    </button>
-                                  )}
-                                </div>
-                              </>
-                            )}
                           </div>
                         )}
                       </div>
@@ -285,20 +262,28 @@ export function HabitGrid({
                         <td
                           key={day.toISOString()}
                           className={cn(
-                            'px-1 py-2 text-center',
+                            'px-0.5 sm:px-1 py-1 sm:py-2 text-center',
                             today && 'bg-white/5'
                           )}
                         >
                           <button
-                            onClick={() => handleCellClick(habit.id, day)}
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault()
+                              e.stopPropagation()
+                              if (!isFuture && !isLoading) {
+                                handleCellClick(habit.id, day)
+                              }
+                            }}
                             disabled={isFuture || isLoading}
                             className={cn(
-                              'w-6 h-6 rounded-md flex items-center justify-center transition-all mx-auto',
+                              'w-5 h-5 sm:w-6 sm:h-6 rounded-md flex items-center justify-center transition-all mx-auto touch-manipulation',
                               entry?.completed
                                 ? 'text-zinc-900'
-                                : 'border border-zinc-700 hover:border-zinc-500',
+                                : 'border border-zinc-700 hover:border-zinc-500 active:scale-95',
                               isFuture && 'opacity-30 cursor-not-allowed',
-                              isLoading && 'animate-pulse'
+                              isLoading && 'animate-pulse',
+                              !isFuture && !entry?.completed && 'hover:bg-zinc-800/50 cursor-pointer'
                             )}
                             style={{
                               backgroundColor: entry?.completed
@@ -306,7 +291,7 @@ export function HabitGrid({
                                 : 'transparent',
                             }}
                           >
-                            {entry?.completed && <Check size={14} />}
+                            {entry?.completed && <Check size={12} className="sm:w-3.5 sm:h-3.5" />}
                           </button>
                         </td>
                       )
@@ -329,9 +314,9 @@ export function HabitGrid({
 
       {/* Week summary footer */}
       {habits.length > 0 && (
-        <div className="px-6 py-4 bg-zinc-800/30 border-t border-zinc-800/50">
-          <div className="flex items-center gap-4 text-sm">
-            <span className="text-zinc-400">Weekly completion:</span>
+        <div className="px-3 sm:px-6 py-3 sm:py-4 bg-zinc-800/30 border-t border-zinc-800/50">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm">
+            <span className="text-zinc-400 w-full sm:w-auto mb-1 sm:mb-0">Weekly completion:</span>
             {weeks.map((weekStart, i) => {
               const totalPossible = Math.min(7, daysInMonth - weekStart + 1) * habits.length
               const totalCompleted = habits.reduce(
@@ -341,20 +326,79 @@ export function HabitGrid({
               const percentage = totalPossible > 0 ? Math.round((totalCompleted / totalPossible) * 100) : 0
 
               return (
-                <div key={weekStart} className="flex items-center gap-2">
+                <div key={weekStart} className="flex items-center gap-1 sm:gap-2">
                   <span className="text-zinc-500">W{i + 1}:</span>
-                  <div className="w-16 h-2 bg-zinc-700 rounded-full overflow-hidden">
+                  <div className="w-10 sm:w-16 h-1.5 sm:h-2 bg-zinc-700 rounded-full overflow-hidden">
                     <div
                       className="h-full bg-white rounded-full transition-all"
                       style={{ width: `${percentage}%` }}
                     />
                   </div>
-                  <span className="text-white font-medium">{percentage}%</span>
+                  <span className="text-white font-medium text-[10px] sm:text-sm">{percentage}%</span>
                 </div>
               )
             })}
           </div>
         </div>
+      )}
+
+      {/* Dropdown Menu Portal */}
+      {menuOpen && menuPosition && (
+        <>
+          <div 
+            className="fixed inset-0"
+            style={{ zIndex: 9998 }}
+            onClick={() => {
+              setMenuOpen(null)
+              setMenuPosition(null)
+            }} 
+          />
+          <div 
+            className="fixed bg-zinc-800 border border-zinc-700 rounded-lg shadow-2xl py-1 min-w-[140px]"
+            style={{ 
+              zIndex: 9999,
+              top: menuPosition.top,
+              left: menuPosition.left
+            }}
+          >
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                if (onArchiveHabit && menuOpen) {
+                  onArchiveHabit(menuOpen)
+                }
+                setMenuOpen(null)
+                setMenuPosition(null)
+              }}
+              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-zinc-300 hover:bg-zinc-700 hover:text-white transition-colors"
+            >
+              <Archive size={14} />
+              Archive
+            </button>
+            {onDeleteHabit && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  const habit = habits.find(h => h.id === menuOpen)
+                  if (habit) {
+                    const habitEntries = entries.filter(en => en.habitId === habit.id && en.completed)
+                    setDeleteConfirm({
+                      habitId: habit.id,
+                      title: habit.title,
+                      hasEntries: habitEntries.length > 0
+                    })
+                  }
+                  setMenuOpen(null)
+                  setMenuPosition(null)
+                }}
+                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-400 hover:bg-red-500/20 hover:text-red-300 transition-colors"
+              >
+                <Trash2 size={14} />
+                Delete
+              </button>
+            )}
+          </div>
+        </>
       )}
 
       {/* Delete Confirmation Modal */}

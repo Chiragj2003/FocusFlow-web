@@ -1,8 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Next.js 15 uses Webpack by default (no Turbopack)
-  
   // Mark Prisma packages as external to avoid bundling issues
   serverExternalPackages: ['@prisma/client', '@prisma/adapter-neon', '@neondatabase/serverless'],
 
@@ -15,6 +13,26 @@ const nextConfig: NextConfig = {
         '*.github.dev',
         '*.vercel.app',
       ],
+    },
+  },
+
+  // Performance optimizations
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
+
+  // Image optimization
+  images: {
+    formats: ['image/avif', 'image/webp'],
+  },
+
+  // Enable gzip/brotli compression
+  compress: true,
+
+  // Reduce bundle size by excluding unused packages from client
+  modularizeImports: {
+    'lucide-react': {
+      transform: 'lucide-react/dist/esm/icons/{{kebabCase member}}',
     },
   },
 };

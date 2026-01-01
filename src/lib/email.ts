@@ -1,11 +1,12 @@
 // Email service using Resend API
-// You can also use other providers like SendGrid, Mailgun, etc.
+// Rate limited to 1 email per user per week
 
 interface EmailOptions {
   to: string
   subject: string
   html: string
   text?: string
+  tags?: { name: string; value: string }[]
 }
 
 interface SendEmailResult {
@@ -15,7 +16,30 @@ interface SendEmailResult {
 }
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY
-const FROM_EMAIL = process.env.FROM_EMAIL || 'FocusFlow <noreply@focusflow.app>'
+const FROM_EMAIL = process.env.FROM_EMAIL || 'FocusFlow <onboarding@resend.dev>'
+
+// Rate limit: 1 email per user per 7 days
+export const EMAIL_RATE_LIMIT_DAYS = 7
+
+export function canSendEmail(lastEmailSent: Date | null): boolean {
+  if (!lastEmailSent) return true
+  
+  const daysSinceLastEmail = Math.floor(
+    (Date.now() - lastEmailSent.getTime()) / (1000 * 60 * 60 * 24)
+  )
+  
+  return daysSinceLastEmail >= EMAIL_RATE_LIMIT_DAYS
+}
+
+export function getDaysUntilNextEmail(lastEmailSent: Date | null): number {
+  if (!lastEmailSent) return 0
+  
+  const daysSinceLastEmail = Math.floor(
+    (Date.now() - lastEmailSent.getTime()) / (1000 * 60 * 60 * 24)
+  )
+  
+  return Math.max(0, EMAIL_RATE_LIMIT_DAYS - daysSinceLastEmail)
+}
 
 export async function sendEmail(options: EmailOptions): Promise<SendEmailResult> {
   if (!RESEND_API_KEY) {
@@ -36,16 +60,18 @@ export async function sendEmail(options: EmailOptions): Promise<SendEmailResult>
         subject: options.subject,
         html: options.html,
         text: options.text,
+        tags: options.tags,
       }),
     })
 
     if (!response.ok) {
       const error = await response.text()
       console.error('Failed to send email:', error)
-      return { success: false, error: 'Failed to send email' }
+      return { success: false, error: `Failed to send email: ${error}` }
     }
 
     const data = await response.json()
+    console.log(`Email sent successfully to ${options.to}, messageId: ${data.id}`)
     return { success: true, messageId: data.id }
   } catch (error) {
     console.error('Email send error:', error)

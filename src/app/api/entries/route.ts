@@ -32,7 +32,16 @@ export async function GET(request: NextRequest) {
 
     const entries = await prisma.habitEntry.findMany({
       where,
-      include: {
+      select: {
+        id: true,
+        habitId: true,
+        userId: true,
+        entryDate: true,
+        completed: true,
+        value: true,
+        notes: true,
+        createdAt: true,
+        updatedAt: true,
         habit: {
           select: { title: true, color: true, goalType: true },
         },
@@ -40,7 +49,10 @@ export async function GET(request: NextRequest) {
       orderBy: { entryDate: 'desc' },
     })
 
-    return NextResponse.json(entries)
+    // Add cache headers for better performance
+    const response = NextResponse.json(entries)
+    response.headers.set('Cache-Control', 'private, max-age=30, stale-while-revalidate=60')
+    return response
   } catch (error) {
     console.error('Error fetching entries:', error)
     return NextResponse.json(

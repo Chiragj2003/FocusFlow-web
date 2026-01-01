@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/db'
-import { sendEmail, generateDailyReminderEmail } from '@/lib/email'
+import { sendEmail, generateDailyReminderEmail, canSendEmail, EMAIL_RATE_LIMIT_DAYS } from '@/lib/email'
 import { clerkClient } from '@clerk/nextjs/server'
 
 // POST /api/emails/daily-reminder
-// This endpoint sends daily reminder emails to all users
+// This endpoint sends weekly reminder emails to all users (rate limited to 1 per week)
 // Should be called by a cron job service (Vercel Cron, Railway Cron, etc.)
 export async function POST(request: NextRequest) {
   try {
@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     const tomorrow = new Date(today)
     tomorrow.setDate(tomorrow.getDate() + 1)
 
-    // Get all users with active habits
+    // Get all users with active habits who haven't opted out and can receive emails (rate limit check)
     const usersWithHabits = await prisma.user.findMany({
       where: {
         habits: {
@@ -30,6 +30,7 @@ export async function POST(request: NextRequest) {
             active: true,
           },
         },
+        emailOptOut: false, // Only users who haven't opted out
       },
       include: {
         habits: {
@@ -51,12 +52,19 @@ export async function POST(request: NextRequest) {
       sent: 0,
       failed: 0,
       skipped: 0,
+      rateLimited: 0,
       errors: [] as string[],
     }
 
     // Process each user
     for (const user of usersWithHabits) {
       try {
+        // Check rate limit: 1 email per user per week
+        if (!canSendEmail(user.lastEmailSent)) {
+          results.rateLimited++
+          continue
+        }
+
         // Get user email from Clerk
         let userEmail = user.email
         let userName: string | null = user.name
@@ -114,9 +122,18 @@ export async function POST(request: NextRequest) {
           subject: emailContent.subject,
           html: emailContent.html,
           text: emailContent.text,
+          tags: [
+            { name: 'type', value: 'weekly-reminder' },
+            { name: 'userId', value: user.id },
+          ],
         })
 
         if (result.success) {
+          // Update lastEmailSent timestamp for rate limiting
+          await prisma.user.update({
+            where: { id: user.id },
+            data: { lastEmailSent: new Date() },
+          })
           results.sent++
         } else {
           results.failed++
@@ -129,7 +146,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({
-      message: 'Daily reminder job completed',
+      message: `Weekly reminder job completed (rate limit: ${EMAIL_RATE_LIMIT_DAYS} days)`,
       results,
       timestamp: new Date().toISOString(),
     })
@@ -191,11 +208,12 @@ export async function GET(request: NextRequest) {
 
   return NextResponse.json({
     status: 'ready',
-    message: 'Daily reminder endpoint is ready. POST to trigger sending.',
+    message: `Weekly reminder endpoint ready. Rate limit: ${EMAIL_RATE_LIMIT_DAYS} days per user.`,
     config: {
       hasResendKey: !!process.env.RESEND_API_KEY,
       hasFromEmail: !!process.env.FROM_EMAIL,
       hasCronSecret: !!process.env.CRON_SECRET,
+      rateLimitDays: EMAIL_RATE_LIMIT_DAYS,
     },
   })
 }
