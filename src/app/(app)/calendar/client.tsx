@@ -143,7 +143,7 @@ export function CalendarClient({
   const todayStr = formatDate(today)
 
   return (
-    <div className="space-y-4 sm:space-y-6 pt-14 lg:pt-0">
+    <div className="space-y-4 sm:space-y-6 pt-[72px] lg:pt-0">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div>
@@ -312,31 +312,31 @@ export function CalendarClient({
 
       {/* Stats Summary */}
       {habits.length > 0 && (
-        <div className="bg-zinc-900/50 rounded-2xl border border-zinc-800/50 p-6">
-          <h3 className="text-lg font-semibold text-white mb-4">
+        <div className="bg-zinc-900/50 rounded-xl sm:rounded-2xl border border-zinc-800/50 p-4 sm:p-6">
+          <h3 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4">
             {year} Summary
           </h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-zinc-800/50 rounded-xl p-4">
-              <p className="text-2xl font-black text-white">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4">
+            <div className="bg-zinc-800/50 rounded-lg sm:rounded-xl p-3 sm:p-4">
+              <p className="text-xl sm:text-2xl font-black text-white">
                 {Object.keys(dailyProgress).length}
               </p>
-              <p className="text-sm text-zinc-400">Active Days</p>
+              <p className="text-xs sm:text-sm text-zinc-400">Active Days</p>
             </div>
-            <div className="bg-zinc-800/50 rounded-xl p-4">
-              <p className="text-2xl font-black text-white">
+            <div className="bg-zinc-800/50 rounded-lg sm:rounded-xl p-3 sm:p-4">
+              <p className="text-xl sm:text-2xl font-black text-white">
                 {entries.filter(e => e.completed).length}
               </p>
-              <p className="text-sm text-zinc-400">Habits Completed</p>
+              <p className="text-xs sm:text-sm text-zinc-400">Habits Completed</p>
             </div>
-            <div className="bg-zinc-800/50 rounded-xl p-4">
-              <p className="text-2xl font-black text-white">
+            <div className="bg-zinc-800/50 rounded-lg sm:rounded-xl p-3 sm:p-4">
+              <p className="text-xl sm:text-2xl font-black text-white">
                 {Object.values(dailyProgress).filter(p => p.completed === p.total && p.total > 0).length}
               </p>
-              <p className="text-sm text-zinc-400">Perfect Days</p>
+              <p className="text-xs sm:text-sm text-zinc-400">Perfect Days</p>
             </div>
-            <div className="bg-zinc-800/50 rounded-xl p-4">
-              <p className="text-2xl font-black text-white">
+            <div className="bg-zinc-800/50 rounded-lg sm:rounded-xl p-3 sm:p-4">
+              <p className="text-xl sm:text-2xl font-black text-white">
                 {habits.length > 0 && Object.keys(dailyProgress).length > 0
                   ? Math.round(
                       (entries.filter(e => e.completed).length / 
@@ -344,7 +344,7 @@ export function CalendarClient({
                     )
                   : 0}%
               </p>
-              <p className="text-sm text-zinc-400">Average Completion</p>
+              <p className="text-xs sm:text-sm text-zinc-400">Average Completion</p>
             </div>
           </div>
         </div>
@@ -352,9 +352,9 @@ export function CalendarClient({
 
       {/* No habits message */}
       {habits.length === 0 && (
-        <div className="bg-zinc-900/50 rounded-2xl border border-zinc-800/50 p-12 text-center">
-          <p className="text-zinc-400 mb-2">No habits created yet!</p>
-          <a href="/habits" className="text-white hover:underline">
+        <div className="bg-zinc-900/50 rounded-xl sm:rounded-2xl border border-zinc-800/50 p-8 sm:p-12 text-center">
+          <p className="text-zinc-400 mb-2 text-sm sm:text-base">No habits created yet!</p>
+          <a href="/habits" className="text-white hover:underline text-sm sm:text-base">
             Create your first habit
           </a>
         </div>

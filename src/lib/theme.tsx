@@ -13,10 +13,17 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  const [mounted, setMounted] = useState(false)
   const [theme, setThemeState] = useState<Theme>('system')
-  const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('light')
+  const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('dark')
+
+  // Handle mounting
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
+    if (!mounted) return
     // Get saved theme from localStorage, default to 'system'
     const savedTheme = localStorage.getItem('theme') as Theme | null
     if (savedTheme) {
@@ -25,9 +32,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       // Set system as default if no theme saved
       setThemeState('system')
     }
-  }, [])
+  }, [mounted])
 
   useEffect(() => {
+    if (!mounted) return
     const root = document.documentElement
 
     const applyTheme = (isDark: boolean) => {
@@ -50,7 +58,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     } else {
       applyTheme(theme === 'dark')
     }
-  }, [theme])
+  }, [theme, mounted])
 
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme)

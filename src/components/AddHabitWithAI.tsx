@@ -131,7 +131,7 @@ export function AddHabitWithAI({ isOpen, onClose, onSubmit }: AddHabitWithAIProp
         {/* Header */}
         <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-zinc-800">
           <div className="flex items-center gap-2 sm:gap-3">
-            <div className="p-1.5 sm:p-2 bg-gradient-to-br from-violet-500 to-purple-600 rounded-lg">
+            <div className="p-1.5 sm:p-2 bg-linear-to-br from-violet-500 to-purple-600 rounded-lg">
               <Wand2 className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </div>
             <div>
@@ -214,40 +214,40 @@ export function AddHabitWithAI({ isOpen, onClose, onSubmit }: AddHabitWithAIProp
 
           {/* Generated Habit Preview */}
           {generatedHabit && (
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-medium text-white">Generated Habit</h3>
+                <h3 className="text-xs sm:text-sm font-medium text-white">Generated Habit</h3>
                 <button
                   onClick={handleReset}
-                  className="inline-flex items-center gap-1.5 px-2 py-1 text-xs text-zinc-400 hover:text-white transition-colors"
+                  className="inline-flex items-center gap-1.5 px-2 py-1 text-[10px] sm:text-xs text-zinc-400 hover:text-white transition-colors"
                 >
                   <RefreshCw size={12} />
                   Regenerate
                 </button>
               </div>
               
-              <div className="p-4 bg-zinc-800/50 rounded-xl border border-zinc-700 space-y-3">
+              <div className="p-3 sm:p-4 bg-zinc-800/50 rounded-lg sm:rounded-xl border border-zinc-700 space-y-2 sm:space-y-3">
                 {/* Title & Category */}
-                <div className="flex items-start gap-3">
+                <div className="flex items-start gap-2 sm:gap-3">
                   <div
-                    className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                    className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center shrink-0"
                     style={{ backgroundColor: `${generatedHabit.color}20` }}
                   >
                     <div
-                      className="w-4 h-4 rounded-full"
+                      className="w-3 h-3 sm:w-4 sm:h-4 rounded-full"
                       style={{ backgroundColor: generatedHabit.color }}
                     />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h4 className="font-medium text-white">{generatedHabit.title}</h4>
-                    <p className="text-sm text-zinc-400 mt-0.5">{generatedHabit.description}</p>
+                    <h4 className="font-medium text-white text-sm sm:text-base">{generatedHabit.title}</h4>
+                    <p className="text-xs sm:text-sm text-zinc-400 mt-0.5">{generatedHabit.description}</p>
                   </div>
                 </div>
 
                 {/* Details */}
-                <div className="flex flex-wrap gap-2 pt-2 border-t border-zinc-700">
+                <div className="flex flex-wrap gap-1.5 sm:gap-2 pt-2 border-t border-zinc-700">
                   <span
-                    className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium"
+                    className="inline-flex items-center px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg text-[10px] sm:text-xs font-medium"
                     style={{ 
                       backgroundColor: `${generatedHabit.color}20`,
                       color: generatedHabit.color 
@@ -255,7 +255,7 @@ export function AddHabitWithAI({ isOpen, onClose, onSubmit }: AddHabitWithAIProp
                   >
                     {generatedHabit.category}
                   </span>
-                  <span className="inline-flex items-center px-2.5 py-1 bg-zinc-700 rounded-lg text-xs text-zinc-300">
+                  <span className="inline-flex items-center px-2 sm:px-2.5 py-0.5 sm:py-1 bg-zinc-700 rounded-lg text-[10px] sm:text-xs text-zinc-300">
                     {generatedHabit.goalType === 'binary' 
                       ? 'Yes/No' 
                       : generatedHabit.goalType === 'duration'
@@ -269,11 +269,11 @@ export function AddHabitWithAI({ isOpen, onClose, onSubmit }: AddHabitWithAIProp
           )}
 
           {/* Action Buttons */}
-          <div className="flex gap-3 pt-2">
+          <div className="flex gap-2 sm:gap-3 pt-1 sm:pt-2">
             <button
               type="button"
               onClick={handleClose}
-              className="flex-1 px-4 py-3 text-sm font-medium text-zinc-400 bg-zinc-800 rounded-xl hover:bg-zinc-700 transition-colors"
+              className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-medium text-zinc-400 bg-zinc-800 rounded-lg sm:rounded-xl hover:bg-zinc-700 transition-colors"
             >
               Cancel
             </button>
@@ -281,16 +281,16 @@ export function AddHabitWithAI({ isOpen, onClose, onSubmit }: AddHabitWithAIProp
               <button
                 onClick={handleSubmit}
                 disabled={isSubmitting}
-                className="flex-1 px-4 py-3 text-sm font-medium text-white bg-gradient-to-r from-violet-600 to-purple-600 rounded-xl hover:from-violet-500 hover:to-purple-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2"
+                className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-medium text-white bg-linear-to-r from-violet-600 to-purple-600 rounded-lg sm:rounded-xl hover:from-violet-500 hover:to-purple-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center gap-1.5 sm:gap-2"
               >
                 {isSubmitting ? (
                   <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin" />
                     Creating...
                   </>
                 ) : (
                   <>
-                    <Check className="w-4 h-4" />
+                    <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     Add Habit
                   </>
                 )}
@@ -299,16 +299,16 @@ export function AddHabitWithAI({ isOpen, onClose, onSubmit }: AddHabitWithAIProp
               <button
                 onClick={handleGenerate}
                 disabled={!prompt.trim() || isGenerating}
-                className="flex-1 px-4 py-3 text-sm font-medium text-white bg-gradient-to-r from-violet-600 to-purple-600 rounded-xl hover:from-violet-500 hover:to-purple-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2"
+                className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-medium text-white bg-linear-to-r from-violet-600 to-purple-600 rounded-lg sm:rounded-xl hover:from-violet-500 hover:to-purple-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center gap-1.5 sm:gap-2"
               >
                 {isGenerating ? (
                   <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin" />
                     Generating...
                   </>
                 ) : (
                   <>
-                    <Sparkles className="w-4 h-4" />
+                    <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     Generate Habit
                   </>
                 )}

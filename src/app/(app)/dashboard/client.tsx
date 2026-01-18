@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { StatsCard } from '@/components/StatsCard'
 import { DonutChart } from '@/components/DonutChart'
 import { ChartLine } from '@/components/ChartLine'
@@ -40,9 +41,14 @@ export function DashboardClient({
 }: DashboardClientProps) {
   const completionPercentage = Math.round(insights.overallCompletionRate * 100)
   const firstName = userName?.split(' ')[0] || 'there'
+  const [todayString, setTodayString] = useState('')
+
+  useEffect(() => {
+    setTodayString(new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' }))
+  }, [])
 
   return (
-    <div className="space-y-4 sm:space-y-6 lg:space-y-8 pt-14 lg:pt-0">
+    <div className="space-y-4 sm:space-y-6 lg:space-y-8 pt-[72px] lg:pt-0">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div className="min-w-0 flex-1">
@@ -71,7 +77,7 @@ export function DashboardClient({
       <div className="bg-zinc-900/50 rounded-xl sm:rounded-2xl border border-zinc-800/50 p-4 sm:p-6 backdrop-blur-sm">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 sm:mb-4 gap-1">
           <h2 className="text-base sm:text-lg font-bold text-white">Today&apos;s Progress</h2>
-          <span className="text-xs sm:text-sm text-zinc-400">{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}</span>
+          <span className="text-xs sm:text-sm text-zinc-400">{todayString}</span>
         </div>
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-8">
           <div className="flex-1 w-full">
@@ -136,7 +142,12 @@ export function DashboardClient({
             <h2 className="text-base sm:text-lg font-bold text-white mb-3 sm:mb-4">
               Monthly Trend
             </h2>
-            <ChartLine data={dailyData} height={200} />
+            <div className="block sm:hidden">
+              <ChartLine data={dailyData} height={140} />
+            </div>
+            <div className="hidden sm:block">
+              <ChartLine data={dailyData} height={200} />
+            </div>
           </div>
 
           {/* Weekly Overview */}
@@ -144,7 +155,12 @@ export function DashboardClient({
             <h2 className="text-base sm:text-lg font-bold text-white mb-3 sm:mb-4">
               Weekly Overview
             </h2>
-            <WeeklyBars data={insights.weekly} height={180} />
+            <div className="block sm:hidden">
+              <WeeklyBars data={insights.weekly} height={120} />
+            </div>
+            <div className="hidden sm:block">
+              <WeeklyBars data={insights.weekly} height={180} />
+            </div>
           </div>
         </div>
 
@@ -156,11 +172,13 @@ export function DashboardClient({
               Overall Progress
             </h2>
             <div className="flex justify-center">
-              <DonutChart
-                completed={insights.totalCompleted}
-                total={insights.totalPossible}
-                size={150}
-              />
+              <div className="scale-[0.8] sm:scale-100 origin-center">
+                <DonutChart
+                  completed={insights.totalCompleted}
+                  total={insights.totalPossible}
+                  size={150}
+                />
+              </div>
             </div>
             <div className="mt-3 sm:mt-4 text-center text-xs sm:text-sm text-zinc-400">
               {insights.totalCompleted} of {insights.totalPossible} habits completed

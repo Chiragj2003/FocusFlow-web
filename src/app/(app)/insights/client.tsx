@@ -150,7 +150,7 @@ export function InsightsClient({
   }, [insights, streaks, year, month])
 
   return (
-    <div className="space-y-4 sm:space-y-6 pt-14 lg:pt-0">
+    <div className="space-y-4 sm:space-y-6 pt-[72px] lg:pt-0">
       {/* Header */}
       <div>
         <h1 className="text-lg sm:text-2xl font-bold text-white">Insights</h1>
@@ -161,7 +161,7 @@ export function InsightsClient({
 
       {/* Quick Stats Row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-        <div className="bg-gradient-to-br from-violet-500/20 to-purple-500/10 border border-violet-500/20 rounded-xl p-3 sm:p-4">
+        <div className="bg-linear-to-br from-violet-500/20 to-purple-500/10 border border-violet-500/20 rounded-xl p-3 sm:p-4">
           <div className="flex items-center gap-2 mb-1">
             <Target size={14} className="text-violet-400" />
             <span className="text-[10px] sm:text-xs text-violet-400 font-medium">Completion Rate</span>
@@ -173,7 +173,7 @@ export function InsightsClient({
           </p>
         </div>
         
-        <div className="bg-gradient-to-br from-amber-500/20 to-orange-500/10 border border-amber-500/20 rounded-xl p-3 sm:p-4">
+        <div className="bg-linear-to-br from-amber-500/20 to-orange-500/10 border border-amber-500/20 rounded-xl p-3 sm:p-4">
           <div className="flex items-center gap-2 mb-1">
             <Flame size={14} className="text-amber-400" />
             <span className="text-[10px] sm:text-xs text-amber-400 font-medium">Best Streak</span>
@@ -181,7 +181,7 @@ export function InsightsClient({
           <p className="text-xl sm:text-2xl font-bold text-white">{quickStats.bestStreak} days</p>
         </div>
         
-        <div className="bg-gradient-to-br from-emerald-500/20 to-green-500/10 border border-emerald-500/20 rounded-xl p-3 sm:p-4">
+        <div className="bg-linear-to-br from-emerald-500/20 to-green-500/10 border border-emerald-500/20 rounded-xl p-3 sm:p-4">
           <div className="flex items-center gap-2 mb-1">
             <TrendingUp size={14} className="text-emerald-400" />
             <span className="text-[10px] sm:text-xs text-emerald-400 font-medium">Daily Average</span>
@@ -189,7 +189,7 @@ export function InsightsClient({
           <p className="text-xl sm:text-2xl font-bold text-white">{quickStats.avgDaily.toFixed(1)}</p>
         </div>
         
-        <div className="bg-gradient-to-br from-cyan-500/20 to-blue-500/10 border border-cyan-500/20 rounded-xl p-3 sm:p-4">
+        <div className="bg-linear-to-br from-cyan-500/20 to-blue-500/10 border border-cyan-500/20 rounded-xl p-3 sm:p-4">
           <div className="flex items-center gap-2 mb-1">
             <Trophy size={14} className="text-cyan-400" />
             <span className="text-[10px] sm:text-xs text-cyan-400 font-medium">Total Completed</span>
@@ -219,7 +219,9 @@ export function InsightsClient({
             30-Day Trend
           </h2>
         </div>
-        <TrendChart data={trendData} height={220} />
+        <div className="h-40 sm:h-[220px]">
+          <TrendChart data={trendData} height={220} />
+        </div>
       </div>
 
       {/* Main Grid */}
@@ -230,11 +232,13 @@ export function InsightsClient({
             Monthly Overview
           </h2>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-8">
-            <DonutChart
-              completed={insights.totalCompleted}
-              total={insights.totalPossible}
-              size={160}
-            />
+            <div className="scale-100 sm:scale-[1.33] origin-center">
+              <DonutChart
+                completed={insights.totalCompleted}
+                total={insights.totalPossible}
+                size={120}
+              />
+            </div>
             <div className="grid grid-cols-3 sm:grid-cols-1 gap-4 sm:space-y-4">
               <div className="text-center sm:text-left">
                 <p className="text-xs sm:text-sm text-zinc-400">Completed</p>
@@ -263,7 +267,9 @@ export function InsightsClient({
           <h2 className="text-base sm:text-lg font-semibold text-white mb-4 sm:mb-6">
             Weekly Performance
           </h2>
-          <WeeklyBars data={insights.weekly} height={200} />
+          <div className="h-[140px] sm:h-[200px]">
+            <WeeklyBars data={insights.weekly} height={200} />
+          </div>
         </div>
       </div>
 
@@ -279,7 +285,9 @@ export function InsightsClient({
               </h2>
             </div>
             <div className="flex flex-col lg:flex-row items-center gap-6">
-              <CategoryRadar data={categoryData} size={240} />
+              <div className="scale-100 sm:scale-[1.33] origin-center">
+                <CategoryRadar data={categoryData} size={180} />
+              </div>
               <div className="flex-1 grid grid-cols-2 gap-3 w-full">
                 {categoryData.slice(0, 6).map((cat) => (
                   <div 

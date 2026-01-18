@@ -130,37 +130,37 @@ export function ChallengeBrowser({
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4">
       <div
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         onClick={onClose}
       />
-      <div className="relative bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[85vh] overflow-hidden flex flex-col">
+      <div className="relative bg-zinc-900 border border-zinc-800 rounded-xl sm:rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] sm:max-h-[85vh] overflow-hidden flex flex-col mx-1">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-zinc-800">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
-              <Trophy size={20} className="text-white" />
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-zinc-800">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-linear-to-br from-violet-500 to-purple-600 flex items-center justify-center shrink-0">
+              <Trophy size={16} className="sm:w-5 sm:h-5 text-white" />
             </div>
-            <div>
-              <h2 className="text-xl font-bold text-white">
-                {viewMode === 'create' ? 'Create Custom Challenge' : 'Challenges'}
+            <div className="min-w-0">
+              <h2 className="text-base sm:text-xl font-bold text-white truncate">
+                {viewMode === 'create' ? 'Custom Challenge' : 'Challenges'}
               </h2>
-              <p className="text-sm text-zinc-400">
+              <p className="text-xs sm:text-sm text-zinc-400 hidden sm:block">
                 {viewMode === 'create' 
                   ? 'Design your own habit challenge'
                   : 'Start a structured journey to build habits'}
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
             {viewMode === 'list' && (
               <button
                 onClick={() => setViewMode('create')}
-                className="px-4 py-2 text-sm font-medium text-violet-400 bg-violet-500/10 rounded-lg hover:bg-violet-500/20 transition-colors flex items-center gap-2"
+                className="px-2.5 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-violet-400 bg-violet-500/10 rounded-lg hover:bg-violet-500/20 transition-colors flex items-center gap-1 sm:gap-2"
               >
-                <Plus size={16} />
-                Custom
+                <Plus size={14} className="sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">Custom</span>
               </button>
             )}
             <button
@@ -173,23 +173,23 @@ export function ChallengeBrowser({
                   onClose()
                 }
               }}
-              className="p-2 text-zinc-500 hover:text-white rounded-lg transition-colors"
+              className="p-1.5 sm:p-2 text-zinc-500 hover:text-white rounded-lg transition-colors"
             >
-              <X size={20} />
+              <X size={18} className="sm:w-5 sm:h-5" />
             </button>
           </div>
         </div>
 
         {/* Category Filter */}
         {viewMode === 'list' && (
-          <div className="px-6 py-4 border-b border-zinc-800/50 overflow-x-auto">
-            <div className="flex gap-2">
+          <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-zinc-800/50 overflow-x-auto">
+            <div className="flex gap-1.5 sm:gap-2">
               {CATEGORIES.map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
                   className={cn(
-                    'px-4 py-2 text-sm font-medium rounded-lg whitespace-nowrap transition-colors',
+                    'px-2.5 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium rounded-lg whitespace-nowrap transition-colors',
                     selectedCategory === cat
                       ? 'bg-white text-zinc-900'
                       : 'text-zinc-400 hover:text-white hover:bg-zinc-800'
@@ -203,14 +203,14 @@ export function ChallengeBrowser({
         )}
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6">
           {viewMode === 'create' ? (
             // Custom Challenge Creator
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               {/* Basic Info */}
-              <div className="grid md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-zinc-400 mb-2">
+                  <label className="block text-xs sm:text-sm font-medium text-zinc-400 mb-1.5 sm:mb-2">
                     Challenge Title *
                   </label>
                   <input
@@ -218,17 +218,17 @@ export function ChallengeBrowser({
                     value={customTitle}
                     onChange={(e) => setCustomTitle(e.target.value)}
                     placeholder="e.g., My 30-Day Transformation"
-                    className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-violet-500 transition-colors"
+                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-zinc-800 border border-zinc-700 rounded-lg sm:rounded-xl text-sm sm:text-base text-white placeholder-zinc-500 focus:outline-none focus:border-violet-500 transition-colors"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-zinc-400 mb-2">
+                  <label className="block text-xs sm:text-sm font-medium text-zinc-400 mb-1.5 sm:mb-2">
                     Duration (days)
                   </label>
                   <select
                     value={customDuration}
                     onChange={(e) => setCustomDuration(Number(e.target.value))}
-                    className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl text-white focus:outline-none focus:border-violet-500 transition-colors"
+                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-zinc-800 border border-zinc-700 rounded-lg sm:rounded-xl text-sm sm:text-base text-white focus:outline-none focus:border-violet-500 transition-colors"
                   >
                     <option value={7}>7 days</option>
                     <option value={14}>14 days</option>
@@ -241,7 +241,7 @@ export function ChallengeBrowser({
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-zinc-400 mb-2">
+                <label className="block text-xs sm:text-sm font-medium text-zinc-400 mb-1.5 sm:mb-2">
                   Description
                 </label>
                 <textarea
@@ -249,22 +249,22 @@ export function ChallengeBrowser({
                   onChange={(e) => setCustomDescription(e.target.value)}
                   placeholder="Describe your challenge goals..."
                   rows={2}
-                  className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-violet-500 transition-colors resize-none"
+                  className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-zinc-800 border border-zinc-700 rounded-lg sm:rounded-xl text-sm sm:text-base text-white placeholder-zinc-500 focus:outline-none focus:border-violet-500 transition-colors resize-none"
                 />
               </div>
 
-              <div className="grid md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-zinc-400 mb-2">
+                  <label className="block text-xs sm:text-sm font-medium text-zinc-400 mb-1.5 sm:mb-2">
                     Difficulty
                   </label>
-                  <div className="flex gap-2">
+                  <div className="flex gap-1.5 sm:gap-2">
                     {(['easy', 'medium', 'hard'] as const).map((diff) => (
                       <button
                         key={diff}
                         onClick={() => setCustomDifficulty(diff)}
                         className={cn(
-                          'flex-1 px-4 py-2 text-sm font-medium rounded-lg transition-colors capitalize',
+                          'flex-1 px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium rounded-lg transition-colors capitalize',
                           customDifficulty === diff
                             ? DIFFICULTY_COLORS[diff]
                             : 'text-zinc-400 bg-zinc-800 hover:bg-zinc-700'
@@ -276,13 +276,13 @@ export function ChallengeBrowser({
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-zinc-400 mb-2">
+                  <label className="block text-xs sm:text-sm font-medium text-zinc-400 mb-1.5 sm:mb-2">
                     Category
                   </label>
                   <select
                     value={customCategory}
                     onChange={(e) => setCustomCategory(e.target.value)}
-                    className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-xl text-white focus:outline-none focus:border-violet-500 transition-colors"
+                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-zinc-800 border border-zinc-700 rounded-lg sm:rounded-xl text-sm sm:text-base text-white focus:outline-none focus:border-violet-500 transition-colors"
                   >
                     {CATEGORIES.filter(c => c !== 'All').map((cat) => (
                       <option key={cat} value={cat}>{cat}</option>
@@ -292,40 +292,40 @@ export function ChallengeBrowser({
               </div>
 
               {/* Add Habit Section */}
-              <div className="border-t border-zinc-800 pt-6">
-                <h4 className="text-sm font-medium text-zinc-400 uppercase tracking-wide mb-4">
+              <div className="border-t border-zinc-800 pt-4 sm:pt-6">
+                <h4 className="text-xs sm:text-sm font-medium text-zinc-400 uppercase tracking-wide mb-3 sm:mb-4">
                   Add Habits ({customHabits.length} added)
                 </h4>
                 
-                <div className="p-4 bg-zinc-800/50 rounded-xl space-y-4">
-                  <div className="grid md:grid-cols-2 gap-4">
+                <div className="p-3 sm:p-4 bg-zinc-800/50 rounded-lg sm:rounded-xl space-y-3 sm:space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
                     <input
                       type="text"
                       value={newHabitTitle}
                       onChange={(e) => setNewHabitTitle(e.target.value)}
                       placeholder="Habit name *"
-                      className="w-full px-4 py-2 bg-zinc-700 border border-zinc-600 rounded-lg text-white placeholder-zinc-400 focus:outline-none focus:border-violet-500"
+                      className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base bg-zinc-700 border border-zinc-600 rounded-lg text-white placeholder-zinc-400 focus:outline-none focus:border-violet-500"
                     />
                     <input
                       type="text"
                       value={newHabitDescription}
                       onChange={(e) => setNewHabitDescription(e.target.value)}
                       placeholder="Description (optional)"
-                      className="w-full px-4 py-2 bg-zinc-700 border border-zinc-600 rounded-lg text-white placeholder-zinc-400 focus:outline-none focus:border-violet-500"
+                      className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base bg-zinc-700 border border-zinc-600 rounded-lg text-white placeholder-zinc-400 focus:outline-none focus:border-violet-500"
                     />
                   </div>
                   
-                  <div className="flex flex-wrap items-center gap-4">
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-4">
                     {/* Color picker */}
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-zinc-400">Color:</span>
+                    <div className="flex items-center gap-1.5 sm:gap-2">
+                      <span className="text-[10px] sm:text-xs text-zinc-400">Color:</span>
                       <div className="flex gap-1">
                         {HABIT_COLORS.map((color) => (
                           <button
                             key={color}
                             onClick={() => setNewHabitColor(color)}
                             className={cn(
-                              'w-6 h-6 rounded-full transition-transform',
+                              'w-5 h-5 sm:w-6 sm:h-6 rounded-full transition-transform',
                               newHabitColor === color && 'ring-2 ring-white ring-offset-2 ring-offset-zinc-800 scale-110'
                             )}
                             style={{ backgroundColor: color }}
@@ -335,12 +335,12 @@ export function ChallengeBrowser({
                     </div>
                     
                     {/* Goal type */}
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-zinc-400">Type:</span>
+                    <div className="flex items-center gap-1.5 sm:gap-2">
+                      <span className="text-[10px] sm:text-xs text-zinc-400">Type:</span>
                       <select
                         value={newHabitGoalType}
                         onChange={(e) => setNewHabitGoalType(e.target.value as 'binary' | 'duration' | 'quantity')}
-                        className="px-2 py-1 bg-zinc-700 border border-zinc-600 rounded text-sm text-white"
+                        className="px-2 py-1 text-xs sm:text-sm bg-zinc-700 border border-zinc-600 rounded text-white"
                       >
                         <option value="binary">Yes/No</option>
                         <option value="quantity">Quantity</option>
@@ -355,14 +355,14 @@ export function ChallengeBrowser({
                           value={newHabitTarget}
                           onChange={(e) => setNewHabitTarget(Number(e.target.value))}
                           min={1}
-                          className="w-20 px-2 py-1 bg-zinc-700 border border-zinc-600 rounded text-sm text-white text-center"
+                          className="w-16 sm:w-20 px-2 py-1 text-xs sm:text-sm bg-zinc-700 border border-zinc-600 rounded text-white text-center"
                         />
                         <input
                           type="text"
                           value={newHabitUnit}
                           onChange={(e) => setNewHabitUnit(e.target.value)}
                           placeholder="unit"
-                          className="w-24 px-2 py-1 bg-zinc-700 border border-zinc-600 rounded text-sm text-white"
+                          className="w-20 sm:w-24 px-2 py-1 text-xs sm:text-sm bg-zinc-700 border border-zinc-600 rounded text-white"
                         />
                       </>
                     )}
@@ -370,9 +370,9 @@ export function ChallengeBrowser({
                     <button
                       onClick={addHabitToChallenge}
                       disabled={!newHabitTitle.trim()}
-                      className="ml-auto px-4 py-2 text-sm font-medium text-white bg-violet-500 rounded-lg hover:bg-violet-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+                      className="ml-auto px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-white bg-violet-500 rounded-lg hover:bg-violet-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-1 sm:gap-2"
                     >
-                      <Plus size={16} />
+                      <Plus size={14} className="sm:w-4 sm:h-4" />
                       Add
                     </button>
                   </div>
@@ -380,22 +380,22 @@ export function ChallengeBrowser({
                 
                 {/* Added habits list */}
                 {customHabits.length > 0 && (
-                  <div className="mt-4 space-y-2">
+                  <div className="mt-3 sm:mt-4 space-y-1.5 sm:space-y-2">
                     {customHabits.map((habit, i) => (
                       <div
                         key={i}
-                        className="flex items-center gap-3 p-3 bg-zinc-800/50 rounded-lg group"
+                        className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-zinc-800/50 rounded-lg group"
                       >
                         <div
-                          className="w-3 h-3 rounded-full shrink-0"
+                          className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full shrink-0"
                           style={{ backgroundColor: habit.color }}
                         />
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-white truncate">{habit.title}</p>
-                          <p className="text-xs text-zinc-400 truncate">{habit.description}</p>
+                          <p className="text-xs sm:text-sm font-medium text-white truncate">{habit.title}</p>
+                          <p className="text-[10px] sm:text-xs text-zinc-400 truncate">{habit.description}</p>
                         </div>
                         {habit.goalType !== 'binary' && (
-                          <span className="text-xs px-2 py-1 bg-zinc-700 rounded text-zinc-300 shrink-0">
+                          <span className="text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 bg-zinc-700 rounded text-zinc-300 shrink-0">
                             {habit.goalTarget} {habit.unit}
                           </span>
                         )}
@@ -403,7 +403,7 @@ export function ChallengeBrowser({
                           onClick={() => removeHabit(i)}
                           className="p-1 text-zinc-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all"
                         >
-                          <Trash2 size={14} />
+                          <Trash2 size={12} className="sm:w-3.5 sm:h-3.5" />
                         </button>
                       </div>
                     ))}
@@ -415,43 +415,43 @@ export function ChallengeBrowser({
               <button
                 onClick={startCustomChallenge}
                 disabled={!customTitle.trim() || customHabits.length === 0}
-                className="w-full py-4 px-6 bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 disabled:from-zinc-600 disabled:to-zinc-700 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-all flex items-center justify-center gap-2"
+                className="w-full py-3 sm:py-4 px-4 sm:px-6 text-sm sm:text-base bg-linear-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 disabled:from-zinc-600 disabled:to-zinc-700 disabled:cursor-not-allowed text-white font-semibold rounded-lg sm:rounded-xl transition-all flex items-center justify-center gap-2"
               >
-                <Sparkles size={20} />
+                <Sparkles size={18} className="sm:w-5 sm:h-5" />
                 Start {customDuration}-Day Challenge
                 {customHabits.length > 0 && ` (${customHabits.length} habits)`}
               </button>
             </div>
           ) : selectedChallenge ? (
             // Challenge Detail View
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               <button
                 onClick={() => setSelectedChallenge(null)}
-                className="text-sm text-zinc-400 hover:text-white flex items-center gap-1"
+                className="text-xs sm:text-sm text-zinc-400 hover:text-white flex items-center gap-1"
               >
                 ← Back to challenges
               </button>
 
-              <div className="flex items-start gap-4">
-                <div className="text-5xl">{selectedChallenge.icon}</div>
+              <div className="flex items-start gap-3 sm:gap-4">
+                <div className="text-3xl sm:text-5xl">{selectedChallenge.icon}</div>
                 <div className="flex-1">
-                  <h3 className="text-2xl font-bold text-white mb-2">
+                  <h3 className="text-lg sm:text-2xl font-bold text-white mb-1 sm:mb-2">
                     {selectedChallenge.title}
                   </h3>
-                  <p className="text-zinc-400 mb-4">{selectedChallenge.description}</p>
-                  <div className="flex items-center gap-4">
+                  <p className="text-zinc-400 text-sm sm:text-base mb-3 sm:mb-4">{selectedChallenge.description}</p>
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-4">
                     <span className={cn(
-                      'px-3 py-1 text-xs font-medium rounded-full',
+                      'px-2 sm:px-3 py-0.5 sm:py-1 text-[10px] sm:text-xs font-medium rounded-full',
                       DIFFICULTY_COLORS[selectedChallenge.difficulty]
                     )}>
                       {selectedChallenge.difficulty}
                     </span>
-                    <span className="flex items-center gap-1 text-sm text-zinc-400">
-                      <Clock size={14} />
+                    <span className="flex items-center gap-1 text-xs sm:text-sm text-zinc-400">
+                      <Clock size={12} className="sm:w-3.5 sm:h-3.5" />
                       {selectedChallenge.duration} days
                     </span>
-                    <span className="flex items-center gap-1 text-sm text-zinc-400">
-                      <Target size={14} />
+                    <span className="flex items-center gap-1 text-xs sm:text-sm text-zinc-400">
+                      <Target size={12} className="sm:w-3.5 sm:h-3.5" />
                       {selectedChallenge.habits.length} habits
                     </span>
                   </div>
@@ -460,25 +460,25 @@ export function ChallengeBrowser({
 
               {/* Habits List */}
               <div>
-                <h4 className="text-sm font-medium text-zinc-400 uppercase tracking-wide mb-4">
+                <h4 className="text-xs sm:text-sm font-medium text-zinc-400 uppercase tracking-wide mb-3 sm:mb-4">
                   Habits in this challenge
                 </h4>
-                <div className="space-y-3">
+                <div className="space-y-2 sm:space-y-3">
                   {selectedChallenge.habits.map((habit, i) => (
                     <div
                       key={i}
-                      className="flex items-center gap-4 p-4 bg-zinc-800/50 rounded-xl"
+                      className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-zinc-800/50 rounded-lg sm:rounded-xl"
                     >
                       <div
-                        className="w-4 h-4 rounded-full"
+                        className="w-3 h-3 sm:w-4 sm:h-4 rounded-full"
                         style={{ backgroundColor: habit.color }}
                       />
                       <div className="flex-1">
-                        <p className="font-medium text-white">{habit.title}</p>
-                        <p className="text-sm text-zinc-400">{habit.description}</p>
+                        <p className="font-medium text-white text-sm sm:text-base">{habit.title}</p>
+                        <p className="text-xs sm:text-sm text-zinc-400">{habit.description}</p>
                       </div>
                       {habit.goalType !== 'binary' && (
-                        <span className="text-sm px-3 py-1 bg-zinc-700 rounded-lg text-zinc-300">
+                        <span className="text-xs sm:text-sm px-2 sm:px-3 py-0.5 sm:py-1 bg-zinc-700 rounded-lg text-zinc-300">
                           {habit.goalTarget} {habit.unit}
                         </span>
                       )}
@@ -493,47 +493,47 @@ export function ChallengeBrowser({
                   onStartChallenge(selectedChallenge)
                   onClose()
                 }}
-                className="w-full py-4 px-6 bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 text-white font-semibold rounded-xl transition-all flex items-center justify-center gap-2"
+                className="w-full py-3 sm:py-4 px-4 sm:px-6 text-sm sm:text-base bg-linear-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 text-white font-semibold rounded-lg sm:rounded-xl transition-all flex items-center justify-center gap-2"
               >
-                <Sparkles size={20} />
+                <Sparkles size={18} className="sm:w-5 sm:h-5" />
                 Start {selectedChallenge.duration}-Day Challenge
               </button>
             </div>
           ) : (
             // Challenge Grid View
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
               {filteredChallenges.map((challenge) => (
                 <button
                   key={challenge.id}
                   onClick={() => setSelectedChallenge(challenge)}
-                  className="text-left p-5 bg-zinc-800/50 hover:bg-zinc-800 border border-zinc-700/50 hover:border-zinc-600 rounded-xl transition-all group"
+                  className="text-left p-3 sm:p-5 bg-zinc-800/50 hover:bg-zinc-800 border border-zinc-700/50 hover:border-zinc-600 rounded-lg sm:rounded-xl transition-all group"
                 >
-                  <div className="flex items-start gap-4">
-                    <div className="text-3xl">{challenge.icon}</div>
+                  <div className="flex items-start gap-3 sm:gap-4">
+                    <div className="text-2xl sm:text-3xl">{challenge.icon}</div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-2 mb-1">
-                        <h3 className="font-semibold text-white truncate">
+                        <h3 className="font-semibold text-white text-sm sm:text-base truncate">
                           {challenge.title}
                         </h3>
                         <ChevronRight
-                          size={16}
-                          className="text-zinc-500 group-hover:text-white transition-colors shrink-0"
+                          size={14}
+                          className="sm:w-4 sm:h-4 text-zinc-500 group-hover:text-white transition-colors shrink-0"
                         />
                       </div>
-                      <p className="text-sm text-zinc-400 line-clamp-2 mb-3">
+                      <p className="text-xs sm:text-sm text-zinc-400 line-clamp-2 mb-2 sm:mb-3">
                         {challenge.description}
                       </p>
-                      <div className="flex items-center gap-3">
+                      <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                         <span className={cn(
-                          'px-2 py-0.5 text-xs font-medium rounded-full',
+                          'px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-xs font-medium rounded-full',
                           DIFFICULTY_COLORS[challenge.difficulty]
                         )}>
                           {challenge.difficulty}
                         </span>
-                        <span className="text-xs text-zinc-500">
+                        <span className="text-[10px] sm:text-xs text-zinc-500">
                           {challenge.duration} days
                         </span>
-                        <span className="text-xs text-zinc-500">
+                        <span className="text-[10px] sm:text-xs text-zinc-500">
                           {challenge.habits.length} habits
                         </span>
                       </div>

@@ -371,7 +371,7 @@ export function HabitsClient({
   )
 
   return (
-    <div className="space-y-4 sm:space-y-6 pt-14 lg:pt-0">
+    <div className="space-y-4 sm:space-y-6 pt-[72px] lg:pt-0">
       {/* Header */}
       <div className="flex flex-col gap-3 sm:gap-4">
         <div>

@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 interface MonthNavigatorProps {
@@ -9,6 +10,12 @@ interface MonthNavigatorProps {
 }
 
 export function MonthNavigator({ month, year, onChange }: MonthNavigatorProps) {
+  const [currentDate, setCurrentDate] = useState<Date | null>(null)
+
+  useEffect(() => {
+    setCurrentDate(new Date())
+  }, [])
+
   const monthName = new Date(year, month).toLocaleString('default', {
     month: 'long',
     year: 'numeric',
@@ -35,8 +42,9 @@ export function MonthNavigator({ month, year, onChange }: MonthNavigatorProps) {
     onChange(today.getMonth(), today.getFullYear())
   }
 
-  const isCurrentMonth =
-    month === new Date().getMonth() && year === new Date().getFullYear()
+  const isCurrentMonth = currentDate
+    ? month === currentDate.getMonth() && year === currentDate.getFullYear()
+    : false
 
   return (
     <div className="flex items-center gap-2">

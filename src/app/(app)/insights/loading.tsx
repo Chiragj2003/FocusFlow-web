@@ -1,6 +1,6 @@
 export default function InsightsLoading() {
   return (
-    <div className="space-y-4 sm:space-y-6 pt-14 lg:pt-0 animate-pulse">
+    <div className="space-y-4 sm:space-y-6 pt-[72px] lg:pt-0 animate-pulse">
       {/* Header Skeleton */}
       <div>
         <div className="h-7 bg-zinc-800 rounded-lg w-28 mb-2" />

@@ -34,29 +34,69 @@ export function Sidebar() {
 
   return (
     <>
-      {/* Mobile menu button */}
-      <button
-        className="fixed top-4 left-4 z-50 lg:hidden p-2 rounded-xl bg-zinc-900 border border-zinc-800 shadow-lg"
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        {isOpen ? <X size={24} className="text-white" /> : <Menu size={24} className="text-white" />}
-      </button>
+      {/* Mobile Top Navigation Bar - Fixed */}
+      <div className="fixed top-0 left-0 right-0 z-50 lg:hidden bg-zinc-950 border-b border-zinc-800/50">
+        {/* Top row with logo and menu button */}
+        <div className="flex items-center justify-between px-4 py-3">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center">
+              <Sparkles className="w-4 h-4 text-zinc-900" />
+            </div>
+            <span className="font-bold text-base text-white">FocusFlow</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <UserButton
+              appearance={{
+                elements: {
+                  avatarBox: 'w-7 h-7',
+                },
+              }}
+            />
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="p-1.5 rounded-lg bg-zinc-900 border border-zinc-800"
+            >
+              {isOpen ? <X size={20} className="text-white" /> : <Menu size={20} className="text-white" />}
+            </button>
+          </div>
+        </div>
+      </div>
 
-      {/* Overlay */}
+      {/* Mobile Dropdown Menu */}
       {isOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
-          onClick={() => setIsOpen(false)}
-        />
+        <>
+          <div
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
+            onClick={() => setIsOpen(false)}
+          />
+          <div className="fixed top-14 left-0 right-0 z-40 lg:hidden bg-zinc-900 border-b border-zinc-800 shadow-xl">
+            <div className="p-4 space-y-2">
+              {navigation.map((item) => {
+                const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
+                return (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    onClick={() => setIsOpen(false)}
+                    className={cn(
+                      'flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all',
+                      isActive
+                        ? 'bg-white text-zinc-900'
+                        : 'text-zinc-400 hover:bg-zinc-800/50 hover:text-white'
+                    )}
+                  >
+                    <item.icon size={18} />
+                    {item.name}
+                  </Link>
+                )
+              })}
+            </div>
+          </div>
+        </>
       )}
 
-      {/* Sidebar */}
-      <aside
-        className={cn(
-          'fixed left-0 top-0 z-40 h-screen w-64 bg-zinc-950 border-r border-zinc-800/50 transition-transform lg:translate-x-0',
-          isOpen ? 'translate-x-0' : '-translate-x-full'
-        )}
-      >
+      {/* Desktop Sidebar */}
+      <aside className="hidden lg:block fixed left-0 top-0 z-40 h-screen w-64 bg-zinc-950 border-r border-zinc-800/50">
         <div className="flex flex-col h-full">
           {/* Logo */}
           <div className="flex items-center gap-3 px-6 py-5 border-b border-zinc-800/50">
@@ -74,7 +114,6 @@ export function Sidebar() {
                 <Link
                   key={item.name}
                   href={item.href}
-                  onClick={() => setIsOpen(false)}
                   className={cn(
                     'flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200',
                     isActive

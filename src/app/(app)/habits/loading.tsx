@@ -1,6 +1,6 @@
 export default function HabitsLoading() {
   return (
-    <div className="space-y-4 sm:space-y-6 pt-14 lg:pt-0 animate-pulse">
+    <div className="space-y-4 sm:space-y-6 pt-[72px] lg:pt-0 animate-pulse">
       {/* Header Skeleton */}
       <div className="flex flex-col gap-3 sm:gap-4">
         <div>
