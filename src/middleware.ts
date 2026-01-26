@@ -1,6 +1,13 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
+  'Access-Control-Max-Age': '86400',
+}
+
 const isPublicRoute = createRouteMatcher([
   '/',
   '/sign-in(.*)',
@@ -10,20 +17,37 @@ const isPublicRoute = createRouteMatcher([
   '/api/webhooks(.*)',
 ])
 
+const isApiRoute = createRouteMatcher(['/api/(.*)'])
+
+// Add CORS headers to response
+function addCorsHeaders(response: NextResponse) {
+  Object.entries(corsHeaders).forEach(([key, value]) => {
+    response.headers.set(key, value)
+  })
+  return response
+}
+
 export default clerkMiddleware(async (auth, request) => {
-  // Handle CORS preflight requests for API routes
-  if (request.method === 'OPTIONS') {
-    const response = new NextResponse(null, { status: 200 })
-    response.headers.set('Access-Control-Allow-Origin', '*')
-    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS')
-    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-    response.headers.set('Access-Control-Max-Age', '86400')
-    return response
+  // For API routes, handle CORS preflight - return immediately without auth check
+  if (isApiRoute(request) && request.method === 'OPTIONS') {
+    return new NextResponse(null, {
+      status: 200,
+      headers: corsHeaders,
+    })
   }
 
-  if (!isPublicRoute(request)) {
+  // Only protect non-public, non-API routes in middleware
+  // API routes handle their own auth via auth() call in route handlers
+  if (!isPublicRoute(request) && !isApiRoute(request)) {
     await auth.protect()
   }
+
+  // Add CORS headers to all API responses
+  const response = NextResponse.next()
+  if (isApiRoute(request)) {
+    return addCorsHeaders(response)
+  }
+  return response
 })
 
 export const config = {
