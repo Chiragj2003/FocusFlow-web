@@ -122,7 +122,7 @@ export async function GET() {
           // Get current streak
           const today = new Date()
           let streak = 0
-          let date = new Date(today)
+          const date = new Date(today)
           
           while (true) {
             const dateStr = date.toISOString().split('T')[0]

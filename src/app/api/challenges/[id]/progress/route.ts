@@ -67,7 +67,7 @@ export async function GET(
       // Get current streak
       const today = new Date()
       let streak = 0
-      let date = new Date(today)
+      const date = new Date(today)
       
       while (streak < challengeInfo.target) {
         const dateStr = date.toISOString().split('T')[0]
