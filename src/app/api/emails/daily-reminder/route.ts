@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
-import { sendEmail, generateDailyReminderEmail, canSendEmail, EMAIL_RATE_LIMIT_DAYS } from '@/lib/email'
+import { sendEmail, generateDailyReminderEmail, EMAIL_RATE_LIMIT_DAYS } from '@/lib/email'
 import { clerkClient } from '@clerk/nextjs/server'
 
 export async function POST(request: NextRequest) {
