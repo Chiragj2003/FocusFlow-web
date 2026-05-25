@@ -1,8 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Mark Prisma packages as external to avoid bundling issues
-  serverExternalPackages: ['@prisma/client', '@prisma/adapter-neon', '@neondatabase/serverless'],
 
   // Allow Server Actions from forwarded hosts (GitHub Codespaces, etc.)
   experimental: {
