@@ -1,5 +1,5 @@
 // Badge System - Definitions and Logic
-import prisma from './db'
+import { supabase } from './supabase'
 
 export interface BadgeDefinition {
   id: string
@@ -392,13 +392,10 @@ export function getBadgeById(id: string): BadgeDefinition | undefined {
 
 // Get all badges for a user
 export async function getUserBadges(userId: string) {
-  const badges = await prisma.badge.findMany({
-    where: { userId },
-    orderBy: { awardedAt: 'desc' },
-  })
+  const { data: badges } = await supabase.from('badges').select('*').eq('user_id', userId).order('awarded_at', { ascending: false })
 
-  return badges.map((badge: { id: string; userId: string; name: string; metadata: unknown; awardedAt: Date }) => ({
-    ...badge,
+  return (badges || []).map((badge: any) => ({
+    id: badge.id, userId: badge.user_id, name: badge.name, metadata: badge.metadata, awardedAt: badge.awarded_at,
     definition: getBadgeById(badge.name),
   }))
 }
@@ -414,18 +411,10 @@ export async function checkStreakBadges(
 
   for (const badge of streakBadges) {
     if (longestStreak >= badge.requirement) {
-      const exists = await prisma.badge.findFirst({
-        where: { userId, name: badge.id },
-      })
+      const { data: exists } = await supabase.from('badges').select('id').eq('user_id', userId).eq('name', badge.id).single()
 
       if (!exists) {
-        await prisma.badge.create({
-          data: {
-            userId,
-            name: badge.id,
-            metadata: { streak: longestStreak },
-          },
-        })
+        await supabase.from('badges').insert({ user_id: userId, name: badge.id, metadata: { streak: longestStreak } })
         awarded.push(badge)
       }
     }
@@ -439,7 +428,7 @@ export async function checkMilestoneBadges(userId: string): Promise<BadgeDefinit
   const awarded: BadgeDefinition[] = []
 
   // Check habit count badges
-  const habitCount = await prisma.habit.count({ where: { userId } })
+  const { count: habitCount } = await supabase.from('habits').select('*', { count: 'exact', head: true }).eq('user_id', userId)
   const habitBadges = [
     { id: 'first_habit', requirement: 1 },
     { id: 'five_habits', requirement: 5 },
@@ -447,19 +436,11 @@ export async function checkMilestoneBadges(userId: string): Promise<BadgeDefinit
   ]
 
   for (const { id, requirement } of habitBadges) {
-    if (habitCount >= requirement) {
-      const exists = await prisma.badge.findFirst({
-        where: { userId, name: id },
-      })
+    if ((habitCount ?? 0) >= requirement) {
+      const { data: exists } = await supabase.from('badges').select('id').eq('user_id', userId).eq('name', id).single()
 
       if (!exists) {
-        await prisma.badge.create({
-          data: {
-            userId,
-            name: id,
-            metadata: { habitCount },
-          },
-        })
+        await supabase.from('badges').insert({ user_id: userId, name: id, metadata: { habitCount } })
         const badge = getBadgeById(id)
         if (badge) awarded.push(badge)
       }
@@ -467,9 +448,7 @@ export async function checkMilestoneBadges(userId: string): Promise<BadgeDefinit
   }
 
   // Check completion count badges
-  const completionCount = await prisma.habitEntry.count({
-    where: { userId, completed: true },
-  })
+  const { count: completionCount } = await supabase.from('entries').select('*', { count: 'exact', head: true }).eq('user_id', userId).eq('completed', true)
   const completionBadges = [
     { id: 'completions_50', requirement: 50 },
     { id: 'completions_100', requirement: 100 },
@@ -478,19 +457,11 @@ export async function checkMilestoneBadges(userId: string): Promise<BadgeDefinit
   ]
 
   for (const { id, requirement } of completionBadges) {
-    if (completionCount >= requirement) {
-      const exists = await prisma.badge.findFirst({
-        where: { userId, name: id },
-      })
+    if ((completionCount ?? 0) >= requirement) {
+      const { data: exists } = await supabase.from('badges').select('id').eq('user_id', userId).eq('name', id).single()
 
       if (!exists) {
-        await prisma.badge.create({
-          data: {
-            userId,
-            name: id,
-            metadata: { completionCount },
-          },
-        })
+        await supabase.from('badges').insert({ user_id: userId, name: id, metadata: { completionCount } })
         const badge = getBadgeById(id)
         if (badge) awarded.push(badge)
       }
@@ -502,18 +473,10 @@ export async function checkMilestoneBadges(userId: string): Promise<BadgeDefinit
 
 // Award early bird badge for new users
 export async function awardEarlyBirdBadge(userId: string): Promise<boolean> {
-  const exists = await prisma.badge.findFirst({
-    where: { userId, name: 'early_bird' },
-  })
+  const { data: exists } = await supabase.from('badges').select('id').eq('user_id', userId).eq('name', 'early_bird').single()
 
   if (!exists) {
-    await prisma.badge.create({
-      data: {
-        userId,
-        name: 'early_bird',
-        metadata: { joinedAt: new Date().toISOString() },
-      },
-    })
+    await supabase.from('badges').insert({ user_id: userId, name: 'early_bird', metadata: { joinedAt: new Date().toISOString() } })
     return true
   }
 
@@ -527,34 +490,19 @@ export async function checkPerfectBadges(userId: string): Promise<BadgeDefinitio
 
   // Check for perfect week (last 7 days)
   const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
-  const habits = await prisma.habit.findMany({
-    where: { userId, active: true },
-  })
+  const { data: habits } = await supabase.from('habits').select('*').eq('user_id', userId).eq('active', true)
 
-  if (habits.length > 0) {
-    const weekEntries = await prisma.habitEntry.findMany({
-      where: {
-        userId,
-        completed: true,
-        entryDate: { gte: weekAgo, lte: now },
-      },
-    })
+  if (habits && habits.length > 0) {
+    const weekAgoStr = weekAgo.toISOString().slice(0, 10)
+    const nowStr = now.toISOString().slice(0, 10)
+    const { data: weekEntries } = await supabase.from('entries').select('*').eq('user_id', userId).eq('completed', true).gte('entry_date', weekAgoStr).lte('entry_date', nowStr)
 
-    // Perfect week: all habits completed for 7 days
     const perfectWeekTarget = habits.length * 7
-    if (weekEntries.length >= perfectWeekTarget) {
-      const exists = await prisma.badge.findFirst({
-        where: { userId, name: 'perfect_week' },
-      })
+    if ((weekEntries || []).length >= perfectWeekTarget) {
+      const { data: exists } = await supabase.from('badges').select('id').eq('user_id', userId).eq('name', 'perfect_week').single()
 
       if (!exists) {
-        await prisma.badge.create({
-          data: {
-            userId,
-            name: 'perfect_week',
-            metadata: { date: now.toISOString() },
-          },
-        })
+        await supabase.from('badges').insert({ user_id: userId, name: 'perfect_week', metadata: { date: now.toISOString() } })
         const badge = getBadgeById('perfect_week')
         if (badge) awarded.push(badge)
       }

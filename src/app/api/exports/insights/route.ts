@@ -1,53 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
-import { convex } from '@/lib/convex'
-import { api } from '../../../../../convex/_generated/api'
+import { dbInsightsSummary, dbStreaks, dbListHabits } from '@/lib/db'
+import { toHabitResponse } from '@/lib/supabase'
 
-// GET /api/exports/insights - Get insights data for PDF export
 export async function GET(request: NextRequest) {
   try {
     const { userId } = await auth()
-
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
     const searchParams = request.nextUrl.searchParams
-    const monthParam = searchParams.get('month')
-    const yearParam = searchParams.get('year')
-
     const now = new Date()
-    const month = monthParam ? parseInt(monthParam) : now.getMonth()
-    const year = yearParam ? parseInt(yearParam) : now.getFullYear()
-
+    const month = searchParams.get('month') ? parseInt(searchParams.get('month')!) : now.getMonth()
+    const year = searchParams.get('year') ? parseInt(searchParams.get('year')!) : now.getFullYear()
     const startDate = new Date(year, month, 1).toISOString().slice(0, 10)
     const endDate = new Date(year, month + 1, 0).toISOString().slice(0, 10)
 
-    // Fetch insights and streaks
     const [insights, streaks, habits] = await Promise.all([
-      convex.query(api.insights.summary, { userId, startDate, endDate }),
-      convex.query(api.insights.streaks, { userId }),
-      convex.query(api.habits.list, { userId, active: true }),
+      dbInsightsSummary(userId, startDate, endDate),
+      dbStreaks(userId),
+      dbListHabits(userId, true),
     ])
 
-    const monthName = new Date(year, month).toLocaleString('default', {
-      month: 'long',
-      year: 'numeric',
-    })
-
     return NextResponse.json({
-      monthName,
-      month,
-      year,
-      insights,
-      streaks,
-      habits,
+      monthName: new Date(year, month).toLocaleString('default', { month: 'long', year: 'numeric' }),
+      month, year, insights, streaks, habits: habits.map(toHabitResponse),
     })
   } catch (error) {
-    console.error('Error fetching insights for export:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch insights' },
-      { status: 500 }
-    )
+    console.error('Error:', error)
+    return NextResponse.json({ error: 'Failed to fetch insights' }, { status: 500 })
   }
 }

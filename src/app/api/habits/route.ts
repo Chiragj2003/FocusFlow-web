@@ -1,80 +1,61 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
-import { convex } from '@/lib/convex'
-import { api } from '../../../../convex/_generated/api'
+import { supabase, toHabitResponse, type DbHabit } from '@/lib/supabase'
 
-// Force dynamic rendering for auth
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
-// GET /api/habits - List all habits for the current user
+// GET /api/habits
 export async function GET(request: NextRequest) {
   try {
     const { userId } = await auth()
-
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
     const searchParams = request.nextUrl.searchParams
     const active = searchParams.get('active')
     const category = searchParams.get('category')
 
-    const habits = await convex.query(api.habits.list, {
-      userId,
-      ...(active !== null ? { active: active === 'true' } : {}),
-      ...(category ? { category } : {}),
-    })
+    let query = supabase.from('habits').select('*').eq('user_id', userId).order('created_at', { ascending: false })
+    if (active !== null) query = query.eq('active', active === 'true')
+    if (category) query = query.eq('category', category)
 
-    // Add cache headers for faster subsequent requests
-    const response = NextResponse.json(habits)
+    const { data, error } = await query
+    if (error) throw error
+
+    const response = NextResponse.json((data as DbHabit[]).map(toHabitResponse))
     response.headers.set('Cache-Control', 'private, max-age=10, stale-while-revalidate=30')
     return response
   } catch (error) {
     console.error('Error fetching habits:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch habits' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch habits' }, { status: 500 })
   }
 }
 
-// POST /api/habits - Create a new habit
+// POST /api/habits
 export async function POST(request: NextRequest) {
   try {
     const { userId } = await auth()
-
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
     const body = await request.json()
     const { title, description, category, color, goalType, goalTarget, unit } = body
+    if (!title || !goalType) return NextResponse.json({ error: 'Title and goalType are required' }, { status: 400 })
 
-    if (!title || !goalType) {
-      return NextResponse.json(
-        { error: 'Title and goalType are required' },
-        { status: 400 }
-      )
-    }
-
-    const habit = await convex.mutation(api.habits.create, {
-      userId,
+    const { data, error } = await supabase.from('habits').insert({
+      user_id: userId,
       title,
-      description,
-      category,
-      color,
-      goalType,
-      goalTarget,
-      unit,
-    })
+      description: description || null,
+      category: category || null,
+      color: color || '#ffffff',
+      goal_type: goalType,
+      goal_target: goalTarget || null,
+      unit: unit || null,
+    }).select().single()
 
-    return NextResponse.json(habit, { status: 201 })
+    if (error) throw error
+    return NextResponse.json(toHabitResponse(data as DbHabit), { status: 201 })
   } catch (error) {
     console.error('Error creating habit:', error)
-    return NextResponse.json(
-      { error: 'Failed to create habit' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to create habit' }, { status: 500 })
   }
 }

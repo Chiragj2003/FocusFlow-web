@@ -1,219 +1,77 @@
 import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/db'
+import { supabase } from '@/lib/supabase'
 import { sendEmail, generateDailyReminderEmail, canSendEmail, EMAIL_RATE_LIMIT_DAYS } from '@/lib/email'
 import { clerkClient } from '@clerk/nextjs/server'
 
-// POST /api/emails/daily-reminder
-// This endpoint sends weekly reminder emails to all users (rate limited to 1 per week)
-// Should be called by a cron job service (Vercel Cron, Railway Cron, etc.)
 export async function POST(request: NextRequest) {
   try {
-    // Verify cron secret to prevent unauthorized calls
     const authHeader = request.headers.get('authorization')
     const cronSecret = process.env.CRON_SECRET
-
     if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Get today's date range
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    const tomorrow = new Date(today)
-    tomorrow.setDate(tomorrow.getDate() + 1)
+    const todayStr = new Date().toISOString().slice(0, 10)
+    const { data: users } = await supabase.from('users').select('*').eq('is_deactivated', false)
 
-    // Get all users with active habits who haven't opted out and can receive emails (rate limit check)
-    const usersWithHabits = await prisma.user.findMany({
-      where: {
-        habits: {
-          some: {
-            active: true,
-          },
-        },
-        emailOptOut: false, // Only users who haven't opted out
-      },
-      include: {
-        habits: {
-          where: { active: true },
-        },
-        entries: {
-          where: {
-            entryDate: {
-              gte: today,
-              lt: tomorrow,
-            },
-          },
-        },
-      },
-    })
+    const results = { total: (users || []).length, sent: 0, failed: 0, skipped: 0, rateLimited: 0, errors: [] as string[] }
 
-    const results = {
-      total: usersWithHabits.length,
-      sent: 0,
-      failed: 0,
-      skipped: 0,
-      rateLimited: 0,
-      errors: [] as string[],
-    }
-
-    // Process each user
-    for (const user of usersWithHabits) {
+    for (const user of users || []) {
       try {
-        // Check rate limit: 1 email per user per week
-        if (!canSendEmail(user.lastEmailSent)) {
-          results.rateLimited++
-          continue
-        }
+        const { data: habits } = await supabase.from('habits').select('id,title').eq('user_id', user.clerk_user_id).eq('active', true)
+        if (!habits || habits.length === 0) { results.skipped++; continue }
 
-        // Get user email from Clerk
+        const { data: entries } = await supabase.from('entries').select('*').eq('user_id', user.clerk_user_id).eq('entry_date', todayStr)
+
         let userEmail = user.email
-        let userName: string | null = user.name
-
+        let userName = user.name
         if (!userEmail) {
-          // Fetch from Clerk if not stored locally
           try {
             const client = await clerkClient()
-            const clerkUser = await client.users.getUser(user.id)
+            const clerkUser = await client.users.getUser(user.clerk_user_id)
             userEmail = clerkUser.emailAddresses[0]?.emailAddress
-            userName = clerkUser.firstName || clerkUser.username || null
-
-            // Update local user record with email
+            userName = clerkUser.firstName || null
             if (userEmail) {
-              await prisma.user.update({
-                where: { id: user.id },
-                data: { 
-                  email: userEmail,
-                  name: userName,
-                },
-              })
+              await supabase.from('users').update({ email: userEmail, name: userName }).eq('id', user.id)
             }
-          } catch {
-            console.error(`Failed to fetch Clerk user: ${user.id}`)
-          }
+          } catch { results.skipped++; continue }
         }
+        if (!userEmail) { results.skipped++; continue }
 
-        if (!userEmail) {
-          results.skipped++
-          continue
-        }
+        const completedToday = (entries || []).filter((e: any) => e.completed).length
+        const pendingHabits = habits.filter((h: any) => !(entries || []).some((e: any) => e.habit_id === h.id && e.completed)).map((h: any) => h.title)
 
-        // Calculate user stats
-        const totalHabits = user.habits.length
-        const completedToday = user.entries.filter((e: { completed: boolean }) => e.completed).length
-        const pendingHabits = user.habits
-          .filter((habit: { id: string; title: string }) => 
-            !user.entries.some((e: { habitId: string; completed: boolean }) => e.habitId === habit.id && e.completed)
-          )
-          .map((h: { title: string }) => h.title)
-
-        // Calculate streak (simplified - check consecutive days)
-        const streak = await calculateStreak(user.id, totalHabits)
-
-        // Generate and send email
         const emailContent = generateDailyReminderEmail(userName || 'there', {
-          totalHabits,
-          completedToday,
-          currentStreak: streak,
-          pendingHabits,
+          totalHabits: habits.length, completedToday, currentStreak: 0, pendingHabits,
         })
 
         const result = await sendEmail({
-          to: userEmail,
-          subject: emailContent.subject,
-          html: emailContent.html,
-          text: emailContent.text,
-          tags: [
-            { name: 'type', value: 'weekly-reminder' },
-            { name: 'userId', value: user.id },
-          ],
+          to: userEmail, subject: emailContent.subject, html: emailContent.html, text: emailContent.text,
+          tags: [{ name: 'type', value: 'weekly-reminder' }, { name: 'userId', value: user.clerk_user_id }],
         })
 
-        if (result.success) {
-          // Update lastEmailSent timestamp for rate limiting
-          await prisma.user.update({
-            where: { id: user.id },
-            data: { lastEmailSent: new Date() },
-          })
-          results.sent++
-        } else {
-          results.failed++
-          results.errors.push(`${userEmail}: ${result.error}`)
-        }
+        if (result.success) { results.sent++ } else { results.failed++; results.errors.push(`${userEmail}: ${result.error}`) }
       } catch (error) {
         results.failed++
-        results.errors.push(`User ${user.id}: ${error instanceof Error ? error.message : 'Unknown error'}`)
+        results.errors.push(`User ${user.clerk_user_id}: ${error instanceof Error ? error.message : 'Unknown error'}`)
       }
     }
 
-    return NextResponse.json({
-      message: `Weekly reminder job completed (rate limit: ${EMAIL_RATE_LIMIT_DAYS} days)`,
-      results,
-      timestamp: new Date().toISOString(),
-    })
+    return NextResponse.json({ message: `Weekly reminder job completed`, results, timestamp: new Date().toISOString() })
   } catch (error) {
     console.error('Daily reminder error:', error)
-    return NextResponse.json(
-      { error: 'Failed to send daily reminders' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to send daily reminders' }, { status: 500 })
   }
 }
 
-// Calculate user's current streak
-async function calculateStreak(userId: string, totalHabits: number): Promise<number> {
-  if (totalHabits === 0) return 0
-
-  let streak = 0
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-
-  // Check up to 365 days back
-  for (let i = 0; i < 365; i++) {
-    const checkDate = new Date(today)
-    checkDate.setDate(checkDate.getDate() - i)
-    const nextDate = new Date(checkDate)
-    nextDate.setDate(nextDate.getDate() + 1)
-
-    const entriesForDay = await prisma.habitEntry.count({
-      where: {
-        userId,
-        completed: true,
-        entryDate: {
-          gte: checkDate,
-          lt: nextDate,
-        },
-      },
-    })
-
-    // If user completed at least one habit that day, count it
-    if (entriesForDay > 0) {
-      streak++
-    } else if (i > 0) {
-      // Don't break streak for today (they might not have completed yet)
-      break
-    }
-  }
-
-  return streak
-}
-
-// GET endpoint to check status (useful for debugging)
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get('authorization')
   const cronSecret = process.env.CRON_SECRET
-
   if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
-
   return NextResponse.json({
     status: 'ready',
-    message: `Weekly reminder endpoint ready. Rate limit: ${EMAIL_RATE_LIMIT_DAYS} days per user.`,
-    config: {
-      hasResendKey: !!process.env.RESEND_API_KEY,
-      hasFromEmail: !!process.env.FROM_EMAIL,
-      hasCronSecret: !!process.env.CRON_SECRET,
-      rateLimitDays: EMAIL_RATE_LIMIT_DAYS,
-    },
+    config: { hasResendKey: !!process.env.RESEND_API_KEY, hasCronSecret: !!process.env.CRON_SECRET, rateLimitDays: EMAIL_RATE_LIMIT_DAYS },
   })
 }

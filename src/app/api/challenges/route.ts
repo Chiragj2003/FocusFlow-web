@@ -1,20 +1,14 @@
 import { NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
-import { convex } from '@/lib/convex'
-import { api } from '../../../../convex/_generated/api'
+import { supabase, type DbChallenge } from '@/lib/supabase'
 
-// GET /api/challenges - Get all available challenges
 export async function GET() {
   try {
-    const { userId } = await auth()
-
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const challenges = await convex.query(api.challenges.list, {})
-
-    return NextResponse.json(challenges)
+    const { data, error } = await supabase.from('challenges').select('*').eq('active', true)
+    if (error) throw error
+    return NextResponse.json((data as DbChallenge[]).map((c) => ({
+      id: c.id, challengeId: c.challenge_id, title: c.title, description: c.description,
+      type: c.type, target: c.target, duration: c.duration, reward: c.reward, active: c.active,
+    })))
   } catch (error) {
     console.error('Error fetching challenges:', error)
     return NextResponse.json({ error: 'Failed to fetch challenges' }, { status: 500 })

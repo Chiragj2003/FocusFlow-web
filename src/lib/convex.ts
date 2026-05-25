@@ -1,9 +1,3 @@
-import { ConvexHttpClient } from "convex/browser";
-
-const url = process.env.NEXT_PUBLIC_CONVEX_URL;
-
-if (!url) {
-  throw new Error("NEXT_PUBLIC_CONVEX_URL is not set");
-}
-
-export const convex = new ConvexHttpClient(url);
+// Legacy convex.ts - now re-exports from supabase
+// This file kept for backward compatibility during migration
+export { supabase as convex } from './supabase'
