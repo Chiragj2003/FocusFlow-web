@@ -1,7 +1,8 @@
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
-import prisma from '@/lib/db'
-import { getInsightsSummary, getAllStreaks } from '@/lib/analytics'
+import { convex } from '@/lib/convex'
+import { api } from '../../../../convex/_generated/api'
+import type { InsightsSummary, StreakInfo } from '@/lib/analytics'
 import { InsightsClient } from './client'
 
 // Revalidate every 60 seconds for faster loads
@@ -19,34 +20,29 @@ export default async function InsightsPage() {
   const startDate = new Date(now.getFullYear(), now.getMonth(), 1)
   const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0)
   
-  // Get 6 months ago for heatmap (faster than full year)
   const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1)
+  const start = startDate.toISOString().slice(0, 10)
+  const end = endDate.toISOString().slice(0, 10)
+  const heatmapStart = sixMonthsAgo.toISOString().slice(0, 10)
 
   // Fetch all data in parallel for maximum speed
-  const [insights, streaks, habits, yearEntries] = await Promise.all([
-    getInsightsSummary(userId, startDate, endDate),
-    getAllStreaks(userId),
-    prisma.habit.findMany({
-      where: { userId, active: true },
-      select: { id: true, title: true, color: true },
-    }),
-    prisma.habitEntry.findMany({
-      where: {
-        userId,
-        entryDate: { gte: sixMonthsAgo, lte: endDate },
-        completed: true,
-      },
-      select: { entryDate: true },
-    }),
+  const [insights, streaks, habits, allEntries] = await Promise.all([
+    convex.query(api.insights.summary, { userId, startDate: start, endDate: end }),
+    convex.query(api.insights.streaks, { userId }),
+    convex.query(api.habits.list, { userId, active: true }),
+    convex.query(api.entries.list, { userId, start: heatmapStart, end }),
   ])
+  const yearEntries = allEntries
+    .filter((e) => e.completed)
+    .map((e) => ({ entryDate: new Date(`${e.entryDate}T00:00:00.000Z`) }))
 
   // Process entries for heatmap
   const heatmapData = processEntriesForHeatmap(yearEntries)
 
   return (
     <InsightsClient
-      insights={insights}
-      streaks={streaks}
+      insights={insights as unknown as InsightsSummary}
+      streaks={streaks.streaksByHabit as unknown as StreakInfo[]}
       habits={habits}
       month={now.getMonth()}
       year={now.getFullYear()}

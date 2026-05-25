@@ -1,0 +1,900 @@
+FocusFlow Studio Prompts (Supabase)
+Version: 1.2
+Purpose: detailed, task-based prompts for building FocusFlow with Supabase and Clerk.
+
+Core API - Route Handlers
+I am building a habit tracking app named FocusFlow using Next.js 15 App Router.
+
+Global API rules
+1. Write code only inside src/app/api/**.
+2. Use zod for input validation in every route.
+3. Use Clerk auth() and scope all queries by userId.
+4. Return JSON with { data, error }.
+5. Use standard PrismaClient with Supabase DATABASE_URL.
+6. Use date-fns and date-fns-tz for timezone normalization.
+7. Use 401 for unauthenticated, 400 for invalid input, 404 for missing data.
+8. Always validate required fields and coerce types where needed.
+
+Habits API
+Your task is to implement the API for this module.
+Files to edit:
+- src/app/api/habits/route.ts
+- src/app/api/habits/[id]/route.ts
+- src/app/api/habits/ai-generate/route.ts
+Steps:
+- Create GET /api/habits with optional includeArchived and category filters.
+- Create POST /api/habits to add a habit.
+- Create GET /api/habits/[id] to fetch a single habit.
+- Create PATCH /api/habits/[id] to update habit fields.
+- Create DELETE /api/habits/[id] to archive or delete a habit.
+- Create POST /api/habits/ai-generate to generate a habit from a prompt.
+Validation:
+- goalType must be binary, duration, or quantity.
+- if goalType is duration or quantity, require goalTarget and unit.
+- title is required and trimmed.
+- color must be a valid hex string.
+Behavior:
+- Always scope by userId.
+- Use soft delete for archive unless hardDelete is true.
+- AI fallback uses deterministic template matching if GEMINI_API_KEY is missing.
+
+Entries API
+Your task is to implement the API for this module.
+Files to edit:
+- src/app/api/entries/route.ts
+- src/app/api/entries/[id]/route.ts
+Steps:
+- Create GET /api/entries with startDate, endDate, and optional habitId.
+- Create POST /api/entries to upsert daily entries.
+- Create PATCH /api/entries/[id] to update entry fields.
+- Create DELETE /api/entries/[id] to remove an entry.
+Validation:
+- entryDate must be a valid date.
+- value must be non-negative.
+- mood and energy must be in range 1-5.
+Behavior:
+- Normalize entryDate to user timezone at midnight.
+- Enforce unique (habitId, userId, entryDate).
+- Support bulk toggle for the monthly grid.
+
+Insights API
+Your task is to implement the API for this module.
+Files to edit:
+- src/app/api/insights/summary/route.ts
+- src/app/api/insights/streaks/route.ts
+Steps:
+- Create GET /api/insights/summary for completion metrics.
+- Create GET /api/insights/streaks for per-habit and overall streaks.
+Validation:
+- startDate and endDate are required for summary.
+Behavior:
+- Return category breakdown.
+- Return best and worst day analysis.
+- Return top habits by completion rate.
+
+Badges API
+Your task is to implement the API for this module.
+Files to edit:
+- src/app/api/badges/route.ts
+Steps:
+- Create GET /api/badges to list earned badges.
+Validation:
+- No input required.
+Behavior:
+- Include badge definitions from src/lib/badges.ts.
+- Return awardedAt and metadata.
+
+Challenges API
+Your task is to implement the API for this module.
+Files to edit:
+- src/app/api/challenges/route.ts
+- src/app/api/challenges/join/route.ts
+- src/app/api/challenges/[id]/progress/route.ts
+Steps:
+- Create GET /api/challenges to list challenges.
+- Create POST /api/challenges/join to join and create habits.
+- Create PATCH /api/challenges/[id]/progress to update progress.
+Validation:
+- challengeId is required when joining.
+Behavior:
+- Avoid duplicate participant entries.
+- Progress cannot exceed duration.
+
+Focus API
+Your task is to implement the API for this module.
+Files to edit:
+- src/app/api/focus/route.ts
+- src/app/api/focus/[id]/route.ts
+- src/app/api/focus/stats/route.ts
+Steps:
+- Create POST /api/focus to save focus sessions.
+- Create DELETE /api/focus/[id] to remove a session.
+- Create GET /api/focus/stats for time totals.
+Validation:
+- duration must be positive.
+Behavior:
+- Group totals by day in user timezone.
+
+Export API
+Your task is to implement the API for this module.
+Files to edit:
+- src/app/api/exports/csv/route.ts
+- src/app/api/exports/pdf/route.ts
+Steps:
+- Create GET /api/exports/csv to export CSV.
+- Create GET /api/exports/pdf to export PDF.
+Validation:
+- startDate and endDate are required.
+Behavior:
+- Use jsPDF and autotable for PDF.
+- Include summary header in PDF.
+
+Emails API
+Your task is to implement the API for this module.
+Files to edit:
+- src/app/api/emails/daily-reminder/route.ts
+Steps:
+- Create POST /api/emails/daily-reminder.
+Validation:
+- No input required.
+Behavior:
+- Respect emailOptOut and lastEmailSent.
+
+Account API
+Your task is to implement the API for this module.
+Files to edit:
+- src/app/api/account/status/route.ts
+- src/app/api/account/delete/route.ts
+Steps:
+- Create GET /api/account/status for profile summary.
+- Create DELETE /api/account/delete to remove user data.
+Validation:
+- No input required.
+Behavior:
+- Cascade delete with Prisma relations.
+
+Middleware
+Your task is to update the middleware to protect routes.
+Files to edit:
+- src/middleware.ts
+Instructions:
+1. Protect all non-public app routes.
+2. Allow public access to /, /sign-in, /sign-up, /privacy, /terms.
+3. Add CORS headers for /api routes.
+4. Handle OPTIONS preflight for /api routes.
+
+App UI
+Prompts for the app layout and shared UI.
+
+Sidebar and Header
+Your next task is only to create the layout structure of the app.
+Files to edit:
+- src/app/(app)/layout.tsx
+- src/components/Sidebar.tsx
+- src/components/Logo.tsx
+Instructions:
+1. Layout should have a sidebar, header, and main content area.
+2. Sidebar links: Dashboard, Habits, Calendar, Insights, Export, Settings, Help.
+3. Header should show user profile and quick actions.
+4. Use next/link and next/image for navigation and images.
+5. Make sidebar responsive with a mobile drawer.
+
+App Pages
+
+Dashboard Page
+Your next task is only to create this page.
+Files to edit:
+- src/app/(app)/dashboard/page.tsx
+- src/app/(app)/dashboard/client.tsx
+Instructions:
+- Create summary cards for streaks, completion rate, and habit count.
+- Render donut chart, weekly bars, and 30-day trend line.
+- Show daily quote and streak message.
+- Show recent badges and a focus timer entry point.
+- Add loading and empty states for new users.
+- Use ISR revalidate 60 seconds.
+Data sources:
+- /api/insights/summary
+- /api/insights/streaks
+- /api/badges
+- /api/entries
+States:
+- Loading state
+- Empty state
+- Error state
+
+Habits Page
+Your next task is only to create this page.
+Files to edit:
+- src/app/(app)/habits/page.tsx
+- src/app/(app)/habits/client.tsx
+Instructions:
+- Render monthly grid for quick toggles.
+- Show habit list with color chips and goal types.
+- Include create and edit modal.
+- Include archive panel and templates picker.
+- Include AI habit generator modal.
+- Support inline value editing for duration and quantity.
+Data sources:
+- /api/habits
+- /api/entries
+- /api/habits/ai-generate
+States:
+- Loading state
+- Empty state
+- Error state
+
+Calendar Page
+Your next task is only to create this page.
+Files to edit:
+- src/app/(app)/calendar/page.tsx
+- src/app/(app)/calendar/client.tsx
+Instructions:
+- Render year view with month sections.
+- Color code daily circles based on completion intensity.
+- Show year stats summary at top.
+- Provide filters by habit and category.
+- Add hover or click to show day details.
+Data sources:
+- /api/habits
+- /api/entries
+States:
+- Loading state
+- Empty state
+- Error state
+
+Insights Page
+Your next task is only to create this page.
+Files to edit:
+- src/app/(app)/insights/page.tsx
+- src/app/(app)/insights/client.tsx
+Instructions:
+- Render 6-month heatmap.
+- Render category radar chart.
+- Render streak table per habit.
+- Render top habits and day analysis.
+- Render 30-day trend line with moving average.
+Data sources:
+- /api/insights/summary
+- /api/insights/streaks
+- /api/entries
+States:
+- Loading state
+- Empty state
+- Error state
+
+Export Page
+Your next task is only to create this page.
+Files to edit:
+- src/app/(app)/export/page.tsx
+- src/app/(app)/export/client.tsx
+Instructions:
+- Provide date range picker with presets.
+- Provide buttons for CSV and PDF export.
+- Show preview of export summary.
+- Disable export when date range is invalid.
+Data sources:
+- /api/exports/csv
+- /api/exports/pdf
+States:
+- Loading state
+- Empty state
+- Error state
+
+Settings Page
+Your next task is only to create this page.
+Files to edit:
+- src/app/(app)/settings/page.tsx
+- src/app/(app)/settings/client.tsx
+Instructions:
+- Render profile form for name and email.
+- Render timezone selector.
+- Render email opt-out toggle.
+- Render account delete action with confirmation.
+Data sources:
+- /api/account/status
+- /api/account/delete
+States:
+- Loading state
+- Empty state
+- Error state
+
+Help Page
+Your next task is only to create this page.
+Files to edit:
+- src/app/(app)/help/page.tsx
+- src/app/(app)/help/client.tsx
+Instructions:
+- Render FAQ accordion.
+- Render quick start guide and tips.
+- Render feedback form (optional).
+Data sources:
+- static content
+States:
+- Loading state
+- Empty state
+- Error state
+
+Public Pages
+
+Landing Page
+Your next task is only to create this page.
+Files to edit:
+- src/app/page.tsx
+Instructions:
+- Hero with CTA and app preview.
+- Feature grid and benefit highlights.
+- Testimonials or social proof strip.
+- FAQ and footer.
+
+Pricing Page
+Your next task is only to create this page.
+Files to edit:
+- src/app/pricing/page.tsx
+Instructions:
+- Tier cards with comparison table.
+- Monthly vs yearly toggle.
+- Primary CTA to sign up.
+
+Privacy Page
+Your next task is only to create this page.
+Files to edit:
+- src/app/privacy/page.tsx
+Instructions:
+- Single column article layout.
+- Last-updated banner.
+
+Terms Page
+Your next task is only to create this page.
+Files to edit:
+- src/app/terms/page.tsx
+Instructions:
+- Single column article layout.
+- Last-updated banner.
+
+Sign-in Page
+Your next task is only to create this page.
+Files to edit:
+- src/app/sign-in/[[...sign-in]]/page.tsx
+Instructions:
+- Render Clerk sign-in component.
+- Minimal layout with privacy links.
+
+Sign-up Page
+Your next task is only to create this page.
+Files to edit:
+- src/app/sign-up/[[...sign-up]]/page.tsx
+Instructions:
+- Render Clerk sign-up component.
+- Minimal layout with terms and privacy links.
+
+Components
+
+Component: FocusTimer
+Your next task is only to create this component.
+Files to edit:
+- src/components/FocusTimer.tsx
+Instructions:
+- Support focus, short break, and long break modes.
+- Add start, pause, reset controls.
+- Track total focus time and sessions.
+- Play sound on completion.
+- Persist session to /api/focus on close.
+
+Component: AddHabitModal
+Your next task is only to create this component.
+Files to edit:
+- src/components/AddHabitModal.tsx
+Instructions:
+- Form fields: title, description, category, color.
+- Goal fields: goalType, goalTarget, unit.
+- Validate and submit to /api/habits.
+
+Component: AddHabitWithAI
+Your next task is only to create this component.
+Files to edit:
+- src/components/AddHabitWithAI.tsx
+Instructions:
+- Prompt input and generate button.
+- Show loading and error states.
+- Preview generated habit and allow submit.
+- Submit to /api/habits after confirmation.
+
+Component: ChallengeBrowser
+Your next task is only to create this component.
+Files to edit:
+- src/components/ChallengeBrowser.tsx
+Instructions:
+- List built-in challenges.
+- Support custom challenge builder.
+- Join challenge via /api/challenges/join.
+
+Component: BadgeDisplay
+Your next task is only to create this component.
+Files to edit:
+- src/components/BadgeDisplay.tsx
+Instructions:
+- Show earned badges and all badges.
+- Compact mode for dashboard.
+- New badge notification.
+
+Component: Charts
+Your next task is only to create this component.
+Files to edit:
+- src/components/DonutChart.tsx
+- src/components/ChartLine.tsx
+- src/components/WeeklyBars.tsx
+- src/components/CategoryRadar.tsx
+- src/components/Heatmap.tsx
+Instructions:
+- Use Chart.js for all charts.
+- Provide legends and tooltips.
+- Make charts responsive.
+
+Data Modules
+Your next task is to implement domain logic modules.
+Files to edit:
+- src/lib/analytics.ts
+- src/lib/badges.ts
+- src/lib/challenges.ts
+- src/lib/templates.ts
+- src/lib/quotes.ts
+- src/lib/utils.ts
+Instructions:
+1. Analytics: completion summary, streaks, heatmap, top habits.
+2. Badges: definitions and award checks.
+3. Challenges: templates with habit JSON.
+4. Templates: per-category habit templates.
+5. Quotes: daily quote rotation and streak message.
+6. Utils: date helpers and className helper.
+
+PWA
+Your next task is to add PWA support.
+Files to edit:
+- public/manifest.json
+- public/sw.js
+Instructions:
+1. Add name, short_name, icons, and theme_color.
+2. Cache the app shell for offline view.
+3. Use safe caching strategy, no stale user data.
+
+Setup
+Your next task is to provide setup instructions.
+Instructions:
+1. Provide .env.example with required keys.
+2. Provide Prisma generate and db push commands.
+3. Provide npm run dev command.
+4. Document Supabase DATABASE_URL format.
+
+Modifications
+Your next task is to improve UX on pagination and data refresh.
+Instructions:
+1. Use client fetch for pages beyond the first page.
+2. Avoid full page refresh on filters.
+3. Show a centered loader while fetching.
+
+Additional notes
+Your next task is to apply the following additional rules.
+Instructions:
+- Use Promise.all for parallel queries in server components.
+- Do not render charts on the server.
+- Validate timezone strings before saving.
+- Use lightweight SVG icons for better performance.
+- Prefer ISO date strings in API responses.
+- Handle empty states with clear CTAs.
+- Use aria-labels for icon-only buttons.
+- Prefer non-blocking badge checks.
+- Do not store secrets in the client bundle.
+- Add error toasts for failed network requests.
+- Keep AI fallback deterministic.
+- Limit export ranges if needed.
+- Add rate limits for reminder emails.
+- Use optimistic UI for entry toggles.
+- Clamp mood and energy values between 1 and 5.
+- Normalize category names for grouping.
+- Keep chart colors consistent across pages.
+- Avoid N+1 queries by using Prisma include.
+
+Appendix - Checklists
+API checklist
+- All routes validate input with zod.
+- All routes scope by userId.
+- Errors return consistent JSON shape.
+- Dates are normalized by timezone.
+- Pagination includes total counts.
+
+UI checklist
+- Each page has loading state.
+- Each page has empty state.
+- Each page has error state.
+- Mobile layout is tested.
+- Buttons have aria-labels when icon-only.
+
+Performance checklist
+- Parallelize server queries.
+- Avoid N+1 queries.
+- Use ISR for heavy pages.
+- Limit chart points on mobile.
+
+Security checklist
+- No secrets in client bundle.
+- Auth enforced on all APIs.
+- Sanitize user input.
+- Delete user data on account delete.
+
+Testing checklist
+- Unit test analytics functions.
+- Integration test key APIs.
+- E2E test sign-up and habit creation.
+- Verify export output format.
+
+- Avoid blocking UI on badge evaluation.
+- Prefer server-side aggregation for insights.
+- Use suspense boundaries for heavy charts.
+- Guard against empty datasets.
+- Use stable keys in lists.
+- Include unit labels for duration and quantity.
+- Provide helper text in forms.
+- Use controlled inputs for form state.
+- Defer chart rendering until data is ready.
+- Use consistent spacing and typography.
+- Verify empty state copy is clear.
+- Confirm export range validation.
+- Use consistent category colors.
+- Ensure charts are responsive.
+- Add confirmation dialogs for destructive actions.
+- Keep focus timer in sync with UI state.
+- Save focus sessions only on completion.
+- Show toast on successful exports.
+- Use ISO dates in query params.
+- Normalize habit titles for duplicates.
+- Avoid blocking UI on badge evaluation.
+- Prefer server-side aggregation for insights.
+- Use suspense boundaries for heavy charts.
+- Guard against empty datasets.
+- Use stable keys in lists.
+- Include unit labels for duration and quantity.
+- Provide helper text in forms.
+- Use controlled inputs for form state.
+- Defer chart rendering until data is ready.
+- Use consistent spacing and typography.
+- Verify empty state copy is clear.
+- Confirm export range validation.
+- Use consistent category colors.
+- Ensure charts are responsive.
+- Add confirmation dialogs for destructive actions.
+- Keep focus timer in sync with UI state.
+- Save focus sessions only on completion.
+- Show toast on successful exports.
+- Use ISO dates in query params.
+- Normalize habit titles for duplicates.
+- Avoid blocking UI on badge evaluation.
+- Prefer server-side aggregation for insights.
+- Use suspense boundaries for heavy charts.
+- Guard against empty datasets.
+- Use stable keys in lists.
+- Include unit labels for duration and quantity.
+- Provide helper text in forms.
+- Use controlled inputs for form state.
+- Defer chart rendering until data is ready.
+- Use consistent spacing and typography.
+- Verify empty state copy is clear.
+- Confirm export range validation.
+- Use consistent category colors.
+- Ensure charts are responsive.
+- Add confirmation dialogs for destructive actions.
+- Keep focus timer in sync with UI state.
+- Save focus sessions only on completion.
+- Show toast on successful exports.
+- Use ISO dates in query params.
+- Normalize habit titles for duplicates.
+- Avoid blocking UI on badge evaluation.
+- Prefer server-side aggregation for insights.
+- Use suspense boundaries for heavy charts.
+- Guard against empty datasets.
+- Use stable keys in lists.
+- Include unit labels for duration and quantity.
+- Provide helper text in forms.
+- Use controlled inputs for form state.
+- Defer chart rendering until data is ready.
+- Use consistent spacing and typography.
+- Verify empty state copy is clear.
+- Confirm export range validation.
+- Use consistent category colors.
+- Ensure charts are responsive.
+- Add confirmation dialogs for destructive actions.
+- Keep focus timer in sync with UI state.
+- Save focus sessions only on completion.
+- Show toast on successful exports.
+- Use ISO dates in query params.
+- Normalize habit titles for duplicates.
+- Avoid blocking UI on badge evaluation.
+- Prefer server-side aggregation for insights.
+- Use suspense boundaries for heavy charts.
+- Guard against empty datasets.
+- Use stable keys in lists.
+- Include unit labels for duration and quantity.
+- Provide helper text in forms.
+- Use controlled inputs for form state.
+- Defer chart rendering until data is ready.
+- Use consistent spacing and typography.
+- Verify empty state copy is clear.
+- Confirm export range validation.
+- Use consistent category colors.
+- Ensure charts are responsive.
+- Add confirmation dialogs for destructive actions.
+- Keep focus timer in sync with UI state.
+- Save focus sessions only on completion.
+- Show toast on successful exports.
+- Use ISO dates in query params.
+- Normalize habit titles for duplicates.
+- Avoid blocking UI on badge evaluation.
+- Prefer server-side aggregation for insights.
+- Use suspense boundaries for heavy charts.
+- Guard against empty datasets.
+- Use stable keys in lists.
+- Include unit labels for duration and quantity.
+- Provide helper text in forms.
+- Use controlled inputs for form state.
+- Defer chart rendering until data is ready.
+- Use consistent spacing and typography.
+- Verify empty state copy is clear.
+- Confirm export range validation.
+- Use consistent category colors.
+- Ensure charts are responsive.
+- Add confirmation dialogs for destructive actions.
+- Keep focus timer in sync with UI state.
+- Save focus sessions only on completion.
+- Show toast on successful exports.
+- Use ISO dates in query params.
+- Normalize habit titles for duplicates.
+- Avoid blocking UI on badge evaluation.
+- Prefer server-side aggregation for insights.
+- Use suspense boundaries for heavy charts.
+- Guard against empty datasets.
+- Use stable keys in lists.
+- Include unit labels for duration and quantity.
+- Provide helper text in forms.
+- Use controlled inputs for form state.
+- Defer chart rendering until data is ready.
+- Use consistent spacing and typography.
+- Verify empty state copy is clear.
+- Confirm export range validation.
+- Use consistent category colors.
+- Ensure charts are responsive.
+- Add confirmation dialogs for destructive actions.
+- Keep focus timer in sync with UI state.
+- Save focus sessions only on completion.
+- Show toast on successful exports.
+- Use ISO dates in query params.
+- Normalize habit titles for duplicates.
+- Avoid blocking UI on badge evaluation.
+- Prefer server-side aggregation for insights.
+- Use suspense boundaries for heavy charts.
+- Guard against empty datasets.
+- Use stable keys in lists.
+- Include unit labels for duration and quantity.
+- Provide helper text in forms.
+- Use controlled inputs for form state.
+- Defer chart rendering until data is ready.
+- Use consistent spacing and typography.
+- Verify empty state copy is clear.
+- Confirm export range validation.
+- Use consistent category colors.
+- Ensure charts are responsive.
+- Add confirmation dialogs for destructive actions.
+- Keep focus timer in sync with UI state.
+- Save focus sessions only on completion.
+- Show toast on successful exports.
+- Use ISO dates in query params.
+- Normalize habit titles for duplicates.
+- Avoid blocking UI on badge evaluation.
+- Prefer server-side aggregation for insights.
+- Use suspense boundaries for heavy charts.
+- Guard against empty datasets.
+- Use stable keys in lists.
+- Include unit labels for duration and quantity.
+- Provide helper text in forms.
+- Use controlled inputs for form state.
+- Defer chart rendering until data is ready.
+- Use consistent spacing and typography.
+- Verify empty state copy is clear.
+- Confirm export range validation.
+- Use consistent category colors.
+- Ensure charts are responsive.
+- Add confirmation dialogs for destructive actions.
+- Keep focus timer in sync with UI state.
+- Save focus sessions only on completion.
+- Show toast on successful exports.
+- Use ISO dates in query params.
+- Normalize habit titles for duplicates.
+- Avoid blocking UI on badge evaluation.
+- Prefer server-side aggregation for insights.
+- Use suspense boundaries for heavy charts.
+- Guard against empty datasets.
+- Use stable keys in lists.
+- Include unit labels for duration and quantity.
+- Provide helper text in forms.
+- Use controlled inputs for form state.
+- Defer chart rendering until data is ready.
+- Use consistent spacing and typography.
+- Verify empty state copy is clear.
+- Confirm export range validation.
+- Use consistent category colors.
+- Ensure charts are responsive.
+- Add confirmation dialogs for destructive actions.
+- Keep focus timer in sync with UI state.
+- Save focus sessions only on completion.
+- Show toast on successful exports.
+- Use ISO dates in query params.
+- Normalize habit titles for duplicates.
+- Avoid blocking UI on badge evaluation.
+- Prefer server-side aggregation for insights.
+- Use suspense boundaries for heavy charts.
+- Guard against empty datasets.
+- Use stable keys in lists.
+- Include unit labels for duration and quantity.
+- Provide helper text in forms.
+- Use controlled inputs for form state.
+- Defer chart rendering until data is ready.
+- Use consistent spacing and typography.
+- Verify empty state copy is clear.
+- Confirm export range validation.
+- Use consistent category colors.
+- Ensure charts are responsive.
+- Add confirmation dialogs for destructive actions.
+- Keep focus timer in sync with UI state.
+- Save focus sessions only on completion.
+- Show toast on successful exports.
+- Use ISO dates in query params.
+- Normalize habit titles for duplicates.
+- Avoid blocking UI on badge evaluation.
+- Prefer server-side aggregation for insights.
+- Use suspense boundaries for heavy charts.
+- Guard against empty datasets.
+- Use stable keys in lists.
+- Include unit labels for duration and quantity.
+- Provide helper text in forms.
+- Use controlled inputs for form state.
+- Defer chart rendering until data is ready.
+- Use consistent spacing and typography.
+- Verify empty state copy is clear.
+- Confirm export range validation.
+- Use consistent category colors.
+- Ensure charts are responsive.
+- Add confirmation dialogs for destructive actions.
+- Keep focus timer in sync with UI state.
+- Save focus sessions only on completion.
+- Show toast on successful exports.
+- Use ISO dates in query params.
+- Normalize habit titles for duplicates.
+- Avoid blocking UI on badge evaluation.
+- Prefer server-side aggregation for insights.
+- Use suspense boundaries for heavy charts.
+- Guard against empty datasets.
+- Use stable keys in lists.
+- Include unit labels for duration and quantity.
+- Provide helper text in forms.
+- Use controlled inputs for form state.
+- Defer chart rendering until data is ready.
+- Use consistent spacing and typography.
+- Verify empty state copy is clear.
+- Confirm export range validation.
+- Use consistent category colors.
+- Ensure charts are responsive.
+- Add confirmation dialogs for destructive actions.
+- Keep focus timer in sync with UI state.
+- Save focus sessions only on completion.
+- Show toast on successful exports.
+- Use ISO dates in query params.
+- Normalize habit titles for duplicates.
+- Avoid blocking UI on badge evaluation.
+- Prefer server-side aggregation for insights.
+- Use suspense boundaries for heavy charts.
+- Guard against empty datasets.
+- Use stable keys in lists.
+- Include unit labels for duration and quantity.
+- Provide helper text in forms.
+- Use controlled inputs for form state.
+- Defer chart rendering until data is ready.
+- Use consistent spacing and typography.
+- Verify empty state copy is clear.
+- Confirm export range validation.
+- Use consistent category colors.
+- Ensure charts are responsive.
+- Add confirmation dialogs for destructive actions.
+- Keep focus timer in sync with UI state.
+- Save focus sessions only on completion.
+- Show toast on successful exports.
+- Use ISO dates in query params.
+- Normalize habit titles for duplicates.
+- Avoid blocking UI on badge evaluation.
+- Prefer server-side aggregation for insights.
+- Use suspense boundaries for heavy charts.
+- Guard against empty datasets.
+- Use stable keys in lists.
+- Include unit labels for duration and quantity.
+- Provide helper text in forms.
+- Use controlled inputs for form state.
+- Defer chart rendering until data is ready.
+- Use consistent spacing and typography.
+- Verify empty state copy is clear.
+- Confirm export range validation.
+- Use consistent category colors.
+- Ensure charts are responsive.
+- Add confirmation dialogs for destructive actions.
+- Keep focus timer in sync with UI state.
+- Save focus sessions only on completion.
+- Show toast on successful exports.
+- Use ISO dates in query params.
+- Normalize habit titles for duplicates.
+- Avoid blocking UI on badge evaluation.
+- Prefer server-side aggregation for insights.
+- Use suspense boundaries for heavy charts.
+- Guard against empty datasets.
+- Use stable keys in lists.
+- Include unit labels for duration and quantity.
+- Provide helper text in forms.
+- Use controlled inputs for form state.
+- Defer chart rendering until data is ready.
+- Use consistent spacing and typography.
+- Verify empty state copy is clear.
+- Confirm export range validation.
+- Use consistent category colors.
+- Ensure charts are responsive.
+- Add confirmation dialogs for destructive actions.
+- Keep focus timer in sync with UI state.
+- Save focus sessions only on completion.
+- Show toast on successful exports.
+- Use ISO dates in query params.
+- Normalize habit titles for duplicates.
+- Avoid blocking UI on badge evaluation.
+- Prefer server-side aggregation for insights.
+- Use suspense boundaries for heavy charts.
+- Guard against empty datasets.
+- Use stable keys in lists.
+- Include unit labels for duration and quantity.
+- Provide helper text in forms.
+- Use controlled inputs for form state.
+- Defer chart rendering until data is ready.
+- Use consistent spacing and typography.
+- Verify empty state copy is clear.
+- Confirm export range validation.
+- Use consistent category colors.
+- Ensure charts are responsive.
+- Add confirmation dialogs for destructive actions.
+- Keep focus timer in sync with UI state.
+- Save focus sessions only on completion.
+- Show toast on successful exports.
+- Use ISO dates in query params.
+- Normalize habit titles for duplicates.
+- Avoid blocking UI on badge evaluation.
+- Prefer server-side aggregation for insights.
+- Use suspense boundaries for heavy charts.
+- Guard against empty datasets.
+- Use stable keys in lists.
+- Include unit labels for duration and quantity.
+- Provide helper text in forms.
+- Use controlled inputs for form state.
+- Defer chart rendering until data is ready.
+- Use consistent spacing and typography.
+- Verify empty state copy is clear.
+- Confirm export range validation.
+- Use consistent category colors.
+- Ensure charts are responsive.
+- Add confirmation dialogs for destructive actions.
+- Keep focus timer in sync with UI state.
+- Save focus sessions only on completion.
+- Show toast on successful exports.
+- Use ISO dates in query params.
+- Normalize habit titles for duplicates.
+- Avoid blocking UI on badge evaluation.
+- Prefer server-side aggregation for insights.
+- Use suspense boundaries for heavy charts.
+- Guard against empty datasets.
+- Use stable keys in lists.
+- Include unit labels for duration and quantity.
+- Provide helper text in forms.
+- Use controlled inputs for form state.
+- Defer chart rendering until data is ready.
+- Use consistent spacing and typography.

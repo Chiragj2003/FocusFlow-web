@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
-import prisma from '@/lib/db'
+import { convex } from '@/lib/convex'
+import { api } from '../../../../../convex/_generated/api'
+import type { Id } from '../../../../../convex/_generated/dataModel'
 
 // GET /api/habits/[id] - Get a specific habit
 export async function GET(
@@ -15,14 +17,9 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const habit = await prisma.habit.findFirst({
-      where: { id, userId },
-      include: {
-        entries: {
-          orderBy: { entryDate: 'desc' },
-          take: 100,
-        },
-      },
+    const habit = await convex.query(api.habits.getById, {
+      userId,
+      id: id as Id<'habits'>,
     })
 
     if (!habit) {
@@ -55,28 +52,22 @@ export async function PUT(
     const body = await request.json()
     const { title, description, category, color, goalType, goalTarget, unit, active } = body
 
-    // Verify ownership
-    const existingHabit = await prisma.habit.findFirst({
-      where: { id, userId },
+    const habit = await convex.mutation(api.habits.update, {
+      userId,
+      id: id as Id<'habits'>,
+      title,
+      description,
+      category,
+      color,
+      goalType,
+      goalTarget,
+      unit,
+      active,
     })
 
-    if (!existingHabit) {
+    if (!habit) {
       return NextResponse.json({ error: 'Habit not found' }, { status: 404 })
     }
-
-    const habit = await prisma.habit.update({
-      where: { id },
-      data: {
-        ...(title !== undefined && { title }),
-        ...(description !== undefined && { description }),
-        ...(category !== undefined && { category }),
-        ...(color !== undefined && { color }),
-        ...(goalType !== undefined && { goalType }),
-        ...(goalTarget !== undefined && { goalTarget }),
-        ...(unit !== undefined && { unit }),
-        ...(active !== undefined && { active }),
-      },
-    })
 
     return NextResponse.json(habit)
   } catch (error) {
@@ -101,18 +92,14 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Verify ownership
-    const existingHabit = await prisma.habit.findFirst({
-      where: { id, userId },
+    const ok = await convex.mutation(api.habits.remove, {
+      userId,
+      id: id as Id<'habits'>,
     })
 
-    if (!existingHabit) {
+    if (!ok) {
       return NextResponse.json({ error: 'Habit not found' }, { status: 404 })
     }
-
-    await prisma.habit.delete({
-      where: { id },
-    })
 
     return NextResponse.json({ success: true })
   } catch (error) {
@@ -140,21 +127,15 @@ export async function PATCH(
     const body = await request.json()
     const { active } = body
 
-    // Verify ownership
-    const existingHabit = await prisma.habit.findFirst({
-      where: { id, userId },
+    const habit = await convex.mutation(api.habits.update, {
+      userId,
+      id: id as Id<'habits'>,
+      active,
     })
 
-    if (!existingHabit) {
+    if (!habit) {
       return NextResponse.json({ error: 'Habit not found' }, { status: 404 })
     }
-
-    const habit = await prisma.habit.update({
-      where: { id },
-      data: {
-        ...(active !== undefined && { active }),
-      },
-    })
 
     return NextResponse.json(habit)
   } catch (error) {

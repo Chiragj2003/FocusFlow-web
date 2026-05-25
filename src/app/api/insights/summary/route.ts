@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
-import { getInsightsSummary } from '@/lib/analytics'
+import { convex } from '@/lib/convex'
+import { api } from '../../../../../convex/_generated/api'
 
 // Force dynamic rendering for this API route
 export const dynamic = 'force-dynamic'
@@ -27,7 +28,11 @@ export async function GET(request: NextRequest) {
       ? new Date(end)
       : new Date(now.getFullYear(), now.getMonth() + 1, 0)
 
-    const summary = await getInsightsSummary(userId, startDate, endDate)
+    const summary = await convex.query(api.insights.summary, {
+      userId,
+      startDate: startDate.toISOString().slice(0, 10),
+      endDate: endDate.toISOString().slice(0, 10),
+    })
 
     return NextResponse.json(summary)
   } catch (error) {

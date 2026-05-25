@@ -1,6 +1,7 @@
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
-import prisma from '@/lib/db'
+import { convex } from '@/lib/convex'
+import { api } from '../../../../convex/_generated/api'
 import { CalendarClient } from './client'
 
 export default async function CalendarPage() {
@@ -15,22 +16,12 @@ export default async function CalendarPage() {
   const startDate = new Date(currentYear, 0, 1)
   const endDate = new Date(currentYear, 11, 31)
 
-  // Fetch habits and entries for the year
+  const start = startDate.toISOString().slice(0, 10)
+  const end = endDate.toISOString().slice(0, 10)
+
   const [habits, entries] = await Promise.all([
-    prisma.habit.findMany({
-      where: { userId, active: true },
-      orderBy: { createdAt: 'desc' },
-    }),
-    prisma.habitEntry.findMany({
-      where: {
-        userId,
-        entryDate: {
-          gte: startDate,
-          lte: endDate,
-        },
-      },
-      orderBy: { entryDate: 'desc' },
-    }),
+    convex.query(api.habits.list, { userId, active: true }),
+    convex.query(api.entries.list, { userId, start, end }),
   ])
 
   // Serialize dates for client component
@@ -43,10 +34,10 @@ export default async function CalendarPage() {
     unit: h.unit,
   }))
 
-  const serializedEntries = entries.map((e: { id: string; habitId: string; entryDate: Date; completed: boolean; value: number | null }) => ({
+  const serializedEntries = entries.map((e: { id: string; habitId: string; entryDate: string; completed: boolean; value: number | null }) => ({
     id: e.id,
     habitId: e.habitId,
-    entryDate: e.entryDate.toISOString().split('T')[0],
+    entryDate: e.entryDate,
     completed: e.completed,
     value: e.value,
   }))

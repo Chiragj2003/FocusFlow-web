@@ -9,19 +9,39 @@ import { TopHabitsList, StreakCard } from '@/components/TopHabitsList'
 import { BadgeDisplay } from '@/components/BadgeDisplay'
 import { MotivationalQuote } from '@/components/MotivationalQuote'
 import { LayoutGrid, Target, Flame, TrendingUp, Plus } from 'lucide-react'
-import type { InsightsSummary } from '@/lib/analytics'
 import type { BadgeDefinition } from '@/lib/badges'
 import type { Quote } from '@/lib/quotes'
 import Link from 'next/link'
 
+interface DashboardInsightsSummary {
+  overallCompletionRate: number
+  totalCompleted: number
+  totalPossible: number
+  topHabits: Array<{
+    habitId: string
+    title: string
+    color: string
+    completionRate: number
+    completedCount: number
+    totalDays: number
+  }>
+  weekly: Array<{
+    day: string
+    date: string
+    completed: number
+    total: number
+    rate: number
+  }>
+}
+
 interface DashboardClientProps {
-  insights: InsightsSummary
+  insights: DashboardInsightsSummary
   dailyData: { date: string; value: number }[]
   bestStreak: number
   currentBestStreak: number
   habitsCount: number
   userName?: string
-  badges: { name: string; awardedAt: Date; definition?: BadgeDefinition }[]
+  badges: { name: string; awardedAt: Date | string; definition?: BadgeDefinition }[]
   allBadges: BadgeDefinition[]
   dailyQuote: Quote
   streakMessage: string
@@ -42,6 +62,12 @@ export function DashboardClient({
   const completionPercentage = Math.round(insights.overallCompletionRate * 100)
   const firstName = userName?.split(' ')[0] || 'there'
   const [todayString, setTodayString] = useState('')
+  const weeklyBarsData = insights.weekly.map((week) => ({
+    weekStart: week.date,
+    completed: week.completed,
+    possible: week.total,
+    completionRate: week.rate,
+  }))
 
   useEffect(() => {
     setTodayString(new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' }))
@@ -156,10 +182,10 @@ export function DashboardClient({
               Weekly Overview
             </h2>
             <div className="block sm:hidden">
-              <WeeklyBars data={insights.weekly} height={120} />
+              <WeeklyBars data={weeklyBarsData} height={120} />
             </div>
             <div className="hidden sm:block">
-              <WeeklyBars data={insights.weekly} height={180} />
+              <WeeklyBars data={weeklyBarsData} height={180} />
             </div>
           </div>
         </div>
@@ -193,7 +219,13 @@ export function DashboardClient({
                 View all
               </Link>
             </div>
-            <TopHabitsList habits={insights.topHabits.slice(0, 5)} />
+            <TopHabitsList
+              habits={insights.topHabits.slice(0, 5).map((habit) => ({
+                ...habit,
+                currentStreak: 0,
+                longestStreak: 0,
+              }))}
+            />
           </div>
 
           {/* Streaks */}

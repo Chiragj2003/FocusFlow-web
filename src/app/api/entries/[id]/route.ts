@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
-import prisma from '@/lib/db'
+import { convex } from '@/lib/convex'
+import { api } from '../../../../../convex/_generated/api'
+import type { Id } from '../../../../../convex/_generated/dataModel'
 
 // PUT /api/entries/[id] - Update a specific entry
 export async function PUT(
@@ -18,23 +20,16 @@ export async function PUT(
     const body = await request.json()
     const { completed, value, notes } = body
 
-    // Verify ownership
-    const existingEntry = await prisma.habitEntry.findFirst({
-      where: { id, userId },
+    const entry = await convex.mutation(api.entries.update, {
+      userId,
+      id: id as Id<'entries'>,
+      completed,
+      value,
+      notes,
     })
-
-    if (!existingEntry) {
+    if (!entry) {
       return NextResponse.json({ error: 'Entry not found' }, { status: 404 })
     }
-
-    const entry = await prisma.habitEntry.update({
-      where: { id },
-      data: {
-        ...(completed !== undefined && { completed }),
-        ...(value !== undefined && { value }),
-        ...(notes !== undefined && { notes }),
-      },
-    })
 
     return NextResponse.json(entry)
   } catch (error) {
@@ -59,18 +54,13 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Verify ownership
-    const existingEntry = await prisma.habitEntry.findFirst({
-      where: { id, userId },
+    const ok = await convex.mutation(api.entries.remove, {
+      userId,
+      id: id as Id<'entries'>,
     })
-
-    if (!existingEntry) {
+    if (!ok) {
       return NextResponse.json({ error: 'Entry not found' }, { status: 404 })
     }
-
-    await prisma.habitEntry.delete({
-      where: { id },
-    })
 
     return NextResponse.json({ success: true })
   } catch (error) {

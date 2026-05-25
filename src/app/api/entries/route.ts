@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
-import prisma from '@/lib/db'
+import { convex } from '@/lib/convex'
+import { api } from '../../../../convex/_generated/api'
+import type { Id } from '../../../../convex/_generated/dataModel'
 
 // GET /api/entries - Get entries for a date range
 export async function GET(request: NextRequest) {
@@ -16,37 +18,11 @@ export async function GET(request: NextRequest) {
     const start = searchParams.get('start')
     const end = searchParams.get('end')
 
-    const where: { userId: string; habitId?: string; entryDate?: { gte?: Date; lte?: Date } } = { userId }
-    
-    if (habitId) {
-      where.habitId = habitId
-    }
-    
-    if (start) {
-      where.entryDate = { ...where.entryDate, gte: new Date(start) }
-    }
-    
-    if (end) {
-      where.entryDate = { ...where.entryDate, lte: new Date(end) }
-    }
-
-    const entries = await prisma.habitEntry.findMany({
-      where,
-      select: {
-        id: true,
-        habitId: true,
-        userId: true,
-        entryDate: true,
-        completed: true,
-        value: true,
-        notes: true,
-        createdAt: true,
-        updatedAt: true,
-        habit: {
-          select: { title: true, color: true, goalType: true },
-        },
-      },
-      orderBy: { entryDate: 'desc' },
+    const entries = await convex.query(api.entries.list, {
+      userId,
+      ...(habitId ? { habitId: habitId as Id<'habits'> } : {}),
+      ...(start ? { start } : {}),
+      ...(end ? { end } : {}),
     })
 
     // Add cache headers for better performance
@@ -81,37 +57,18 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const parsedDate = new Date(entryDate)
-
-    // Upsert the entry directly - habit ownership verified by unique constraint
-    const entry = await prisma.habitEntry.upsert({
-      where: {
-        habitId_userId_entryDate: {
-          habitId,
-          userId,
-          entryDate: parsedDate,
-        },
-      },
-      update: {
-        completed: completed ?? false,
-        value: value ?? 0,
-        notes: notes ?? null,
-        mood: mood ?? null,
-        energy: energy ?? null,
-        duration: duration ?? null,
-      },
-      create: {
-        habitId,
-        userId,
-        entryDate: parsedDate,
-        completed: completed ?? false,
-        value: value ?? 0,
-        notes: notes ?? null,
-        mood: mood ?? null,
-        energy: energy ?? null,
-        duration: duration ?? null,
-      },
+    const entry = await convex.mutation(api.entries.upsert, {
+      userId,
+      habitId: habitId as Id<'habits'>,
+      entryDate,
+      completed,
+      value,
+      notes,
+      mood,
+      energy,
+      duration,
     })
+    if (!entry) return NextResponse.json({ error: 'Habit not found' }, { status: 404 })
 
     return NextResponse.json(entry)
   } catch (error) {

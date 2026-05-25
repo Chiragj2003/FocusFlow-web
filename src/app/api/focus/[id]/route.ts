@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
-import { prisma } from '@/lib/db'
+import { convex } from '@/lib/convex'
+import { api } from '../../../../../convex/_generated/api'
+import type { Id } from '../../../../../convex/_generated/dataModel'
 
 // DELETE /api/focus/[id] - Delete a focus session
 export async function DELETE(
@@ -16,18 +18,13 @@ export async function DELETE(
 
     const { id } = await params
 
-    // Check if session exists and belongs to user
-    const session = await prisma.focusSession.findFirst({
-      where: { id, userId },
+    const ok = await convex.mutation(api.focus.remove, {
+      userId,
+      id: id as Id<'focusSessions'>,
     })
-
-    if (!session) {
+    if (!ok) {
       return NextResponse.json({ error: 'Focus session not found' }, { status: 404 })
     }
-
-    await prisma.focusSession.delete({
-      where: { id },
-    })
 
     return NextResponse.json({ success: true })
   } catch (error) {

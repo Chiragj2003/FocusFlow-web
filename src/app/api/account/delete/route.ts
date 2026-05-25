@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { auth, clerkClient } from '@clerk/nextjs/server'
-import { prisma } from '@/lib/db'
+import { convex } from '@/lib/convex'
+import { api } from '../../../../../convex/_generated/api'
 
 export async function DELETE(request: Request) {
   try {
@@ -19,10 +20,7 @@ export async function DELETE(request: Request) {
       )
     }
 
-    // Delete user from database (cascade will delete all related data)
-    await prisma.user.delete({
-      where: { id: userId },
-    })
+    await convex.mutation(api.users.purgeUserData, { clerkUserId: userId })
 
     // Delete user from Clerk
     const clerk = await clerkClient()

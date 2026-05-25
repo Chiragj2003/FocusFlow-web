@@ -1,5 +1,6 @@
 import { auth, currentUser } from '@clerk/nextjs/server'
-import prisma from './db'
+import { convex } from './convex'
+import { api } from '../../convex/_generated/api'
 
 export async function getAuthenticatedUser() {
   const { userId } = await auth()
@@ -19,19 +20,11 @@ export async function ensureUserExists() {
     return null
   }
 
-  // Upsert user in our database
-  const dbUser = await prisma.user.upsert({
-    where: { id: userId },
-    update: {
-      email: user.emailAddresses[0]?.emailAddress,
-      name: user.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : undefined,
-    },
-    create: {
-      id: userId,
-      email: user.emailAddresses[0]?.emailAddress,
-      name: user.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : null,
-      timezone: 'UTC',
-    },
+  const dbUser = await convex.mutation(api.users.upsertFromClerk, {
+    clerkUserId: userId,
+    email: user.emailAddresses[0]?.emailAddress,
+    name: user.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : undefined,
+    timezone: 'UTC',
   })
 
   return dbUser
@@ -44,7 +37,5 @@ export async function getCurrentDbUser() {
     return null
   }
 
-  return prisma.user.findUnique({
-    where: { id: userId },
-  })
+  return convex.query(api.users.getByClerkId, { clerkUserId: userId })
 }

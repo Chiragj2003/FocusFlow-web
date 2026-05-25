@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
-import { getUserBadges, checkAllBadges, BADGE_DEFINITIONS } from '@/lib/badges'
-import { getAllStreaks } from '@/lib/analytics'
+import { convex } from '@/lib/convex'
+import { api } from '../../../../convex/_generated/api'
+import { BADGE_DEFINITIONS } from '@/lib/badges'
 
 // GET /api/badges - Get user's badges
 export async function GET() {
@@ -12,7 +13,7 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const badges = await getUserBadges(userId)
+    const badges = await convex.query(api.badges.list, { userId })
 
     return NextResponse.json({
       badges,
@@ -36,25 +37,15 @@ export async function POST() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Get streak data for streak badge checks
-    const streaks = await getAllStreaks(userId)
-    const bestCurrentStreak = streaks.reduce(
-      (max, s) => (s.currentStreak > max ? s.currentStreak : max),
-      0
-    )
-    const bestLongestStreak = streaks.reduce(
-      (max, s) => (s.longestStreak > max ? s.longestStreak : max),
-      0
-    )
-
-    // Check all badges
-    const newBadges = await checkAllBadges(userId, {
-      currentStreak: bestCurrentStreak,
-      longestStreak: bestLongestStreak,
+    const streaks = await convex.query(api.insights.streaks, { userId })
+    const newBadges = await convex.mutation(api.badges.checkAndAward, {
+      userId,
+      currentStreak: streaks.currentStreak,
+      longestStreak: streaks.longestStreak,
     })
 
     // Get updated badge list
-    const badges = await getUserBadges(userId)
+    const badges = await convex.query(api.badges.list, { userId })
 
     return NextResponse.json({
       newBadges,

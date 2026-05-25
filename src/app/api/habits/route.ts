@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
-import prisma from '@/lib/db'
+import { convex } from '@/lib/convex'
+import { api } from '../../../../convex/_generated/api'
 
 // Force dynamic rendering for auth
 export const dynamic = 'force-dynamic'
@@ -19,19 +20,10 @@ export async function GET(request: NextRequest) {
     const active = searchParams.get('active')
     const category = searchParams.get('category')
 
-    const where: { userId: string; active?: boolean; category?: string } = { userId }
-    
-    if (active !== null) {
-      where.active = active === 'true'
-    }
-    
-    if (category) {
-      where.category = category
-    }
-
-    const habits = await prisma.habit.findMany({
-      where,
-      orderBy: { createdAt: 'desc' },
+    const habits = await convex.query(api.habits.list, {
+      userId,
+      ...(active !== null ? { active: active === 'true' } : {}),
+      ...(category ? { category } : {}),
     })
 
     // Add cache headers for faster subsequent requests
@@ -66,27 +58,15 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Ensure user exists in our database (upsert to avoid conflicts)
-    await prisma.user.upsert({
-      where: { id: userId },
-      update: {},
-      create: {
-        id: userId,
-        timezone: 'UTC',
-      },
-    })
-
-    const habit = await prisma.habit.create({
-      data: {
-        userId,
-        title,
-        description,
-        category,
-        color: color || '#FFB4A2',
-        goalType,
-        goalTarget,
-        unit,
-      },
+    const habit = await convex.mutation(api.habits.create, {
+      userId,
+      title,
+      description,
+      category,
+      color,
+      goalType,
+      goalTarget,
+      unit,
     })
 
     return NextResponse.json(habit, { status: 201 })

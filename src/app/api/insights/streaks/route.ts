@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
-import { getAllStreaks } from '@/lib/analytics'
+import { convex } from '@/lib/convex'
+import { api } from '../../../../../convex/_generated/api'
 
 // GET /api/insights/streaks - Get all streak information
 export async function GET() {
@@ -11,7 +12,7 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const streaks = await getAllStreaks(userId)
+    const streaks = await convex.query(api.insights.streaks, { userId })
 
     return NextResponse.json(streaks)
   } catch (error) {

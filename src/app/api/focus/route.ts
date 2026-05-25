@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
-import { prisma } from '@/lib/db'
+import { convex } from '@/lib/convex'
+import { api } from '../../../../convex/_generated/api'
 
 // GET /api/focus - Get all focus sessions for the user
 export async function GET() {
@@ -11,10 +12,8 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const sessions = await prisma.focusSession.findMany({
-      where: { userId },
-      orderBy: { completedAt: 'desc' },
-      take: 100,
+    const sessions = await convex.query(api.focus.list, {
+      userId,
     })
 
     return NextResponse.json(sessions)
@@ -40,13 +39,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Duration is required and must be positive' }, { status: 400 })
     }
 
-    const session = await prisma.focusSession.create({
-      data: {
-        userId,
-        habitId: habitId || null,
-        duration,
-        notes: notes || null,
-      },
+    const session = await convex.mutation(api.focus.create, {
+      userId,
+      habitId: habitId || undefined,
+      duration,
+      notes: notes || undefined,
     })
 
     return NextResponse.json(session, { status: 201 })

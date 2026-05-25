@@ -1,0 +1,312 @@
+PROMPT: Generate a full Next.js habit-tracker project scaffold (Supabase DB)
+
+Goal
+Create a complete project structure and file contents for a modern habit tracking web app. It should match the features, design patterns, and workflow of the existing FocusFlow-style app, but use Supabase Postgres instead of Neon for the database. Keep everything else functionally equivalent.
+
+Tech stack (must use)
+- Next.js 15 App Router
+- React 19
+- TypeScript
+- Tailwind CSS 4
+- Prisma 7 (PostgreSQL provider)
+- Supabase Postgres (DATABASE_URL)
+- Clerk for auth
+- Chart.js + react-chartjs-2
+- Lucide icons
+- jsPDF + jspdf-autotable
+- date-fns + date-fns-tz
+
+
+Output requirements
+1) Provide a full folder tree for the project.
+2) Provide file contents for ALL files in the tree. For non-critical files, minimal but valid stubs are ok.
+3) For critical files, provide full implementation (not placeholders). Critical files are:
+   - prisma/schema.prisma
+   - src/lib/db.ts
+   - src/lib/analytics.ts
+   - src/lib/badges.ts
+   - src/lib/challenges.ts
+   - src/lib/quotes.ts
+   - src/lib/templates.ts
+   - src/lib/utils.ts
+   - src/app/layout.tsx
+   - src/app/page.tsx
+   - src/app/(app)/layout.tsx
+   - src/app/(app)/dashboard/page.tsx + client.tsx
+   - src/app/(app)/habits/page.tsx + client.tsx
+   - src/app/(app)/calendar/page.tsx + client.tsx
+   - src/app/(app)/insights/page.tsx + client.tsx
+   - src/app/(app)/export/page.tsx + client.tsx
+   - src/app/(app)/settings/page.tsx + client.tsx
+   - src/app/(app)/help/page.tsx + client.tsx
+   - src/app/api/** route handlers (habits, entries, badges, challenges, insights, focus, exports, emails)
+   - src/middleware.ts
+   - public/manifest.json
+   - public/sw.js
+   - src/app/globals.css
+4) Provide a section that explains design patterns used.
+5) Provide a section that explains the basic workflow of the application in detail (auth, data flow, UI, analytics, badges, exports).
+6) Provide a page-by-page section explaining each page design and features.
+7) Provide setup instructions (env vars, Prisma migrate, dev server).
+8) Provide API contract notes: request body, query params, and response shape for each route.
+9) Provide UI state guidance: loading, empty, and error states for each major page.
+
+Key difference: Supabase DB
+- Use Supabase Postgres connection string in DATABASE_URL.
+- Prisma datasource provider must be "postgresql".
+- Do not use @prisma/adapter-neon. Use the standard PrismaClient.
+
+Features to implement (match existing app)
+- Habit tracking with monthly grid and quick toggle, including per-day completion and inline value editing for duration/quantity goals.
+- Multiple goal types: binary (yes/no), duration (minutes), and quantity (count), each with validation rules and units.
+- Habit categories and per-habit color palette, plus category filters and category-level analytics.
+- Archive and restore habits, preserving historical entries and excluding archived habits from active stats.
+- Habit templates (health, fitness, mindfulness, learning, productivity) with one-click add.
+- AI habit generator with Gemini when configured and a deterministic local fallback when no API key is set.
+- Focus timer (Pomodoro) with focus/short/long modes, optional habit linking, sound alerts, and saved focus sessions.
+- Analytics: donut chart for completion, weekly bars, 30-day trend, category radar, progress rings, and daily distribution.
+- Streak tracking per habit and overall best streaks, with current and longest values.
+- Heatmap view for the last 6 months, color intensity based on completion count.
+- Day analysis, top habits ranking, and motivational quote of the day.
+- Badge system with definitions, progress thresholds, and awarding logic triggered by background checks.
+- Challenges (prebuilt + custom) with progress tracking, join/leave, and completion state.
+- CSV and PDF export with date range selection and summary stats in the export header.
+- User settings page for name, email, timezone, email opt-out, and account deletion.
+- PWA support (manifest + service worker) for installability and offline shell.
+- Fully responsive UI across desktop and mobile breakpoints.
+
+
+
+Routes (App Router)
+- Public: /, /pricing, /privacy, /terms, /sign-in/*, /sign-up/*
+- App (protected group): /dashboard, /habits, /calendar, /insights, /export, /settings, /help
+- API routes under /api for CRUD and analytics
+Notes
+- Use middleware to protect app routes and to set CORS headers for API routes.
+- Use server components for data fetching and client components for charts, modals, and interactive grids.
+- Add metadata for public routes (title, description, Open Graph).
+- Apply incremental revalidation on data-heavy pages (dashboard, habits, insights).
+
+API routes (examples)
+- /api/habits (GET, POST)
+- /api/habits/[id] (GET, PATCH, DELETE)
+- /api/habits/ai-generate (POST)
+- /api/entries (GET, POST)
+- /api/entries/[id] (PATCH, DELETE)
+- /api/badges (GET)
+- /api/challenges (GET)
+- /api/challenges/join (POST)
+- /api/challenges/[id]/progress (PATCH)
+- /api/insights/summary (GET)
+- /api/insights/streaks (GET)
+- /api/exports/csv (GET)
+- /api/exports/pdf (GET)
+- /api/focus (POST)
+- /api/focus/[id] (DELETE)
+- /api/focus/stats (GET)
+- /api/emails/daily-reminder (POST)
+- /api/account/status (GET)
+- /api/account/delete (DELETE)
+API behavior requirements
+- All API routes require Clerk auth, except public webhooks if added.
+- Use JSON responses with consistent shape: { data, error }.
+- Validate inputs and return 400 for bad input, 401 for unauthenticated, 404 for not found, 500 for server errors.
+- Support date range query params for entries, insights, and exports.
+- Normalize timezone handling using user timezone from settings.
+
+Design patterns to mention
+- App Router with route groups to separate public and protected areas.
+- Server components handle data fetching, serialization, and auth checks; client components handle interactivity.
+- A lib layer for domain logic (analytics, badges, templates, challenges) to keep UI thin.
+- API route handlers enforce auth and validation, returning consistent JSON responses.
+- Centralized Prisma client singleton to avoid connection storms in dev.
+- Incremental revalidation and caching to balance freshness and performance.
+- Clear separation of UI state: loading, empty, and error states are explicit on each page.
+
+Basic workflow to explain
+1) Public landing and auth with Clerk, redirecting into the protected app on success.
+2) On first app load, upsert user record with email, name, and default timezone.
+3) User creates habits via /api/habits; habits appear in the monthly grid and list.
+4) User logs entries via quick toggle or value input; /api/entries persists data.
+5) Dashboard aggregates metrics and charts from analytics helpers.
+6) Insights compute streaks, heatmap values, and top habit rankings.
+7) Badge checks run after key actions and award new badges when thresholds are met.
+8) Challenges can be joined; progress updates based on daily completion.
+9) Exports generate CSV/PDF on demand with date ranges and summaries.
+10) Settings updates timezone and preferences, affecting analytics and reminders.
+11) PWA runs as a responsive app with installable manifest and service worker.
+
+Page-by-page design and features
+
+/ (Landing)
+Purpose: convince new users to sign up by showing the value of consistent habits and the app's unique features.
+Layout: hero at top, alternating light/dark sections, and a structured footer.
+Design: high-impact hero with headline, subhead, primary CTA (Sign up), secondary CTA (View demo), and a hero visual of the dashboard.
+Sections: feature highlights grid, focus timer preview, analytics preview, gamification preview, testimonials or social proof strip, FAQ, and footer with links.
+Key interactions: CTA buttons, smooth scroll to sections, and optional interactive demo teaser.
+Data sources: static marketing content.
+States: public-only, no auth required; minimal cookies banner if needed.
+
+/pricing
+Purpose: present tiers and drive upgrades while keeping a free plan visible.
+Layout: three-column tier grid, comparison table, and FAQ.
+Design: tier cards with clear price, limits, feature bullets, and a highlighted recommended plan.
+Sections: comparison table, FAQ, and conversion CTA with trust badges.
+Key interactions: toggle monthly vs yearly, plan selection CTA, and link to sign up.
+Data sources: static pricing config.
+
+/privacy
+Purpose: show privacy policy in a clear, readable format.
+Design: single-column article layout with a sticky table of contents and last-updated banner.
+Sections: data collection, data usage, sharing, retention, user rights, contact info.
+States: static content only.
+
+/terms
+Purpose: show terms of service in a clear, readable format.
+Design: single-column article layout with section anchors and last-updated banner.
+Sections: eligibility, user responsibilities, subscriptions, liability, dispute resolution, contact info.
+States: static content only.
+
+/sign-in/*
+Purpose: fast authentication with minimal friction.
+Layout: centered auth card with optional right-side benefits panel.
+Design: centered form with brand logo, short benefit list in a right-side panel, and minimal distractions.
+Sections: Clerk sign-in component, trust statements, and links to sign-up and privacy/terms.
+Key interactions: social sign-in, passwordless flow if enabled.
+States: error messaging from Clerk, loading state on submit.
+
+/sign-up/*
+Purpose: onboarding entry point with encouragement to start the first habit.
+Layout: centered auth card with onboarding hints.
+Design: centered form plus a slim onboarding panel that explains steps after sign-up.
+Sections: Clerk sign-up component, optional benefits list, and link to sign-in.
+Key interactions: optional email verification and progressive onboarding hints.
+States: error messaging from Clerk, loading state on submit.
+
+/dashboard
+Purpose: daily overview and quick actions.
+Design: grid layout with summary cards and charts. Emphasis on current streak and completion.
+Sections: top summary cards (streak, completion rate, habits count), donut and trend charts, weekly bars, daily quote card, recent badges, and a focus timer launch tile.
+Key interactions: quick jump to habits, toggle chart timeframe, and start focus timer.
+States: loading skeletons, empty state for new users with onboarding CTA.
+Data sources: /api/insights/summary, /api/insights/streaks, /api/badges, /api/entries (month range).
+
+/habits
+Purpose: create, manage, and complete habits.
+Design: monthly grid for completions plus a list of habits with colored chips and action buttons.
+Sections: habit list, create/edit modal, archive panel, templates picker, and AI habit generator modal.
+Key interactions: quick toggle on grid, edit habit, archive/restore, add from templates, AI generate.
+States: empty state with template suggestions and CTA to create a first habit.
+Data sources: /api/habits, /api/entries, /api/habits/ai-generate.
+
+/calendar
+Purpose: yearly overview of consistency.
+Design: year grid with monthly sections and color-coded day circles for completion intensity.
+Sections: year header with stats, month navigation, filters by habit/category.
+Key interactions: hover or click day to view details, filter toggles.
+States: no habits or no entries shows guidance to add habits.
+Data sources: /api/habits, /api/entries (year range).
+
+/insights
+Purpose: advanced analytics and motivation.
+Design: multi-panel analytics with heatmap, radar chart, streak table, and trend lines.
+Sections: 6-month heatmap, category radar, streak table per habit, top habits, best day analysis, 30-day trend line.
+Key interactions: change range, select habits for filtering, tooltip details on charts.
+States: show gentle hints when data is insufficient.
+Data sources: /api/insights/summary, /api/insights/streaks, /api/entries (6 months), /api/habits.
+
+/export
+Purpose: export habit data for sharing or personal records.
+Design: date range picker, format selector, and preview of output summary.
+Sections: range selector, CSV export button, PDF export button, and a preview card listing what will be included.
+Key interactions: choose month/custom range, download file.
+States: disable export when range is empty; show toast on success/failure.
+Data sources: /api/exports/csv, /api/exports/pdf.
+
+/settings
+Purpose: manage profile and preferences.
+Design: simple form layout with grouped settings and account actions.
+Sections: profile details (name, email), timezone picker, email opt-out toggle, and account delete action.
+Key interactions: save changes, confirm delete.
+States: optimistic save, error banner on failure.
+Data sources: /api/account/status, /api/account/delete.
+
+/help
+Purpose: support and guidance.
+Design: FAQ accordion with tips and a feedback form.
+Sections: common questions, quick start guide, troubleshooting tips, contact or feedback form.
+Key interactions: submit feedback, expand FAQ items.
+States: form validation and success state.
+
+Folder structure guidance
+Match this overall structure and include all files:
+- prisma/
+  - schema.prisma
+  - seed.ts
+- public/
+  - manifest.json
+  - sw.js
+- src/
+  - app/
+    - globals.css
+    - layout.tsx
+    - page.tsx
+    - (app)/
+      - layout.tsx
+      - dashboard/ (page.tsx, client.tsx, loading.tsx)
+      - habits/ (page.tsx, client.tsx, loading.tsx)
+      - calendar/ (page.tsx, client.tsx)
+      - insights/ (page.tsx, client.tsx, loading.tsx)
+      - export/ (page.tsx, client.tsx)
+      - settings/ (page.tsx, client.tsx)
+      - help/ (page.tsx, client.tsx)
+    - api/
+      - account/status/route.ts
+      - account/delete/route.ts
+      - badges/route.ts
+      - challenges/route.ts
+      - challenges/join/route.ts
+      - challenges/[id]/progress/route.ts
+      - emails/daily-reminder/route.ts
+      - entries/route.ts
+      - entries/[id]/route.ts
+      - exports/csv/route.ts
+      - exports/pdf/route.ts
+      - focus/route.ts
+      - focus/[id]/route.ts
+      - focus/stats/route.ts
+      - habits/route.ts
+      - habits/[id]/route.ts
+      - habits/ai-generate/route.ts
+      - insights/summary/route.ts
+      - insights/streaks/route.ts
+    - pricing/page.tsx
+    - privacy/page.tsx
+    - terms/page.tsx
+    - sign-in/[[...sign-in]]/page.tsx
+    - sign-up/[[...sign-up]]/page.tsx
+  - components/ (same set as existing app)
+  - lib/ (analytics, badges, challenges, clerk, db, email, quotes, templates, theme, types, utils)
+  - middleware.ts
+- root config: package.json, tsconfig.json, next.config.ts, eslint.config.mjs, postcss.config.mjs, vercel.json, README.md
+Notes
+- Components should include charts, modals, timers, grids, and shared UI (buttons, cards, inputs).
+- Lib utilities should include date helpers, chart data mappers, and formatting helpers.
+- API handlers should be colocated with route folders and separated by resource.
+
+Environment variables (list in setup section)
+- DATABASE_URL (Supabase Postgres)
+- NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+- CLERK_SECRET_KEY
+- NEXT_PUBLIC_CLERK_SIGN_IN_URL
+- NEXT_PUBLIC_CLERK_SIGN_UP_URL
+- GEMINI_API_KEY (optional)
+Notes
+- Include a .env.example with placeholders.
+- Document Supabase connection format and required SSL options.
+
+Style
+- Use clear, structured sections.
+- Use valid TypeScript and Next.js App Router conventions.
+- Keep code ASCII-only.
+- Ensure everything is self-contained and ready to run after installing deps and setting env vars.

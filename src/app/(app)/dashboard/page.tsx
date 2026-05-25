@@ -1,8 +1,8 @@
 import { auth, currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
-import prisma from '@/lib/db'
-import { getInsightsSummary, getAllStreaks, type StreakInfo } from '@/lib/analytics'
-import { getUserBadges, checkAllBadges, BADGE_DEFINITIONS, awardEarlyBirdBadge } from '@/lib/badges'
+import { convex } from '@/lib/convex'
+import { api } from '../../../../convex/_generated/api'
+import { BADGE_DEFINITIONS } from '@/lib/badges'
 import { getDailyQuote, getDailyStreakMessage } from '@/lib/quotes'
 import { DashboardClient } from './client'
 
@@ -23,28 +23,17 @@ export default async function DashboardPage() {
   const startDate = new Date(now.getFullYear(), now.getMonth(), 1)
   const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0)
 
-  // Run ALL queries in parallel for maximum speed
-  const [clerkUser, _, insights, streaks, habitsCount, entries, badges] = await Promise.all([
+  const start = startDate.toISOString().slice(0, 10)
+  const end = endDate.toISOString().slice(0, 10)
+  const [clerkUser, insights, streaks, habits, entries, badges] = await Promise.all([
     currentUser(),
-    // Ensure user exists (fire and forget style)
-    prisma.user.upsert({
-      where: { id: userId },
-      update: {},
-      create: { id: userId, timezone: 'UTC' },
-    }).then(() => awardEarlyBirdBadge(userId)),
-    getInsightsSummary(userId, startDate, endDate),
-    getAllStreaks(userId),
-    prisma.habit.count({ where: { userId, active: true } }),
-    prisma.habitEntry.findMany({
-      where: {
-        userId,
-        entryDate: { gte: startDate, lte: endDate },
-      },
-      select: { entryDate: true, completed: true }, // Only select needed fields
-      orderBy: { entryDate: 'asc' },
-    }),
-    getUserBadges(userId),
+    convex.query(api.insights.summary, { userId, startDate: start, endDate: end }),
+    convex.query(api.insights.streaks, { userId }),
+    convex.query(api.habits.list, { userId, active: true }),
+    convex.query(api.entries.list, { userId, start, end }),
+    convex.query(api.badges.list, { userId }),
   ])
+  const habitsCount = habits.length
 
   // Group by date for line chart
   const dateMap = new Map<string, { completed: number; total: number }>()
@@ -57,7 +46,7 @@ export default async function DashboardPage() {
   }
 
   for (const entry of entries) {
-    const dateStr = new Date(entry.entryDate).toISOString().split('T')[0]
+    const dateStr = entry.entryDate
     const stats = dateMap.get(dateStr)
     if (stats && entry.completed) {
       stats.completed++
@@ -72,20 +61,8 @@ export default async function DashboardPage() {
     }))
 
   // Best streak across all habits
-  const bestStreak = streaks.reduce(
-    (max: number, s: StreakInfo) => (s.longestStreak > max ? s.longestStreak : max),
-    0
-  )
-  const currentBestStreak = streaks.reduce(
-    (max: number, s: StreakInfo) => (s.currentStreak > max ? s.currentStreak : max),
-    0
-  )
-
-  // Check and award badges in background (don't await)
-  checkAllBadges(userId, {
-    currentStreak: currentBestStreak,
-    longestStreak: bestStreak,
-  }).catch(console.error)
+  const bestStreak = streaks.longestStreak
+  const currentBestStreak = streaks.currentStreak
 
   // Get daily quote and streak message (sync - very fast)
   const dailyQuote = getDailyQuote()
@@ -93,7 +70,7 @@ export default async function DashboardPage() {
 
   return (
     <DashboardClient
-      insights={insights}
+      insights={insights as any}
       dailyData={dailyData}
       bestStreak={bestStreak}
       currentBestStreak={currentBestStreak}

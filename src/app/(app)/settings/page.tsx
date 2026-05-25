@@ -1,6 +1,7 @@
 import { auth, currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
-import prisma from '@/lib/db'
+import { convex } from '@/lib/convex'
+import { api } from '../../../../convex/_generated/api'
 import { SettingsClient } from './client'
 
 export default async function SettingsPage() {
@@ -15,28 +16,23 @@ export default async function SettingsPage() {
   const userEmail = clerkUser.emailAddresses[0]?.emailAddress
   const userName = `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim() || null
 
-  // Upsert user in database
-  const dbUser = await prisma.user.upsert({
-    where: { id: userId },
-    update: {
-      email: userEmail,
-      name: userName || undefined,
-    },
-    create: {
-      id: userId,
-      email: userEmail,
-      name: userName,
-      timezone: 'UTC',
-    },
+  const dbUser = await convex.mutation(api.users.upsertFromClerk, {
+    clerkUserId: userId,
+    email: userEmail,
+    name: userName ?? undefined,
+    timezone: 'UTC',
   })
+  if (!dbUser) {
+    redirect('/sign-in')
+  }
 
   return (
     <SettingsClient
       user={{
-        id: dbUser.id,
+        id: dbUser._id ?? userId,
         email: dbUser.email ?? '',
-        name: dbUser.name,
-        timezone: dbUser.timezone,
+        name: dbUser.name ?? null,
+        timezone: dbUser.timezone ?? 'UTC',
       }}
       clerkUser={{
         firstName: clerkUser.firstName,
