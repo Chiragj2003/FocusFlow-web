@@ -157,7 +157,7 @@ export default function AchievementsPage() {
                             : "bg-zinc-50 dark:bg-zinc-950 border-zinc-200 dark:border-zinc-900 opacity-60 grayscale-[50%]"
                         )}
                         style={{
-                          boxShadow: isUnlocked ? \`inset 0 0 40px -20px \${badge.color}20\` : 'none'
+                          boxShadow: isUnlocked ? `inset 0 0 40px -20px ${badge.color}20` : 'none'
                         }}
                       >
                         {!isUnlocked && (
@@ -169,8 +169,8 @@ export default function AchievementsPage() {
                         <div 
                           className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4 border"
                           style={{
-                            backgroundColor: isUnlocked ? \`\${badge.color}15\` : 'transparent',
-                            borderColor: isUnlocked ? \`\${badge.color}30\` : 'var(--border)',
+                            backgroundColor: isUnlocked ? `${badge.color}15` : 'transparent',
+                            borderColor: isUnlocked ? `${badge.color}30` : 'var(--border)',
                             color: isUnlocked ? badge.color : 'var(--muted-foreground)'
                           }}
                         >
