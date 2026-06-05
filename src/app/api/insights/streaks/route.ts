@@ -9,7 +9,7 @@ export async function GET() {
 
     const [habitsRes, entriesRes] = await Promise.all([
       supabase.from('habits').select('*').eq('user_id', userId).eq('active', true),
-      supabase.from('entries').select('*').eq('user_id', userId),
+      supabase.from('habit_entries').select('*').eq('user_id', userId),
     ])
     const habits = (habitsRes.data || []) as DbHabit[]
     const entries = (entriesRes.data || []) as DbEntry[]

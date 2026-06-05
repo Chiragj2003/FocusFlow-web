@@ -6,7 +6,7 @@ export async function GET() {
     const { data, error } = await supabase.from('challenges').select('*').eq('active', true)
     if (error) throw error
     return NextResponse.json((data as DbChallenge[]).map((c) => ({
-      id: c.id, challengeId: c.challenge_id, title: c.title, description: c.description,
+      id: c.challenge_id, dbId: c.id, challengeId: c.challenge_id, title: c.title, description: c.description,
       type: c.type, target: c.target, duration: c.duration, reward: c.reward, active: c.active,
     })))
   } catch (error) {

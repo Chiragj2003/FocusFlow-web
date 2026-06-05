@@ -18,17 +18,17 @@ export async function POST(request: NextRequest) {
 
     for (const user of users || []) {
       try {
-        const { data: habits } = await supabase.from('habits').select('id,title').eq('user_id', user.clerk_user_id).eq('active', true)
+        const { data: habits } = await supabase.from('habits').select('id,title').eq('user_id', user.id).eq('active', true)
         if (!habits || habits.length === 0) { results.skipped++; continue }
 
-        const { data: entries } = await supabase.from('entries').select('*').eq('user_id', user.clerk_user_id).eq('entry_date', todayStr)
+        const { data: entries } = await supabase.from('habit_entries').select('*').eq('user_id', user.id).eq('entry_date', todayStr)
 
         let userEmail = user.email
         let userName = user.name
         if (!userEmail) {
           try {
             const client = await clerkClient()
-            const clerkUser = await client.users.getUser(user.clerk_user_id)
+            const clerkUser = await client.users.getUser(user.id)
             userEmail = clerkUser.emailAddresses[0]?.emailAddress
             userName = clerkUser.firstName || null
             if (userEmail) {
@@ -47,13 +47,13 @@ export async function POST(request: NextRequest) {
 
         const result = await sendEmail({
           to: userEmail, subject: emailContent.subject, html: emailContent.html, text: emailContent.text,
-          tags: [{ name: 'type', value: 'weekly-reminder' }, { name: 'userId', value: user.clerk_user_id }],
+          tags: [{ name: 'type', value: 'weekly-reminder' }, { name: 'userId', value: user.id }],
         })
 
         if (result.success) { results.sent++ } else { results.failed++; results.errors.push(`${userEmail}: ${result.error}`) }
       } catch (error) {
         results.failed++
-        results.errors.push(`User ${user.clerk_user_id}: ${error instanceof Error ? error.message : 'Unknown error'}`)
+        results.errors.push(`User ${user.id}: ${error instanceof Error ? error.message : 'Unknown error'}`)
       }
     }
 

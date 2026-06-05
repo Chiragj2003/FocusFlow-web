@@ -1,52 +1,64 @@
-// Database query helpers for server components (replaces Convex queries)
+// Database query helpers for server components.
 import { supabase, type DbHabit, type DbEntry, type DbBadge, type DbFocusSession, type DbUser } from './supabase'
 
 // ---- HABITS ----
 export async function dbListHabits(userId: string, active?: boolean) {
   let q = supabase.from('habits').select('*').eq('user_id', userId).order('created_at', { ascending: false })
   if (active !== undefined) q = q.eq('active', active)
-  const { data } = await q
+  const { data, error } = await q
+  if (error) console.error('[DB] dbListHabits error:', JSON.stringify(error))
   return (data || []) as DbHabit[]
 }
 
 // ---- ENTRIES ----
 export async function dbListEntries(userId: string, start?: string, end?: string) {
-  let q = supabase.from('entries').select('*').eq('user_id', userId)
+  let q = supabase.from('habit_entries').select('*').eq('user_id', userId)
   if (start) q = q.gte('entry_date', start)
   if (end) q = q.lte('entry_date', end)
   q = q.order('entry_date', { ascending: false })
-  const { data } = await q
+  const { data, error } = await q
+  if (error) console.error('[DB] dbListEntries error:', JSON.stringify(error))
   return (data || []) as DbEntry[]
 }
 
 // ---- BADGES ----
 export async function dbListBadges(userId: string) {
-  const { data } = await supabase.from('badges').select('*').eq('user_id', userId)
+  const { data, error } = await supabase.from('badges').select('*').eq('user_id', userId)
+  if (error) console.error('[DB] dbListBadges error:', JSON.stringify(error))
   return (data || []) as DbBadge[]
 }
 
 // ---- FOCUS ----
 export async function dbListFocusSessions(userId: string) {
-  const { data } = await supabase.from('focus_sessions').select('*').eq('user_id', userId)
+  const { data, error } = await supabase.from('focus_sessions').select('*').eq('user_id', userId)
+  if (error) console.error('[DB] dbListFocusSessions error:', JSON.stringify(error))
   return (data || []) as DbFocusSession[]
 }
 
 // ---- USERS ----
 export async function dbUpsertUser(clerkUserId: string, email?: string, name?: string, timezone?: string) {
-  const { data: existing } = await supabase.from('users').select('*').eq('clerk_user_id', clerkUserId).single()
+  const { data: existing, error: selectError } = await supabase.from('users').select('*').eq('id', clerkUserId).single()
+  
+  if (selectError && selectError.code !== 'PGRST116') {
+    // PGRST116 = "The result contains 0 rows" which is expected for new users
+    console.error('[DB] dbUpsertUser select error:', JSON.stringify(selectError))
+  }
+  
   if (existing) {
-    const { data } = await supabase.from('users').update({
+    const { data, error: updateError } = await supabase.from('users').update({
       email: email ?? existing.email,
       name: name ?? existing.name,
       timezone: timezone ?? existing.timezone ?? 'UTC',
       updated_at: new Date().toISOString(),
-    }).eq('clerk_user_id', clerkUserId).select().single()
+    }).eq('id', clerkUserId).select().single()
+    if (updateError) console.error('[DB] dbUpsertUser update error:', JSON.stringify(updateError))
     return data as DbUser
   }
-  const { data } = await supabase.from('users').insert({
-    clerk_user_id: clerkUserId,
+  const { data, error: insertError } = await supabase.from('users').insert({
+    id: clerkUserId,
     email: email || null, name: name || null, timezone: timezone || 'UTC',
   }).select().single()
+  if (insertError) console.error('[DB] dbUpsertUser insert error:', JSON.stringify(insertError))
   return data as DbUser
 }
 

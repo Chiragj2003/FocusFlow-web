@@ -10,13 +10,13 @@ export async function DELETE(request: NextRequest) {
     if (confirmation !== 'delete my account') return NextResponse.json({ error: 'Invalid confirmation' }, { status: 400 })
     // Delete all user data
     await Promise.all([
-      supabase.from('entries').delete().eq('user_id', userId),
+      supabase.from('habit_entries').delete().eq('user_id', userId),
       supabase.from('focus_sessions').delete().eq('user_id', userId),
       supabase.from('challenge_participants').delete().eq('user_id', userId),
       supabase.from('badges').delete().eq('user_id', userId),
     ])
     await supabase.from('habits').delete().eq('user_id', userId)
-    await supabase.from('users').delete().eq('clerk_user_id', userId)
+    await supabase.from('users').delete().eq('id', userId)
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Error:', error)

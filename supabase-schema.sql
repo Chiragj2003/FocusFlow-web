@@ -47,7 +47,7 @@ CREATE INDEX IF NOT EXISTS idx_habits_user_active ON habits(user_id, active);
 -- ============================================
 -- ENTRIES TABLE
 -- ============================================
-CREATE TABLE IF NOT EXISTS entries (
+CREATE TABLE IF NOT EXISTS habit_entries (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   habit_id UUID NOT NULL REFERENCES habits(id) ON DELETE CASCADE,
   user_id TEXT NOT NULL,
@@ -63,10 +63,10 @@ CREATE TABLE IF NOT EXISTS entries (
   UNIQUE(habit_id, user_id, entry_date)
 );
 
-CREATE INDEX IF NOT EXISTS idx_entries_user ON entries(user_id);
-CREATE INDEX IF NOT EXISTS idx_entries_habit ON entries(habit_id);
-CREATE INDEX IF NOT EXISTS idx_entries_user_date ON entries(user_id, entry_date);
-CREATE INDEX IF NOT EXISTS idx_entries_habit_user_date ON entries(habit_id, user_id, entry_date);
+CREATE INDEX IF NOT EXISTS idx_habit_entries_user ON habit_entries(user_id);
+CREATE INDEX IF NOT EXISTS idx_habit_entries_habit ON habit_entries(habit_id);
+CREATE INDEX IF NOT EXISTS idx_habit_entries_user_date ON habit_entries(user_id, entry_date);
+CREATE INDEX IF NOT EXISTS idx_habit_entries_habit_user_date ON habit_entries(habit_id, user_id, entry_date);
 
 -- ============================================
 -- FOCUS SESSIONS TABLE
@@ -137,7 +137,7 @@ CREATE INDEX IF NOT EXISTS idx_badges_user_name ON badges(user_id, name);
 -- ============================================
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE habits ENABLE ROW LEVEL SECURITY;
-ALTER TABLE entries ENABLE ROW LEVEL SECURITY;
+ALTER TABLE habit_entries ENABLE ROW LEVEL SECURITY;
 ALTER TABLE focus_sessions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE challenge_participants ENABLE ROW LEVEL SECURITY;
 ALTER TABLE badges ENABLE ROW LEVEL SECURITY;
@@ -149,8 +149,8 @@ CREATE POLICY "Service role has full access to users"
   ON users FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Service role has full access to habits"
   ON habits FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Service role has full access to entries"
-  ON entries FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Service role has full access to habit_entries"
+  ON habit_entries FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Service role has full access to focus_sessions"
   ON focus_sessions FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Service role has full access to challenge_participants"
@@ -174,3 +174,12 @@ INSERT INTO challenges (challenge_id, title, description, type, target, duration
   ('focus-master', 'Focus Master', 'Complete 5 hours of focus sessions', 'focus', 300, 30, 100),
   ('habit-builder', 'Habit Builder', 'Create and maintain 5 active habits', 'quantity', 5, 14, 75)
 ON CONFLICT (challenge_id) DO NOTHING;
+
+-- ============================================
+-- VIEWS SECURITY POLICIES
+-- ============================================
+-- Enforce Row Level Security (RLS) policies of the querying user by configuring
+-- views to run under SECURITY INVOKER rather than the creator's privileges (SECURITY DEFINER).
+ALTER VIEW IF EXISTS v_today_habits SET (security_invoker = true);
+ALTER VIEW IF EXISTS v_weekly_summary SET (security_invoker = true);
+

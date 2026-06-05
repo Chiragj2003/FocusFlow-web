@@ -448,7 +448,7 @@ export async function checkMilestoneBadges(userId: string): Promise<BadgeDefinit
   }
 
   // Check completion count badges
-  const { count: completionCount } = await supabase.from('entries').select('*', { count: 'exact', head: true }).eq('user_id', userId).eq('completed', true)
+  const { count: completionCount } = await supabase.from('habit_entries').select('*', { count: 'exact', head: true }).eq('user_id', userId).eq('completed', true)
   const completionBadges = [
     { id: 'completions_50', requirement: 50 },
     { id: 'completions_100', requirement: 100 },
@@ -495,7 +495,7 @@ export async function checkPerfectBadges(userId: string): Promise<BadgeDefinitio
   if (habits && habits.length > 0) {
     const weekAgoStr = weekAgo.toISOString().slice(0, 10)
     const nowStr = now.toISOString().slice(0, 10)
-    const { data: weekEntries } = await supabase.from('entries').select('*').eq('user_id', userId).eq('completed', true).gte('entry_date', weekAgoStr).lte('entry_date', nowStr)
+    const { data: weekEntries } = await supabase.from('habit_entries').select('*').eq('user_id', userId).eq('completed', true).gte('entry_date', weekAgoStr).lte('entry_date', nowStr)
 
     const perfectWeekTarget = habits.length * 7
     if ((weekEntries || []).length >= perfectWeekTarget) {

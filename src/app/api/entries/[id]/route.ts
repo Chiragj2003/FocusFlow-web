@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { supabase, toEntryResponse, type DbEntry } from '@/lib/supabase'
 
-// PUT /api/entries/[id]
-export async function PUT(
+async function updateEntry(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
@@ -19,7 +18,7 @@ export async function PUT(
     if (body.notes !== undefined) updates.notes = body.notes
 
     const { data, error } = await supabase
-      .from('entries')
+      .from('habit_entries')
       .update(updates)
       .eq('id', id)
       .eq('user_id', userId)
@@ -36,6 +35,22 @@ export async function PUT(
   }
 }
 
+// PUT /api/entries/[id]
+export async function PUT(
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
+) {
+  return updateEntry(request, context)
+}
+
+// PATCH /api/entries/[id]
+export async function PATCH(
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
+) {
+  return updateEntry(request, context)
+}
+
 // DELETE /api/entries/[id]
 export async function DELETE(
   request: NextRequest,
@@ -47,7 +62,7 @@ export async function DELETE(
     if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
     const { error } = await supabase
-      .from('entries')
+      .from('habit_entries')
       .delete()
       .eq('id', id)
       .eq('user_id', userId)

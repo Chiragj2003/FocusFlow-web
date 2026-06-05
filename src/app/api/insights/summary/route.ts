@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
 
     const [habitsRes, entriesRes] = await Promise.all([
       supabase.from('habits').select('*').eq('user_id', userId).eq('active', true),
-      supabase.from('entries').select('*').eq('user_id', userId).gte('entry_date', startDate).lte('entry_date', endDate),
+      supabase.from('habit_entries').select('*').eq('user_id', userId).gte('entry_date', startDate).lte('entry_date', endDate),
     ])
 
     const habits = (habitsRes.data || []) as DbHabit[]

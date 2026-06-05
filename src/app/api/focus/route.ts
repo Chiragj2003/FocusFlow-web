@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { supabase, toFocusSessionResponse, type DbFocusSession } from '@/lib/supabase'
+import { dbUpsertUser } from '@/lib/db'
 
 export async function GET() {
   try {
@@ -19,12 +20,13 @@ export async function POST(request: NextRequest) {
   try {
     const { userId } = await auth()
     if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    await dbUpsertUser(userId)
     const body = await request.json()
-    const { habitId, duration, notes } = body
+    const { habitId, duration, notes, completedAt } = body
     if (!duration) return NextResponse.json({ error: 'Duration is required' }, { status: 400 })
     const { data, error } = await supabase.from('focus_sessions').insert({
       user_id: userId, habit_id: habitId || null, duration, notes: notes || null,
-      completed_at: new Date().toISOString(),
+      completed_at: completedAt || new Date().toISOString(),
     }).select().single()
     if (error) throw error
     return NextResponse.json(toFocusSessionResponse(data as DbFocusSession), { status: 201 })

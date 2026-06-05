@@ -31,13 +31,20 @@ export async function PATCH(
       .select()
       .single()
 
-    if (error) throw error
+    if (error) {
+      console.error('[Supabase] Error updating habit:', JSON.stringify(error, null, 2))
+      return NextResponse.json(
+        { error: 'Failed to update habit', details: error.message, code: error.code },
+        { status: 500 }
+      )
+    }
     if (!data) return NextResponse.json({ error: 'Habit not found' }, { status: 404 })
 
     return NextResponse.json(toHabitResponse(data as DbHabit))
   } catch (error) {
-    console.error('Error updating habit:', error)
-    return NextResponse.json({ error: 'Failed to update habit' }, { status: 500 })
+    console.error('[Supabase] Unexpected error updating habit:', error)
+    const msg = error instanceof Error ? error.message : 'Unknown error'
+    return NextResponse.json({ error: 'Failed to update habit', details: msg }, { status: 500 })
   }
 }
 
@@ -57,10 +64,17 @@ export async function DELETE(
       .eq('id', id)
       .eq('user_id', userId)
 
-    if (error) throw error
+    if (error) {
+      console.error('[Supabase] Error deleting habit:', JSON.stringify(error, null, 2))
+      return NextResponse.json(
+        { error: 'Failed to delete habit', details: error.message, code: error.code },
+        { status: 500 }
+      )
+    }
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Error deleting habit:', error)
-    return NextResponse.json({ error: 'Failed to delete habit' }, { status: 500 })
+    console.error('[Supabase] Unexpected error deleting habit:', error)
+    const msg = error instanceof Error ? error.message : 'Unknown error'
+    return NextResponse.json({ error: 'Failed to delete habit', details: msg }, { status: 500 })
   }
 }

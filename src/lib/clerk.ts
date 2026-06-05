@@ -23,6 +23,6 @@ export async function ensureUserExists() {
 export async function getCurrentDbUser() {
   const { userId } = await auth()
   if (!userId) return null
-  const { data } = await supabase.from('users').select('*').eq('clerk_user_id', userId).single()
+  const { data } = await supabase.from('users').select('*').eq('id', userId).single()
   return data
 }

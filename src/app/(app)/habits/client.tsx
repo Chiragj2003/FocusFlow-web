@@ -217,25 +217,30 @@ export function HabitsClient({
           body: JSON.stringify(habitData),
         })
 
-        if (response.ok) {
-          const newHabit = await response.json()
-          setHabits((prev) => [
-            ...prev,
-            {
-              ...newHabit,
-              createdAt:
-                typeof newHabit.createdAt === 'string'
-                  ? newHabit.createdAt
-                  : new Date(newHabit.createdAt).toISOString(),
-              updatedAt:
-                typeof newHabit.updatedAt === 'string'
-                  ? newHabit.updatedAt
-                  : new Date(newHabit.updatedAt).toISOString(),
-            },
-          ])
+        const responseData = await response.json()
+
+        if (!response.ok) {
+          console.error('Failed to create habit:', responseData)
+          throw new Error(responseData.details || responseData.error || 'Failed to create habit')
         }
+
+        setHabits((prev) => [
+          ...prev,
+          {
+            ...responseData,
+            createdAt:
+              typeof responseData.createdAt === 'string'
+                ? responseData.createdAt
+                : new Date(responseData.createdAt).toISOString(),
+            updatedAt:
+              typeof responseData.updatedAt === 'string'
+                ? responseData.updatedAt
+                : new Date(responseData.updatedAt).toISOString(),
+          },
+        ])
       } catch (error) {
         console.error('Failed to create habit:', error)
+        throw error // Re-throw so callers can handle it
       }
     },
     []
@@ -244,15 +249,19 @@ export function HabitsClient({
   // Add habit from template
   const handleAddFromTemplate = useCallback(
     async (template: HabitTemplate) => {
-      await handleAddHabit({
-        title: template.title,
-        description: template.description,
-        category: template.category,
-        color: template.color,
-        goalType: template.goalType,
-        goalTarget: template.goalTarget,
-        unit: template.unit,
-      })
+      try {
+        await handleAddHabit({
+          title: template.title,
+          description: template.description,
+          category: template.category,
+          color: template.color,
+          goalType: template.goalType,
+          goalTarget: template.goalTarget,
+          unit: template.unit,
+        })
+      } catch (error) {
+        console.error('Failed to create habit from template:', error)
+      }
     },
     [handleAddHabit]
   )

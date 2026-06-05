@@ -62,13 +62,13 @@ export function AddHabitWithAI({ isOpen, onClose, onSubmit }: AddHabitWithAIProp
 
       if (!response.ok) {
         const data = await response.json()
-        throw new Error(data.error || 'Failed to generate habit')
+        throw new Error(data.details || data.error || 'Failed to generate habit')
       }
 
       const habit = await response.json()
       setGeneratedHabit(habit)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong')
+      setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
     } finally {
       setIsGenerating(false)
     }
@@ -78,6 +78,7 @@ export function AddHabitWithAI({ isOpen, onClose, onSubmit }: AddHabitWithAIProp
     if (!generatedHabit) return
 
     setIsSubmitting(true)
+    setError('')
     try {
       await onSubmit({
         title: generatedHabit.title,
@@ -93,6 +94,8 @@ export function AddHabitWithAI({ isOpen, onClose, onSubmit }: AddHabitWithAIProp
       setPrompt('')
       setGeneratedHabit(null)
       onClose()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to create habit.')
     } finally {
       setIsSubmitting(false)
     }
@@ -281,7 +284,7 @@ export function AddHabitWithAI({ isOpen, onClose, onSubmit }: AddHabitWithAIProp
               <button
                 onClick={handleSubmit}
                 disabled={isSubmitting}
-                className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-medium text-white bg-linear-to-r from-violet-600 to-purple-600 rounded-lg sm:rounded-xl hover:from-violet-500 hover:to-purple-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center gap-1.5 sm:gap-2"
+                className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold text-white bg-linear-to-r from-green-600 to-emerald-600 rounded-lg sm:rounded-xl hover:from-green-500 hover:to-emerald-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center gap-1.5 sm:gap-2 shadow-lg shadow-green-600/20"
               >
                 {isSubmitting ? (
                   <>

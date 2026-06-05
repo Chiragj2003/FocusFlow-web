@@ -1,11 +1,29 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+// Validate configuration at startup
+if (!supabaseUrl) {
+  console.error('[Supabase] NEXT_PUBLIC_SUPABASE_URL is not set!')
+}
+if (!supabaseServiceKey && !supabaseAnonKey) {
+  console.error('[Supabase] Neither SUPABASE_SERVICE_ROLE_KEY nor NEXT_PUBLIC_SUPABASE_ANON_KEY is set!')
+}
+
+const effectiveKey = supabaseServiceKey || supabaseAnonKey || ''
+
+if (supabaseUrl && effectiveKey) {
+  console.log(`[Supabase] Initialized with URL: ${supabaseUrl}`)
+  console.log(`[Supabase] Using key type: ${supabaseServiceKey ? 'service_role' : 'anon'}`)
+  console.log(`[Supabase] Key prefix: ${effectiveKey.substring(0, 20)}...`)
+}
 
 // Server-side Supabase client with service role (bypasses RLS)
-export const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+export const supabase = createClient(supabaseUrl || '', effectiveKey, {
   auth: { persistSession: false, autoRefreshToken: false },
+  db: { schema: 'public' },
 })
 
 // Types
@@ -27,7 +45,7 @@ export interface DbBadge {
   id: string; user_id: string; name: string; awarded_at: string; metadata: Record<string, unknown> | null;
 }
 export interface DbUser {
-  id: string; clerk_user_id: string; email: string | null; name: string | null;
+  id: string; clerk_user_id?: string; email: string | null; name: string | null;
   timezone: string; is_deactivated: boolean; created_at: string; updated_at: string;
 }
 export interface DbChallenge {

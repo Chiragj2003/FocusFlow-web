@@ -49,12 +49,14 @@ export function AddHabitModal({ isOpen, onClose, onSubmit }: AddHabitModalProps)
   const [goalTarget, setGoalTarget] = useState<number | undefined>(undefined)
   const [unit, setUnit] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState('')
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!title.trim()) return
 
     setIsSubmitting(true)
+    setError('')
     try {
       await onSubmit({
         title: title.trim(),
@@ -75,6 +77,8 @@ export function AddHabitModal({ isOpen, onClose, onSubmit }: AddHabitModalProps)
       setGoalTarget(undefined)
       setUnit('')
       onClose()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to create habit.')
     } finally {
       setIsSubmitting(false)
     }
@@ -89,7 +93,7 @@ export function AddHabitModal({ isOpen, onClose, onSubmit }: AddHabitModalProps)
         className="absolute inset-0 bg-black/70 backdrop-blur-sm"
         onClick={onClose}
       />
-
+ 
       {/* Modal */}
       <div className="relative bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto border border-zinc-800">
         {/* Header */}
@@ -102,6 +106,12 @@ export function AddHabitModal({ isOpen, onClose, onSubmit }: AddHabitModalProps)
             <X size={20} />
           </button>
         </div>
+
+        {error && (
+          <div className="px-6 py-3 bg-red-500/10 border-b border-red-500/20 text-sm text-red-400">
+            {error}
+          </div>
+        )}
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
