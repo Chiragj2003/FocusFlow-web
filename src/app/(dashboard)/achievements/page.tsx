@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import { ALL_ACHIEVEMENTS, ALL_BADGES } from '@/lib/constants'
-import { CheckCircle2, Lock, Star, Trophy, Target, Clock, Zap, Flame, Calendar as CalendarIcon, Award, Medal } from 'lucide-react'
+import { CheckCircle2, Lock, Star, Trophy, Target, Clock, Zap, Flame, Calendar as CalendarIcon, Award } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 export default function AchievementsPage() {
@@ -15,7 +15,7 @@ export default function AchievementsPage() {
     if (saved) {
       try {
         setJoinedAchievements(JSON.parse(saved))
-      } catch (e) {}
+      } catch (_e) {}
     }
   }, [])
 
