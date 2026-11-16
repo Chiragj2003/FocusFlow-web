@@ -808,7 +808,7 @@ export function DashboardClient({
                 <Trophy className="w-6 h-6" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-bold text-white text-sm">Badges & Challenges</p>
+                <p className="font-bold text-white text-sm">Badges</p>
                 <p className="text-xs text-zinc-400 mt-0.5">
                   {badges.length} of {allBadges.length} unlocked
                 </p>

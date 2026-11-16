@@ -169,7 +169,7 @@ const navigation = [
   { name: 'Habits', href: '/habits', icon: Grid3X3 },
   { name: 'Insights', href: '/insights', icon: BarChart3 },
   { name: 'Calendar', href: '/calendar', icon: Calendar },
-  { name: 'Achievements', href: '/achievements', icon: Trophy },
+  { name: 'Badges', href: '/achievements', icon: Trophy },
   { name: 'Export', href: '/export', icon: Download },
   { name: 'Settings', href: '/settings', icon: Settings },
   { name: 'Help', href: '/help', icon: HelpCircle },

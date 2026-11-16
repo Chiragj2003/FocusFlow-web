@@ -209,7 +209,7 @@ export default function AchievementsPage() {
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import Image from 'next/image'
-import { ACTIVE_ACHIEVEMENTS, ALL_BADGES } from '@/lib/constants'
+import { ACTIVE_ACHIEVEMENTS, ALL_BADGES, SHOW_CHALLENGES } from '@/lib/constants'
 import {
   CheckCircle2,
   Lock,
@@ -265,7 +265,7 @@ interface UserChallengeItem {
 }
 
 export default function AchievementsPage() {
-  const [activeTab, setActiveTab] = useState<'achievements' | 'badges'>('achievements')
+  const [activeTab, setActiveTab] = useState<'achievements' | 'badges'>(SHOW_CHALLENGES ? 'achievements' : 'badges')
   const [userChallenges, setUserChallenges] = useState<UserChallengeItem[]>([])
   const [loadingChallenges, setLoadingChallenges] = useState<boolean>(true)
   const [isJoiningId, setIsJoiningId] = useState<string | null>(null)
@@ -287,7 +287,7 @@ export default function AchievementsPage() {
   }, [])
 
   useEffect(() => {
-    loadUserChallenges()
+    if (SHOW_CHALLENGES) loadUserChallenges()
   }, [loadUserChallenges])
 
   // Join challenge via API: POST /api/challenges/join
@@ -376,7 +376,9 @@ export default function AchievementsPage() {
                 Rewards & Progress
               </h1>
               <p className="text-zinc-400 text-sm md:text-base leading-relaxed">
-                Track your milestones, conquer multi-day challenges, and collect beautiful 3D medals as your fire grows.
+                {SHOW_CHALLENGES
+                  ? 'Track your milestones, conquer multi-day challenges, and collect beautiful 3D medals as your fire grows.'
+                  : 'Track your milestones and collect beautiful 3D medals as your fire grows.'}
               </p>
             </div>
 
@@ -389,6 +391,7 @@ export default function AchievementsPage() {
         {/* Tabs */}
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div className="flex bg-[#131316] p-1.5 rounded-2xl border border-[#232328]">
+            {SHOW_CHALLENGES && (
             <button
               onClick={() => setActiveTab('achievements')}
               className={cn(
@@ -401,6 +404,7 @@ export default function AchievementsPage() {
               <Target className="w-4 h-4" />
               Challenges ({userChallenges.length} Active)
             </button>
+            )}
             <button
               onClick={() => setActiveTab('badges')}
               className={cn(
@@ -422,7 +426,7 @@ export default function AchievementsPage() {
         </div>
 
         {/* Tab: Challenges */}
-        {activeTab === 'achievements' && (
+        {SHOW_CHALLENGES && activeTab === 'achievements' && (
           <div>
             {loadingChallenges ? (
               <div className="py-20 flex flex-col items-center justify-center gap-3">

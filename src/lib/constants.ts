@@ -68,6 +68,9 @@ export const ALL_ACHIEVEMENTS = [
   { id: 'ach_60', title: 'Trendsetter', description: 'Maintain streaks on all active habits for a week', target: 7, reward: 300, duration: 7, type: 'streak' }
 ];
 
+// Joinable challenges are hidden for now (app + website). Set to true to bring them back.
+export const SHOW_CHALLENGES = false;
+
 // Challenges live right now (both app and website). Add more IDs here to open them up.
 export const ACTIVE_CHALLENGE_IDS = [
   'ach_1', 'ach_2', 'ach_3', 'ach_4', 'ach_5', 'ach_8',
