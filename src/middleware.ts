@@ -82,6 +82,7 @@ const isPublicRoute = createRouteMatcher([
   '/account-deletion(.*)',
   '/pricing(.*)',
   '/api/webhooks(.*)',
+  '/manifest.json',
 ])
 
 const isApiRoute = createRouteMatcher(['/api/(.*)'])
