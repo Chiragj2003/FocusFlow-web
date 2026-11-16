@@ -14,6 +14,7 @@ import { Filter, SortAsc, Archive, RotateCcw, Sparkles, X, Wand2, Timer, Trophy 
 import { cn } from '@/lib/utils'
 import type { HabitTemplate } from '@/lib/templates'
 import type { ChallengeTemplate } from '@/lib/challenges'
+import { SHOW_CHALLENGES } from '@/lib/constants'
 
 interface Habit {
   id: string
@@ -604,6 +605,7 @@ import { toast, celebrate } from '@/lib/celebrate'
 import { messages } from '@/lib/messages'
 import type { HabitTemplate } from '@/lib/templates'
 import type { ChallengeTemplate } from '@/lib/challenges'
+import { SHOW_CHALLENGES } from '@/lib/constants'
 
 interface Habit {
   id: string
@@ -1045,13 +1047,15 @@ export function HabitsClient({
           <span>AI Generator</span>
         </button>
 
-        <button
-          onClick={() => setIsChallengeBrowserOpen(true)}
-          className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-amber-400 bg-amber-400/10 border border-amber-400/25 rounded-xl hover:bg-amber-400/20 transition-colors"
-        >
-          <Trophy size={14} />
-          <span>Challenges</span>
-        </button>
+        {SHOW_CHALLENGES && (
+          <button
+            onClick={() => setIsChallengeBrowserOpen(true)}
+            className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-amber-400 bg-amber-400/10 border border-amber-400/25 rounded-xl hover:bg-amber-400/20 transition-colors"
+          >
+            <Trophy size={14} />
+            <span>Challenges</span>
+          </button>
+        )}
 
         <button
           onClick={() => {
@@ -1257,11 +1261,13 @@ export function HabitsClient({
       />
 
       {/* Challenge Browser Modal */}
-      <ChallengeBrowser
-        isOpen={isChallengeBrowserOpen}
-        onClose={() => setIsChallengeBrowserOpen(false)}
-        onStartChallenge={handleStartChallenge}
-      />
+      {SHOW_CHALLENGES && (
+        <ChallengeBrowser
+          isOpen={isChallengeBrowserOpen}
+          onClose={() => setIsChallengeBrowserOpen(false)}
+          onStartChallenge={handleStartChallenge}
+        />
+      )}
     </div>
   )
 }

@@ -272,6 +272,7 @@ export default function AchievementsPage() {
 
   // Load challenges from server API: GET /api/challenges/user
   const loadUserChallenges = useCallback(async () => {
+    if (!SHOW_CHALLENGES) return
     try {
       setLoadingChallenges(true)
       const res = await fetch('/api/challenges/user')
@@ -287,11 +288,14 @@ export default function AchievementsPage() {
   }, [])
 
   useEffect(() => {
-    if (SHOW_CHALLENGES) loadUserChallenges()
+    if (SHOW_CHALLENGES) {
+      loadUserChallenges()
+    }
   }, [loadUserChallenges])
 
   // Join challenge via API: POST /api/challenges/join
   const handleJoin = async (id: string, title: string) => {
+    if (!SHOW_CHALLENGES) return
     try {
       setIsJoiningId(id)
       const res = await fetch('/api/challenges/join', {
@@ -388,42 +392,53 @@ export default function AchievementsPage() {
           </div>
         </div>
 
-        {/* Tabs */}
-        <div className="flex items-center justify-between flex-wrap gap-4">
-          <div className="flex bg-[#131316] p-1.5 rounded-2xl border border-[#232328]">
-            {SHOW_CHALLENGES && (
-            <button
-              onClick={() => setActiveTab('achievements')}
-              className={cn(
-                'px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 flex items-center gap-2',
-                activeTab === 'achievements'
-                  ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-[0_2px_12px_rgba(249,115,22,0.35)]'
-                  : 'text-zinc-400 hover:text-white hover:bg-zinc-800/40'
-              )}
-            >
-              <Target className="w-4 h-4" />
-              Challenges ({userChallenges.length} Active)
-            </button>
-            )}
-            <button
-              onClick={() => setActiveTab('badges')}
-              className={cn(
-                'px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 flex items-center gap-2',
-                activeTab === 'badges'
-                  ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-[0_2px_12px_rgba(249,115,22,0.35)]'
-                  : 'text-zinc-400 hover:text-white hover:bg-zinc-800/40'
-              )}
-            >
-              <Award className="w-4 h-4" />
-              3D Badges
-            </button>
-          </div>
+        {/* Tabs / Header */}
+        {SHOW_CHALLENGES ? (
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div className="flex bg-[#131316] p-1.5 rounded-2xl border border-[#232328]">
+              <button
+                onClick={() => setActiveTab('achievements')}
+                className={cn(
+                  'px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 flex items-center gap-2',
+                  activeTab === 'achievements'
+                    ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-[0_2px_12px_rgba(249,115,22,0.35)]'
+                    : 'text-zinc-400 hover:text-white hover:bg-zinc-800/40'
+                )}
+              >
+                <Target className="w-4 h-4" />
+                Challenges ({userChallenges.length} Active)
+              </button>
+              <button
+                onClick={() => setActiveTab('badges')}
+                className={cn(
+                  'px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 flex items-center gap-2',
+                  activeTab === 'badges'
+                    ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-[0_2px_12px_rgba(249,115,22,0.35)]'
+                    : 'text-zinc-400 hover:text-white hover:bg-zinc-800/40'
+                )}
+              >
+                <Award className="w-4 h-4" />
+                3D Badges
+              </button>
+            </div>
 
-          <div className="flex items-center gap-2 text-xs font-bold text-zinc-400">
-            <Trophy className="w-4 h-4 text-amber-400" />
-            <span>Earn XP to rank up on the leaderboard</span>
+            <div className="flex items-center gap-2 text-xs font-bold text-zinc-400">
+              <Trophy className="w-4 h-4 text-amber-400" />
+              <span>Earn XP to rank up on the leaderboard</span>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="flex items-center justify-between flex-wrap gap-4 border-b border-[#232328] pb-4">
+            <div className="flex items-center gap-2.5 text-lg font-bold text-white">
+              <Award className="w-5 h-5 text-orange-400" />
+              <span>3D Badges & Medals</span>
+            </div>
+            <div className="flex items-center gap-2 text-xs font-bold text-zinc-400">
+              <Trophy className="w-4 h-4 text-amber-400" />
+              <span>Unlock badges to grow your streak and XP</span>
+            </div>
+          </div>
+        )}
 
         {/* Tab: Challenges */}
         {SHOW_CHALLENGES && activeTab === 'achievements' && (
@@ -526,7 +541,7 @@ export default function AchievementsPage() {
         )}
 
         {/* Tab: Badges */}
-        {activeTab === 'badges' && (
+        {(!SHOW_CHALLENGES || activeTab === 'badges') && (
           <div className="space-y-12">
             {Object.entries(groupedBadges).map(([category, badges]) => {
               const unlockedInCategory = badges.filter((b) => earnedBadges.includes(b.id)).length

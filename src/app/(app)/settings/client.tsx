@@ -566,8 +566,10 @@
 
 import { useState, useEffect } from 'react'
 import { UserButton, useClerk } from '@clerk/nextjs'
-import { User, Globe, Palette, Moon, AlertTriangle, Trash2, Power, Shield, LogOut, HelpCircle, MessageSquare } from 'lucide-react'
+import { User, Globe, Palette, Moon, Sun, Laptop, AlertTriangle, Trash2, Power, Shield, LogOut, HelpCircle, MessageSquare } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { useTheme } from '@/lib/theme'
+import { cn } from '@/lib/utils'
 
 interface SettingsClientProps {
   user: {
@@ -599,6 +601,7 @@ const TIMEZONES = [
 ]
 
 export function SettingsClient({ user, clerkUser }: SettingsClientProps) {
+  const { theme, setTheme } = useTheme()
   const [timezone, setTimezone] = useState(user.timezone)
   const [isSaving, setIsSaving] = useState(false)
   const [saved, setSaved] = useState(false)
@@ -779,18 +782,55 @@ export function SettingsClient({ user, clerkUser }: SettingsClientProps) {
 
         <div className="space-y-3 sm:space-y-4">
           <div className="p-4 bg-[#18181d] rounded-xl border border-[#232328]">
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-2">
               <div>
                 <p className="font-semibold text-white text-sm sm:text-base">Theme Appearance</p>
-                <p className="text-xs sm:text-sm text-zinc-400">Website color theme</p>
+                <p className="text-xs sm:text-sm text-zinc-400">Default is Dark Mode. Pick your preferred style.</p>
               </div>
-              <span className="px-3 py-1 rounded-full bg-orange-500/10 border border-orange-500/30 text-orange-400 text-xs font-bold flex items-center gap-1.5 shadow-[0_0_12px_rgba(249,115,22,0.15)]">
-                <Moon size={13} />
-                Dark Mode (Active)
-              </span>
+              <div className="flex bg-[#131316] p-1 rounded-xl border border-[#232328] self-start sm:self-auto">
+                <button
+                  type="button"
+                  onClick={() => setTheme('dark')}
+                  className={cn(
+                    'px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5',
+                    theme === 'dark'
+                      ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-sm'
+                      : 'text-zinc-400 hover:text-white'
+                  )}
+                >
+                  <Moon size={13} />
+                  Dark
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTheme('light')}
+                  className={cn(
+                    'px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5',
+                    theme === 'light'
+                      ? 'bg-white text-zinc-900 shadow-sm'
+                      : 'text-zinc-400 hover:text-white'
+                  )}
+                >
+                  <Sun size={13} />
+                  Light
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTheme('system')}
+                  className={cn(
+                    'px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5',
+                    theme === 'system'
+                      ? 'bg-zinc-800 text-white shadow-sm'
+                      : 'text-zinc-400 hover:text-white'
+                  )}
+                >
+                  <Laptop size={13} />
+                  System
+                </button>
+              </div>
             </div>
             <p className="text-xs text-zinc-500 leading-relaxed">
-              FocusFlow is designed exclusively in Dark Mode for high visual comfort, eye protection, and focused productivity.
+              FocusFlow defaults to Dark Mode for high visual comfort and focused productivity.
             </p>
           </div>
 
