@@ -3,6 +3,9 @@ import { auth } from '@clerk/nextjs/server'
 import { supabase, toFocusSessionResponse, type DbFocusSession } from '@/lib/supabase'
 import { dbUpsertUser } from '@/lib/db'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export async function GET() {
   try {
     const { userId } = await auth()

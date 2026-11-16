@@ -29,12 +29,28 @@ export async function GET(request: NextRequest) {
     const startDate = start || new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10)
     const endDate = end || new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().slice(0, 10)
 
-    const [habitsRes, entriesRes] = await Promise.all([
-      supabase.from('habits').select('*').eq('user_id', userId).eq('active', true),
-      supabase.from('habit_entries').select('*').eq('user_id', userId).gte('entry_date', startDate).lte('entry_date', endDate),
-    ])
-
+    const habitsRes = await supabase.from('habits').select('*').eq('user_id', userId).eq('active', true)
     const habits = (habitsRes.data || []) as DbHabit[]
+
+    if (habits.length === 0) {
+      return NextResponse.json({
+        userId,
+        period: { start: startDate, end: endDate },
+        overallCompletionRate: 0,
+        totalCompleted: 0,
+        totalPossible: 0,
+        topHabits: [],
+        weekly: [],
+        habitSummaries: [],
+      }, {
+        headers: {
+          'Cache-Control': 'no-store, max-age=0, must-revalidate',
+          'Pragma': 'no-cache',
+        },
+      })
+    }
+
+    const entriesRes = await supabase.from('habit_entries').select('*').eq('user_id', userId).gte('entry_date', startDate).lte('entry_date', endDate)
     const entries = (entriesRes.data || []) as DbEntry[]
     const days = dateRange(startDate, endDate)
     const completedEntries = entries.filter((e) => e.completed)
@@ -86,6 +102,11 @@ export async function GET(request: NextRequest) {
       topHabits,
       weekly,
       habitSummaries,
+    }, {
+      headers: {
+        'Cache-Control': 'no-store, max-age=0, must-revalidate',
+        'Pragma': 'no-cache',
+      },
     })
   } catch (error) {
     console.error('Error fetching insights:', error)

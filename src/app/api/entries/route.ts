@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { supabase, toEntryResponse, type DbEntry } from '@/lib/supabase'
 import { dbUpsertUser } from '@/lib/db'
+import { entrySchema } from '@/lib/validations'
+import { checkRateLimit } from '@/lib/rateLimit'
+
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 // GET /api/entries
 export async function GET(request: NextRequest) {
@@ -30,7 +35,6 @@ export async function GET(request: NextRequest) {
     }
 
     const response = NextResponse.json((data as DbEntry[]).map(toEntryResponse))
-    response.headers.set('Cache-Control', 'private, max-age=30, stale-while-revalidate=60')
     return response
   } catch (error) {
     console.error('[Supabase] Unexpected error fetching entries:', error)
@@ -45,13 +49,26 @@ export async function POST(request: NextRequest) {
     const { userId } = await auth()
     if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
+    // Apply Rate Limiting
+    const rateLimitResponse = checkRateLimit(request, userId)
+    if (rateLimitResponse) return rateLimitResponse
+
     // Ensure user exists in DB before creating entry
     await dbUpsertUser(userId)
 
     const body = await request.json()
-    const { habitId, entryDate, completed, value, notes, mood, energy, duration } = body
-    if (!habitId || !entryDate) return NextResponse.json({ error: 'habitId and entryDate are required' }, { status: 400 })
-
+    
+    // Validate request body using Zod
+    const validationResult = entrySchema.safeParse(body)
+    if (!validationResult.success) {
+      return NextResponse.json({ 
+        error: 'Validation failed', 
+        details: validationResult.error.flatten().fieldErrors 
+      }, { status: 400 })
+    }
+    
+    const { habitId, entryDate, completed, value, notes, mood, energy, duration } = validationResult.data
+    
     // Verify habit belongs to user
     const { data: habit } = await supabase.from('habits').select('id').eq('id', habitId).eq('user_id', userId).single()
     if (!habit) return NextResponse.json({ error: 'Habit not found' }, { status: 404 })

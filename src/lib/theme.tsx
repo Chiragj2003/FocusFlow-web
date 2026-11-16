@@ -1,6 +1,7 @@
+/* ==================== ORIGINAL CODE START ====================
 'use client'
 
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect } from 'react'
 
 type Theme = 'light' | 'dark' | 'system'
 
@@ -76,6 +77,63 @@ export function useTheme() {
   const context = useContext(ThemeContext)
   if (context === undefined) {
     throw new Error('useTheme must be used within a ThemeProvider')
+  }
+  return context
+}
+==================== ORIGINAL CODE END ==================== */
+
+'use client'
+
+import { createContext, useContext, useEffect } from 'react'
+
+type Theme = 'light' | 'dark' | 'system'
+
+interface ThemeContextType {
+  theme: Theme
+  setTheme: (theme: Theme) => void
+  resolvedTheme: 'dark'
+}
+
+const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
+
+/**
+ * FocusFlow is permanently dark mode across the entire app.
+ * Light mode has been removed per brand guidelines.
+ */
+export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  const theme: Theme = 'dark'
+  const resolvedTheme = 'dark' as const
+
+  useEffect(() => {
+    const root = document.documentElement
+    root.classList.add('dark')
+    root.style.colorScheme = 'dark'
+    localStorage.setItem('theme', 'dark')
+  }, [])
+
+  const setTheme = (_newTheme: Theme) => {
+    // Permanent dark mode enforced
+    const root = document.documentElement
+    root.classList.add('dark')
+    root.style.colorScheme = 'dark'
+    localStorage.setItem('theme', 'dark')
+  }
+
+  return (
+    <ThemeContext.Provider value={{ theme, setTheme, resolvedTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  )
+}
+
+export function useTheme() {
+  const context = useContext(ThemeContext)
+  if (context === undefined) {
+    return {
+      theme: 'dark' as Theme,
+      setTheme: () => {},
+      resolvedTheme: 'dark' as const,
+    }
   }
   return context
 }

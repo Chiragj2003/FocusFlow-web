@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 // AI-powered habit generation using Google Gemini with local fallback
 
 interface GeneratedHabit {

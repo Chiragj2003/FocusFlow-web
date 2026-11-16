@@ -1,3 +1,4 @@
+/* ==================== ORIGINAL CODE START ====================
 'use client'
 
 import { cn, formatDate, isToday } from '@/lib/utils'
@@ -49,22 +50,19 @@ export function HabitGrid({
   const [deleteConfirm, setDeleteConfirm] = useState<{ habitId: string; title: string; hasEntries: boolean } | null>(null)
   const menuButtonRefs = useRef<Map<string, HTMLButtonElement>>(new Map())
 
-  // Generate days for the month
   const daysInMonth = new Date(year, month + 1, 0).getDate()
   const days = Array.from({ length: daysInMonth }, (_, i) => {
     return new Date(year, month, i + 1)
   })
 
-  // Get entry for a specific habit and date
   const getEntry = useCallback(
     (habitId: string, date: Date) => {
       const dateStr = formatDate(date)
       return entries.find(
         (e) => {
           if (e.habitId !== habitId) return false
-          // Handle both string and Date types for entryDate
           const entryDateStr = typeof e.entryDate === 'string'
-            ? e.entryDate.split('T')[0]  // Handle ISO string or date string
+            ? e.entryDate.split('T')[0]
             : formatDate(new Date(e.entryDate))
           return entryDateStr === dateStr
         }
@@ -73,21 +71,14 @@ export function HabitGrid({
     [entries]
   )
 
-  // Handle cell click - instant, no loading state
   const handleCellClick = (habitId: string, date: Date) => {
     const dateStr = formatDate(date)
-
-    // Don't allow future dates
     if (date > new Date()) return
-
     const entry = getEntry(habitId, date)
     const newCompleted = !entry?.completed
-
-    // Call toggle immediately - no loading state needed
     onToggleEntry(habitId, dateStr, newCompleted)
   }
 
-  // Calculate weekly completion for a habit
   const getWeeklyCompletion = (habitId: string, weekStart: number) => {
     let completed = 0
     for (let i = weekStart; i < Math.min(weekStart + 7, daysInMonth + 1); i++) {
@@ -98,7 +89,6 @@ export function HabitGrid({
     return completed
   }
 
-  // Get week boundaries
   const weeks: number[] = []
   for (let i = 1; i <= daysInMonth; i += 7) {
     weeks.push(i)
@@ -108,7 +98,6 @@ export function HabitGrid({
     month: 'long',
   })
 
-  // Get short display for habit goal
   const getGoalDisplay = (habit: Habit) => {
     if (habit.goalType === 'binary') return '✓'
     if (habit.goalType === 'duration' && habit.goalTarget) {
@@ -122,7 +111,6 @@ export function HabitGrid({
 
   return (
     <div className="bg-zinc-900/50 rounded-xl sm:rounded-2xl border border-zinc-800/50 overflow-hidden">
-      {/* Header */}
       <div className="px-3 sm:px-6 py-3 sm:py-4 border-b border-zinc-800/50 flex items-center justify-between gap-2">
         <h2 className="text-base sm:text-lg font-semibold text-white">
           {monthName} {year}
@@ -136,7 +124,6 @@ export function HabitGrid({
         </button>
       </div>
 
-      {/* Grid */}
       <div className="overflow-x-auto">
         <table className="w-full min-w-[600px] sm:min-w-[800px]">
           <thead>
@@ -214,7 +201,6 @@ export function HabitGrid({
                             <span className="text-[10px] sm:text-xs text-zinc-500 hidden sm:block">{habit.category}</span>
                           )}
                         </div>
-                        {/* Menu button */}
                         {onArchiveHabit && (
                           <div className="relative">
                             <button
@@ -302,7 +288,6 @@ export function HabitGrid({
         </table>
       </div>
 
-      {/* Week summary footer */}
       {habits.length > 0 && (
         <div className="px-3 sm:px-6 py-3 sm:py-4 bg-zinc-800/30 border-t border-zinc-800/50">
           <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm">
@@ -332,7 +317,6 @@ export function HabitGrid({
         </div>
       )}
 
-      {/* Dropdown Menu Portal */}
       {menuOpen && menuPosition && (
         <>
           <div 
@@ -391,7 +375,6 @@ export function HabitGrid({
         </>
       )}
 
-      {/* Delete Confirmation Modal */}
       {deleteConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div 
@@ -451,6 +434,474 @@ export function HabitGrid({
                   setDeleteConfirm(null)
                 }}
                 className="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-xl transition-colors"
+              >
+                Delete Habit
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+==================== ORIGINAL CODE END ==================== */
+
+'use client'
+
+import { cn, formatDate, isToday } from '@/lib/utils'
+import { useState, useCallback, useRef } from 'react'
+import { Check, Plus, Archive, MoreVertical, Trash2, AlertTriangle, X } from 'lucide-react'
+
+interface Habit {
+  id: string
+  title: string
+  color: string
+  goalType: string
+  goalTarget?: number | null
+  unit?: string | null
+  category?: string | null
+}
+
+interface Entry {
+  id: string
+  habitId: string
+  entryDate: string | Date
+  completed: boolean
+  value?: number | null
+  notes?: string | null
+}
+
+interface HabitGridProps {
+  habits: Habit[]
+  entries: Entry[]
+  month: number
+  year: number
+  onToggleEntry: (habitId: string, date: string, completed: boolean) => void
+  onAddHabit: () => void
+  onArchiveHabit?: (habitId: string) => void
+  onDeleteHabit?: (habitId: string) => void
+}
+
+export function HabitGrid({
+  habits,
+  entries,
+  month,
+  year,
+  onToggleEntry,
+  onAddHabit,
+  onArchiveHabit,
+  onDeleteHabit,
+}: HabitGridProps) {
+  const [menuOpen, setMenuOpen] = useState<string | null>(null)
+  const [menuPosition, setMenuPosition] = useState<{ top: number; left: number } | null>(null)
+  const [deleteConfirm, setDeleteConfirm] = useState<{ habitId: string; title: string; hasEntries: boolean } | null>(null)
+  const menuButtonRefs = useRef<Map<string, HTMLButtonElement>>(new Map())
+
+  // Generate days for the month
+  const daysInMonth = new Date(year, month + 1, 0).getDate()
+  const days = Array.from({ length: daysInMonth }, (_, i) => {
+    return new Date(year, month, i + 1)
+  })
+
+  // Get entry for a specific habit and date
+  const getEntry = useCallback(
+    (habitId: string, date: Date) => {
+      const dateStr = formatDate(date)
+      return entries.find((e) => {
+        if (e.habitId !== habitId) return false
+        const entryDateStr =
+          typeof e.entryDate === 'string'
+            ? e.entryDate.split('T')[0]
+            : formatDate(new Date(e.entryDate))
+        return entryDateStr === dateStr
+      })
+    },
+    [entries]
+  )
+
+  // Handle cell click - instant, no loading state
+  const handleCellClick = (habitId: string, date: Date) => {
+    const dateStr = formatDate(date)
+    if (date > new Date()) return
+    const entry = getEntry(habitId, date)
+    const newCompleted = !entry?.completed
+    onToggleEntry(habitId, dateStr, newCompleted)
+  }
+
+  // Calculate weekly completion for a habit
+  const getWeeklyCompletion = (habitId: string, weekStart: number) => {
+    let completed = 0
+    for (let i = weekStart; i < Math.min(weekStart + 7, daysInMonth + 1); i++) {
+      const date = new Date(year, month, i)
+      const entry = getEntry(habitId, date)
+      if (entry?.completed) completed++
+    }
+    return completed
+  }
+
+  // Get week boundaries
+  const weeks: number[] = []
+  for (let i = 1; i <= daysInMonth; i += 7) {
+    weeks.push(i)
+  }
+
+  const monthName = new Date(year, month).toLocaleString('default', {
+    month: 'long',
+  })
+
+  const getGoalDisplay = (habit: Habit) => {
+    if (habit.goalType === 'binary') return '✓'
+    if (habit.goalType === 'duration' && habit.goalTarget) {
+      return `${habit.goalTarget}${habit.unit || 'min'}`
+    }
+    if (habit.goalType === 'quantity' && habit.goalTarget) {
+      return `${habit.goalTarget}${habit.unit ? ` ${habit.unit}` : 'x'}`
+    }
+    return ''
+  }
+
+  return (
+    <div className="bg-[#131316] rounded-3xl border border-[#232328] overflow-hidden shadow-xl">
+      {/* Header */}
+      <div className="px-4 sm:px-6 py-4 border-b border-[#232328] flex items-center justify-between gap-2">
+        <h2 className="text-base sm:text-lg font-black text-white tracking-tight">
+          {monthName} {year}
+        </h2>
+        <button
+          onClick={onAddHabit}
+          className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold bg-gradient-to-r from-orange-500 to-amber-500 text-white hover:from-orange-600 hover:to-amber-600 rounded-xl transition-all shadow-[0_2px_10px_rgba(249,115,22,0.3)]"
+        >
+          <Plus size={14} />
+          <span>Add Habit</span>
+        </button>
+      </div>
+
+      {/* Grid Table */}
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[650px] sm:min-w-[850px]">
+          <thead>
+            <tr className="border-b border-[#232328]">
+              <th className="sticky left-0 bg-[#131316] backdrop-blur-md px-3 sm:px-5 py-3 text-left text-xs font-black text-zinc-400 uppercase tracking-wider w-44 sm:w-60 z-20">
+                Habit
+              </th>
+              {days.map((day) => {
+                const today = isToday(day)
+                return (
+                  <th
+                    key={day.toISOString()}
+                    className={cn(
+                      'px-1 py-2 text-center text-[10px] sm:text-xs font-bold w-7 sm:w-9',
+                      today
+                        ? 'text-orange-400 bg-orange-500/10 border-x border-orange-500/20'
+                        : 'text-zinc-500'
+                    )}
+                  >
+                    <div>{day.getDate()}</div>
+                    <div className="text-[8px] sm:text-[9px] uppercase font-semibold">
+                      {day.toLocaleDateString('en', { weekday: 'narrow' })}
+                    </div>
+                  </th>
+                )
+              })}
+              <th className="px-3 sm:px-5 py-3 text-center text-xs font-black text-zinc-400 uppercase tracking-wider">
+                Total
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {habits.length === 0 ? (
+              <tr>
+                <td colSpan={days.length + 2} className="px-4 py-12 text-center text-zinc-500">
+                  <p className="mb-2">No habits in this view</p>
+                  <button onClick={onAddHabit} className="text-orange-400 font-bold hover:underline">
+                    Create a habit
+                  </button>
+                </td>
+              </tr>
+            ) : (
+              habits.map((habit) => {
+                const completedCount = entries.filter(
+                  (e) => e.habitId === habit.id && e.completed
+                ).length
+                const goalDisplay = getGoalDisplay(habit)
+
+                return (
+                  <tr
+                    key={habit.id}
+                    className="border-b border-[#232328]/50 hover:bg-zinc-800/20 transition-colors"
+                  >
+                    {/* Left Sticky Habit Name Column */}
+                    <td className="sticky left-0 bg-[#131316] backdrop-blur-md px-3 sm:px-5 py-3 z-10">
+                      <div className="flex items-center gap-2.5 sm:gap-3">
+                        <div
+                          className="w-3 h-3 rounded-full shrink-0 shadow-sm"
+                          style={{ backgroundColor: habit.color || '#f97316' }}
+                        />
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-xs sm:text-sm font-bold text-white truncate max-w-[90px] sm:max-w-[130px]">
+                              {habit.title}
+                            </span>
+                            {goalDisplay && (
+                              <span className="text-[10px] px-1.5 py-0.2 rounded-md bg-[#18181d] border border-[#232328] text-orange-400 font-semibold shrink-0 hidden sm:inline">
+                                {goalDisplay}
+                              </span>
+                            )}
+                          </div>
+                          {habit.category && (
+                            <span className="text-[10px] text-zinc-500 hidden sm:block">
+                              {habit.category}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Action Menu */}
+                        {onArchiveHabit && (
+                          <div className="relative">
+                            <button
+                              ref={(el) => {
+                                if (el) menuButtonRefs.current.set(habit.id, el)
+                              }}
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                e.preventDefault()
+                                if (menuOpen === habit.id) {
+                                  setMenuOpen(null)
+                                  setMenuPosition(null)
+                                } else {
+                                  const rect = e.currentTarget.getBoundingClientRect()
+                                  setMenuPosition({
+                                    top: rect.bottom + 4,
+                                    left: rect.right - 140,
+                                  })
+                                  setMenuOpen(habit.id)
+                                }
+                              }}
+                              className="p-1 text-zinc-500 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors"
+                            >
+                              <MoreVertical size={15} />
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </td>
+
+                    {/* Day Cells (Round Check Cells matching focusflow-expo) */}
+                    {days.map((day) => {
+                      const entry = getEntry(habit.id, day)
+                      const isFuture = day > new Date()
+                      const today = isToday(day)
+
+                      return (
+                        <td
+                          key={day.toISOString()}
+                          className={cn(
+                            'px-0.5 sm:px-1 py-1 sm:py-2 text-center',
+                            today && 'bg-orange-500/5 border-x border-orange-500/15'
+                          )}
+                        >
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault()
+                              e.stopPropagation()
+                              if (!isFuture) {
+                                handleCellClick(habit.id, day)
+                              }
+                            }}
+                            disabled={isFuture}
+                            className={cn(
+                              'w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center transition-all mx-auto touch-manipulation active:scale-90',
+                              entry?.completed
+                                ? 'text-white shadow-[0_0_8px_rgba(249,115,22,0.4)]'
+                                : today
+                                ? 'border-2 border-orange-500/60 hover:border-orange-500 bg-transparent'
+                                : 'border border-zinc-700/80 hover:border-zinc-500 bg-transparent',
+                              isFuture && 'opacity-25 cursor-not-allowed',
+                              !isFuture && !entry?.completed && 'hover:bg-zinc-800/40 cursor-pointer'
+                            )}
+                            style={{
+                              backgroundColor: entry?.completed
+                                ? habit.color || '#f97316'
+                                : 'transparent',
+                            }}
+                          >
+                            {entry?.completed && <Check size={13} className="stroke-[3] text-white" />}
+                          </button>
+                        </td>
+                      )
+                    })}
+
+                    {/* Total Count */}
+                    <td className="px-4 py-3 text-center">
+                      <span className="text-sm font-bold text-white">
+                        {completedCount}
+                      </span>
+                      <span className="text-xs text-zinc-500">
+                        /{daysInMonth}
+                      </span>
+                    </td>
+                  </tr>
+                )
+              })
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Week Summary Footer with orange gradient */}
+      {habits.length > 0 && (
+        <div className="px-4 sm:px-6 py-3 bg-[#101013] border-t border-[#232328]">
+          <div className="flex flex-wrap items-center gap-3 sm:gap-6 text-xs font-semibold">
+            <span className="text-zinc-400">Weekly completion:</span>
+            {weeks.map((weekStart, i) => {
+              const totalPossible = Math.min(7, daysInMonth - weekStart + 1) * habits.length
+              const totalCompleted = habits.reduce(
+                (sum, habit) => sum + getWeeklyCompletion(habit.id, weekStart),
+                0
+              )
+              const percentage =
+                totalPossible > 0 ? Math.round((totalCompleted / totalPossible) * 100) : 0
+
+              return (
+                <div key={weekStart} className="flex items-center gap-2">
+                  <span className="text-zinc-500 font-bold">W{i + 1}:</span>
+                  <div className="w-12 sm:w-16 h-2 bg-[#1c1c22] rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-orange-500 to-amber-500 rounded-full transition-all duration-500"
+                      style={{ width: `${percentage}%` }}
+                    />
+                  </div>
+                  <span className="text-white font-bold text-xs">{percentage}%</span>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Dropdown Menu Portal */}
+      {menuOpen && menuPosition && (
+        <>
+          <div
+            className="fixed inset-0"
+            style={{ zIndex: 9998 }}
+            onClick={() => {
+              setMenuOpen(null)
+              setMenuPosition(null)
+            }}
+          />
+          <div
+            className="fixed bg-[#18181d] border border-[#232328] rounded-2xl shadow-2xl py-1 min-w-[140px] animate-scale-up"
+            style={{
+              zIndex: 9999,
+              top: menuPosition.top,
+              left: menuPosition.left,
+            }}
+          >
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                if (onArchiveHabit && menuOpen) {
+                  onArchiveHabit(menuOpen)
+                }
+                setMenuOpen(null)
+                setMenuPosition(null)
+              }}
+              className="w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors"
+            >
+              <Archive size={14} className="text-orange-400" />
+              Archive
+            </button>
+            {onDeleteHabit && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  const habit = habits.find((h) => h.id === menuOpen)
+                  if (habit) {
+                    const habitEntries = entries.filter(
+                      (en) => en.habitId === habit.id && en.completed
+                    )
+                    setDeleteConfirm({
+                      habitId: habit.id,
+                      title: habit.title,
+                      hasEntries: habitEntries.length > 0,
+                    })
+                  }
+                  setMenuOpen(null)
+                  setMenuPosition(null)
+                }}
+                className="w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors"
+              >
+                <Trash2 size={14} />
+                Delete
+              </button>
+            )}
+          </div>
+        </>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-black/70 backdrop-blur-sm animate-fade-in"
+            onClick={() => setDeleteConfirm(null)}
+          />
+          <div className="relative bg-[#131316] border border-[#232328] rounded-3xl shadow-2xl max-w-md w-full p-6 animate-scale-up z-10">
+            <button
+              onClick={() => setDeleteConfirm(null)}
+              className="absolute top-4 right-4 p-1 text-zinc-500 hover:text-white rounded-lg transition-colors"
+            >
+              <X size={20} />
+            </button>
+
+            <div className="flex items-center gap-3 mb-4">
+              {deleteConfirm.hasEntries ? (
+                <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center">
+                  <AlertTriangle className="w-6 h-6 text-amber-500" />
+                </div>
+              ) : (
+                <div className="w-12 h-12 rounded-2xl bg-red-500/10 border border-red-500/30 flex items-center justify-center">
+                  <Trash2 className="w-6 h-6 text-red-500" />
+                </div>
+              )}
+              <div>
+                <h3 className="text-lg font-black text-white">Delete Habit</h3>
+                <p className="text-xs text-zinc-400">This action cannot be undone</p>
+              </div>
+            </div>
+
+            <div className="mb-6">
+              <p className="text-zinc-300 text-sm mb-2">
+                Are you sure you want to delete{' '}
+                <span className="font-bold text-white">&quot;{deleteConfirm.title}&quot;</span>?
+              </p>
+              {deleteConfirm.hasEntries && (
+                <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl">
+                  <p className="text-amber-400 text-xs font-semibold flex items-center gap-2">
+                    <AlertTriangle size={15} />
+                    <span>This habit has completed entries that will also be deleted!</span>
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setDeleteConfirm(null)}
+                className="flex-1 px-4 py-2.5 text-xs font-bold text-zinc-300 bg-[#18181d] border border-[#232328] hover:bg-zinc-800 rounded-xl transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  if (onDeleteHabit) {
+                    onDeleteHabit(deleteConfirm.habitId)
+                  }
+                  setDeleteConfirm(null)
+                }}
+                className="flex-1 px-4 py-2.5 text-xs font-bold text-white bg-red-600 hover:bg-red-700 rounded-xl transition-colors shadow-lg"
               >
                 Delete Habit
               </button>

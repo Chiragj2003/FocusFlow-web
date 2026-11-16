@@ -3,6 +3,9 @@ import { auth } from '@clerk/nextjs/server'
 import { supabase } from '@/lib/supabase'
 import { updateChallengeParticipantProgress } from '@/lib/challenge-progress'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export async function GET() {
   try {
     const { userId } = await auth()

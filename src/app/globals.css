@@ -1,3 +1,4 @@
+/* ==================== ORIGINAL CODE START ====================
 @import "tailwindcss";
 
 :root {
@@ -48,6 +49,49 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans), system-ui, sans-serif;
 }
+==================== ORIGINAL CODE END ==================== */
+
+@import "tailwindcss";
+
+:root,
+.dark {
+  --background: #09090b;
+  --foreground: #fafafa;
+  --primary: #f97316;
+  --primary-foreground: #ffffff;
+  --accent: #fbbf24;
+  --card: #131316;
+  --card-foreground: #fafafa;
+  --card-border: #232328;
+  --border: rgba(39, 39, 42, 0.6);
+  --muted: #18181b;
+  --muted-foreground: #a1a1aa;
+  --ring: #f97316;
+  --primary-soft: rgba(249, 115, 22, 0.14);
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-card-border: var(--card-border);
+  --color-border: var(--border);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-ring: var(--ring);
+  --font-sans: var(--font-inter);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
@@ -69,6 +113,88 @@ body {
   background: var(--muted-foreground);
 }
 
+/* Sparky Mascot idle bobbing */
+@keyframes sparky-bob {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.animate-sparky-bob {
+  animation: sparky-bob 2.8s ease-in-out infinite;
+}
+
+/* Confetti fall */
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(-20px) rotate(0deg);
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+.animate-confetti-fall {
+  animation: confetti-fall linear forwards;
+}
+
+/* Animations for modals & toasts */
+@keyframes scale-up {
+  0% {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-scale-up {
+  animation: scale-up 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fade-in {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.2s ease-out forwards;
+}
+
+@keyframes slide-in-right {
+  0% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Flame & orange glows */
+.glow-orange {
+  box-shadow: 0 0 24px rgba(249, 115, 22, 0.35);
+}
+
+.glow-orange-lg {
+  box-shadow: 0 0 40px rgba(249, 115, 22, 0.45);
+}
+
 /* Gradient animation for text */
 @keyframes gradient {
   0%, 100% { background-position: 0% 50%; }
@@ -80,7 +206,7 @@ body {
   animation: gradient 3s ease infinite;
 }
 
-/* Blob animation for home page */
+/* Blob animation */
 @keyframes blob {
   0% {
     transform: translate(0px, 0px) scale(1);
@@ -137,7 +263,6 @@ body {
   animation: marquee-reverse 40s linear infinite;
 }
 
-/* Pause animations on hover */
 .animate-marquee:hover,
 .animate-marquee-reverse:hover {
   animation-play-state: paused;
@@ -170,26 +295,12 @@ body {
   animation: shine 3s linear infinite;
 }
 
-/* Glow effect */
-.glow {
-  box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
-}
-
-.glow-hover:hover {
-  box-shadow: 0 0 30px rgba(255, 255, 255, 0.15);
-}
-
 /* Grid pattern overlay */
 .grid-pattern {
   background-image: 
-    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    linear-gradient(rgba(249, 115, 22, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(249, 115, 22, 0.04) 1px, transparent 1px);
   background-size: 50px 50px;
-}
-
-/* Radial gradient backgrounds */
-.radial-gradient {
-  background: radial-gradient(ellipse at center, rgba(39, 39, 42, 0.5) 0%, transparent 70%);
 }
 
 /* Card hover effect */
@@ -199,12 +310,12 @@ body {
 
 .card-hover:hover {
   transform: translateY(-4px);
-  border-color: rgba(82, 82, 91, 0.8);
+  border-color: rgba(249, 115, 22, 0.4);
 }
 
 /* Text gradient */
 .text-gradient {
-  background: linear-gradient(to right, #ffffff, #a1a1aa);
+  background: linear-gradient(to right, #ffffff, #f97316);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

@@ -1,3 +1,4 @@
+/* ==================== ORIGINAL CODE START ====================
 'use client'
 
 import Image from 'next/image'
@@ -36,7 +37,6 @@ export function Logo({ size = 40, className = '', showText = true }: LogoProps) 
 export function LogoStatic({ size = 40, className = '', showText = true }: LogoProps) {
   return (
     <div className={`flex items-center gap-3 ${className}`}>
-      {/* Light theme logo - hidden in dark mode */}
       <Image
         src="/light.png"
         alt="FocusFlow Logo"
@@ -45,7 +45,6 @@ export function LogoStatic({ size = 40, className = '', showText = true }: LogoP
         className="rounded-xl dark:hidden"
         priority
       />
-      {/* Dark theme logo - shown only in dark mode */}
       <Image
         src="/dark.png"
         alt="FocusFlow Logo"
@@ -56,6 +55,47 @@ export function LogoStatic({ size = 40, className = '', showText = true }: LogoP
       />
       {showText && (
         <span className="font-bold text-xl text-foreground">FocusFlow</span>
+      )}
+    </div>
+  )
+}
+==================== ORIGINAL CODE END ==================== */
+
+'use client'
+
+import React from 'react'
+import { FlameMark } from './ui/FlameMark'
+
+interface LogoProps {
+  size?: number
+  className?: string
+  showText?: boolean
+}
+
+/**
+ * FocusFlow Brand Logo: FlameMark + two-color wordmark (Focus in base text, Flow in primary orange).
+ */
+export function Logo({ size = 32, className = '', showText = true }: LogoProps) {
+  return (
+    <div className={`flex items-center gap-2.5 select-none ${className}`}>
+      <FlameMark size={size} />
+      {showText && (
+        <span className="font-extrabold text-xl tracking-tight text-foreground">
+          Focus<span className="text-orange-500">Flow</span>
+        </span>
+      )}
+    </div>
+  )
+}
+
+export function LogoStatic({ size = 32, className = '', showText = true }: LogoProps) {
+  return (
+    <div className={`flex items-center gap-2.5 select-none ${className}`}>
+      <FlameMark size={size} />
+      {showText && (
+        <span className="font-extrabold text-xl tracking-tight text-foreground">
+          Focus<span className="text-orange-500">Flow</span>
+        </span>
       )}
     </div>
   )

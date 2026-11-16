@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { supabase, toHabitResponse, type DbHabit } from '@/lib/supabase'
 import { dbUpsertUser } from '@/lib/db'
+import { habitSchema } from '@/lib/validations'
+import { checkRateLimit } from '@/lib/rateLimit'
+import { z } from 'zod'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -30,7 +33,6 @@ export async function GET(request: NextRequest) {
     }
 
     const response = NextResponse.json((data as DbHabit[]).map(toHabitResponse))
-    response.headers.set('Cache-Control', 'private, max-age=10, stale-while-revalidate=30')
     return response
   } catch (error) {
     console.error('[Supabase] Unexpected error fetching habits:', error)
@@ -45,12 +47,25 @@ export async function POST(request: NextRequest) {
     const { userId } = await auth()
     if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
+    // Apply Rate Limiting
+    const rateLimitResponse = checkRateLimit(request, userId)
+    if (rateLimitResponse) return rateLimitResponse
+
     // Ensure user exists in DB before creating habit
     await dbUpsertUser(userId)
 
     const body = await request.json()
-    const { title, description, category, color, goalType, goalTarget, unit } = body
-    if (!title || !goalType) return NextResponse.json({ error: 'Title and goalType are required' }, { status: 400 })
+    
+    // Validate request body using Zod
+    const validationResult = habitSchema.safeParse(body)
+    if (!validationResult.success) {
+      return NextResponse.json({ 
+        error: 'Validation failed', 
+        details: validationResult.error.flatten().fieldErrors 
+      }, { status: 400 })
+    }
+    
+    const { title, description, category, color, goalType, goalTarget, unit } = validationResult.data
 
     // Ensure no duplicate active habit name for the same user
     const { data: existingHabits, error: fetchError } = await supabase

@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { supabase, toHabitResponse, type DbHabit } from '@/lib/supabase'
+import { habitUpdateSchema } from '@/lib/validations'
+import { z } from 'zod'
+
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 // PATCH /api/habits/[id]
 export async function PATCH(
@@ -13,15 +18,26 @@ export async function PATCH(
     if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
     const body = await request.json()
+    
+    const validationResult = habitUpdateSchema.safeParse(body)
+    if (!validationResult.success) {
+      return NextResponse.json({ 
+        error: 'Validation failed', 
+        details: validationResult.error.flatten().fieldErrors 
+      }, { status: 400 })
+    }
+    
+    const validData = validationResult.data
     const updates: Record<string, unknown> = { updated_at: new Date().toISOString() }
-    if (body.title !== undefined) updates.title = body.title
-    if (body.description !== undefined) updates.description = body.description
-    if (body.category !== undefined) updates.category = body.category
-    if (body.color !== undefined) updates.color = body.color
-    if (body.goalType !== undefined) updates.goal_type = body.goalType
-    if (body.goalTarget !== undefined) updates.goal_target = body.goalTarget
-    if (body.unit !== undefined) updates.unit = body.unit
-    if (body.active !== undefined) updates.active = body.active
+    
+    if (validData.title !== undefined) updates.title = validData.title
+    if (validData.description !== undefined) updates.description = validData.description
+    if (validData.category !== undefined) updates.category = validData.category
+    if (validData.color !== undefined) updates.color = validData.color
+    if (validData.goalType !== undefined) updates.goal_type = validData.goalType
+    if (validData.goalTarget !== undefined) updates.goal_target = validData.goalTarget
+    if (validData.unit !== undefined) updates.unit = validData.unit
+    if (validData.active !== undefined) updates.active = validData.active
 
     const { data, error } = await supabase
       .from('habits')

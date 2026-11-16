@@ -2,16 +2,27 @@ import { NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { supabase, type DbHabit, type DbEntry } from '@/lib/supabase'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export async function GET() {
   try {
     const { userId } = await auth()
     if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-    const [habitsRes, entriesRes] = await Promise.all([
-      supabase.from('habits').select('*').eq('user_id', userId).eq('active', true),
-      supabase.from('habit_entries').select('*').eq('user_id', userId),
-    ])
+    const habitsRes = await supabase.from('habits').select('*').eq('user_id', userId).eq('active', true)
     const habits = (habitsRes.data || []) as DbHabit[]
+
+    if (habits.length === 0) {
+      return NextResponse.json({ currentStreak: 0, longestStreak: 0, streaksByHabit: [] }, {
+        headers: {
+          'Cache-Control': 'no-store, max-age=0, must-revalidate',
+          'Pragma': 'no-cache',
+        },
+      })
+    }
+
+    const entriesRes = await supabase.from('habit_entries').select('*').eq('user_id', userId)
     const entries = (entriesRes.data || []) as DbEntry[]
 
     const streaksByHabit = habits.map((habit) => {
@@ -39,7 +50,12 @@ export async function GET() {
 
     const currentStreak = Math.max(0, ...streaksByHabit.map((s) => s.currentStreak))
     const longestStreak = Math.max(0, ...streaksByHabit.map((s) => s.longestStreak))
-    return NextResponse.json({ currentStreak, longestStreak, streaksByHabit })
+    return NextResponse.json({ currentStreak, longestStreak, streaksByHabit }, {
+      headers: {
+        'Cache-Control': 'no-store, max-age=0, must-revalidate',
+        'Pragma': 'no-cache',
+      },
+    })
   } catch (error) {
     console.error('Error fetching streaks:', error)
     return NextResponse.json({ error: 'Failed to fetch streaks' }, { status: 500 })

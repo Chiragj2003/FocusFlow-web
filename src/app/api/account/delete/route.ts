@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
+import { auth, clerkClient } from '@clerk/nextjs/server'
 import { supabase } from '@/lib/supabase'
+
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 export async function DELETE(request: NextRequest) {
   try {
@@ -17,6 +20,8 @@ export async function DELETE(request: NextRequest) {
     ])
     await supabase.from('habits').delete().eq('user_id', userId)
     await supabase.from('users').delete().eq('id', userId)
+    const client = await clerkClient()
+    await client.users.deleteUser(userId)
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Error:', error)

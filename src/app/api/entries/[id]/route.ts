@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { supabase, toEntryResponse, type DbEntry } from '@/lib/supabase'
+import { entryUpdateSchema } from '@/lib/validations'
+import { checkRateLimit } from '@/lib/rateLimit'
+
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 async function updateEntry(
   request: NextRequest,
@@ -11,11 +16,30 @@ async function updateEntry(
     const { id } = await params
     if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
+    // Apply Rate Limiting
+    const rateLimitResponse = checkRateLimit(request, userId)
+    if (rateLimitResponse) return rateLimitResponse
+
     const body = await request.json()
+    
+    // Validate request body using Zod
+    const validationResult = entryUpdateSchema.safeParse(body)
+    if (!validationResult.success) {
+      return NextResponse.json({ 
+        error: 'Validation failed', 
+        details: validationResult.error.flatten().fieldErrors 
+      }, { status: 400 })
+    }
+    
+    const validData = validationResult.data
     const updates: Record<string, unknown> = { updated_at: new Date().toISOString() }
-    if (body.completed !== undefined) updates.completed = body.completed
-    if (body.value !== undefined) updates.value = body.value
-    if (body.notes !== undefined) updates.notes = body.notes
+    
+    if (validData.completed !== undefined) updates.completed = validData.completed
+    if (validData.value !== undefined) updates.value = validData.value
+    if (validData.notes !== undefined) updates.notes = validData.notes
+    if (validData.mood !== undefined) updates.mood = validData.mood
+    if (validData.energy !== undefined) updates.energy = validData.energy
+    if (validData.duration !== undefined) updates.duration = validData.duration
 
     const { data, error } = await supabase
       .from('habit_entries')

@@ -1,3 +1,4 @@
+/* ==================== ORIGINAL CODE START ====================
 import { Sidebar } from '@/components/Sidebar'
 
 export default function AppLayout({
@@ -11,6 +12,26 @@ export default function AppLayout({
       <main className="lg:ml-64 min-h-screen">
         <div className="px-4 pb-4 sm:p-6 lg:p-8">{children}</div>
       </main>
+    </div>
+  )
+}
+==================== ORIGINAL CODE END ==================== */
+
+import { Sidebar } from '@/components/Sidebar'
+import { CelebrationModal } from '@/components/ui/CelebrationModal'
+
+export default function AppLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <div className="min-h-screen bg-[#09090b] text-white">
+      <Sidebar />
+      <main className="lg:ml-64 min-h-screen">
+        <div className="px-4 pb-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">{children}</div>
+      </main>
+      <CelebrationModal />
     </div>
   )
 }
