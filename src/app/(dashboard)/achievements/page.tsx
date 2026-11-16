@@ -215,9 +215,6 @@ import {
   Lock,
   Trophy,
   Target,
-  Clock,
-  Zap,
-  Flame,
   Calendar as CalendarIcon,
   Award,
   Sparkles,
@@ -451,19 +448,18 @@ export default function AchievementsPage() {
                       )}
                     >
                       <div className="flex justify-between items-start mb-4">
-                        <div className="bg-[#18181d] p-3 rounded-2xl border border-[#232328]">
-                          {ach.type === 'focus' ? (
-                            <Clock className="w-6 h-6 text-blue-400" />
-                          ) : ach.type === 'streak' ? (
-                            <Flame className="w-6 h-6 text-orange-400" />
-                          ) : ach.type === 'quantity' ? (
-                            <Zap className="w-6 h-6 text-yellow-400" />
-                          ) : (
-                            <Target className="w-6 h-6 text-purple-400" />
-                          )}
+                        {/* Custom 3D art per challenge type (public/art/challenges) */}
+                        <div className="bg-[#18181d] p-2 rounded-2xl border border-[#232328]">
+                          <Image
+                            src={`/art/challenges/${['focus', 'streak', 'quantity', 'completion'].includes(ach.type) ? ach.type : 'completion'}.png`}
+                            alt=""
+                            width={40}
+                            height={40}
+                            className="w-10 h-10 object-contain"
+                          />
                         </div>
                         <div className="bg-orange-500/10 text-orange-400 border border-orange-500/25 text-xs font-extrabold px-3 py-1 rounded-full flex items-center gap-1.5 shadow-[0_0_10px_rgba(249,115,22,0.15)]">
-                          <Trophy className="w-3.5 h-3.5 text-amber-400" />
+                          <Image src="/art/challenges/xp.png" alt="" width={16} height={16} className="w-4 h-4 object-contain" />
                           {ach.reward} XP
                         </div>
                       </div>

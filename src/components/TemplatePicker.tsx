@@ -1,9 +1,25 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { X, Sparkles, Check, Save, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { HABIT_TEMPLATES, getTemplateCategories, type HabitTemplate } from '@/lib/templates'
+
+function TemplateArt({ id, fallback }: { id: string; fallback: string }) {
+  const [failed, setFailed] = useState(false)
+  if (failed) return <>{fallback}</>
+  return (
+    <Image
+      src={`/art/templates/${id}.png`}
+      alt=""
+      width={32}
+      height={32}
+      className="w-6 h-6 sm:w-8 sm:h-8 object-contain"
+      onError={() => setFailed(true)}
+    />
+  )
+}
 
 interface TemplatePickerProps {
   isOpen: boolean
@@ -140,7 +156,8 @@ export function TemplatePicker({ isOpen, onClose, onSelect }: TemplatePickerProp
                     className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center text-lg sm:text-xl shrink-0"
                     style={{ backgroundColor: `${template.color}20` }}
                   >
-                    {template.icon}
+                    {/* Custom 3D art (public/art/templates/<id>.png); emoji if the image is missing */}
+                    <TemplateArt id={template.id} fallback={template.icon} />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2">
