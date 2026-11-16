@@ -1,101 +1,26 @@
-/* ==================== ORIGINAL CODE START ====================
-import { createClient } from '@supabase/supabase-js';
-import * as dotenv from 'dotenv';
-import { ALL_ACHIEVEMENTS } from '../src/lib/constants';
+/**
+ * Creates the active challenge rows (constants.ts -> ACTIVE_CHALLENGE_IDS) in Supabase.
+ * Safe to run more than once: existing rows are reused, only missing ones are added.
+ * The API also does this on first use, so running this is optional.
+ *
+ *   npx tsx scripts/seed-achievements.ts
+ */
+import * as dotenv from 'dotenv'
 
-dotenv.config({ path: '.env' });
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-if (!supabaseUrl || !supabaseKey) {
-  console.error('Missing Supabase environment variables');
-  process.exit(1);
-}
-
-const supabase = createClient(supabaseUrl, supabaseKey);
+dotenv.config({ path: '.env' })
 
 async function main() {
-  console.log('Seeding achievements (challenges) into the database...');
-
-  const { error } = await supabase
-    .from('challenges')
-    .upsert(ALL_ACHIEVEMENTS.map(ach => ({
-      challenge_id: ach.id,
-      title: ach.title,
-      description: ach.description,
-      target: ach.target,
-      reward: ach.reward,
-      duration: ach.duration,
-      type: ach.type,
-      start_date: new Date().toISOString(),
-      end_date: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365).toISOString() // 1 year from now
-    })));
-
-  if (error) {
-    console.error('Error seeding achievements:', error);
-    process.exit(1);
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    console.error('Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in .env')
+    process.exit(1)
   }
-
-  console.log(`Successfully seeded ${ALL_ACHIEVEMENTS.length} achievements!`);
-  process.exit(0);
+  // Imported after dotenv so the Supabase client sees the env vars
+  const { getCatalog } = await import('../src/lib/challengeCatalog')
+  const catalog = await getCatalog()
+  console.log(`Challenges ready: ${catalog.size}`)
 }
 
-main();
-==================== ORIGINAL CODE END ==================== */
-
-import { createClient } from '@supabase/supabase-js';
-import * as dotenv from 'dotenv';
-import { ALL_ACHIEVEMENTS } from '../src/lib/constants';
-
-dotenv.config({ path: '.env' });
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-if (!supabaseUrl || !supabaseKey) {
-  console.error('Missing Supabase environment variables');
-  process.exit(1);
-}
-
-const supabase = createClient(supabaseUrl, supabaseKey);
-
-async function main() {
-  console.log('Seeding achievements (challenges) into the database...');
-
-  const rows = ALL_ACHIEVEMENTS.map((ach) => ({
-    challenge_id: ach.id,
-    title: ach.title,
-    description: ach.description,
-    target: ach.target,
-    reward: ach.reward,
-    duration: ach.duration,
-    type: ach.type,
-    active: true,
-  }));
-
-  const { error } = await supabase
-    .from('challenges')
-    .upsert(rows, { onConflict: 'challenge_id' });
-
-  if (error) {
-    console.error('Error seeding achievements:', error);
-    process.exit(1);
-  }
-
-  // Confirm row count
-  const { count, error: countError } = await supabase
-    .from('challenges')
-    .select('*', { count: 'exact', head: true });
-
-  if (countError) {
-    console.warn('Could not fetch exact row count:', countError.message);
-  } else {
-    console.log(`Confirmed row count in challenges table: ${count}`);
-  }
-
-  console.log(`Successfully seeded ${ALL_ACHIEVEMENTS.length} achievements!`);
-  process.exit(0);
-}
-
-main();
+main().catch((error) => {
+  console.error('Seeding failed:', error)
+  process.exit(1)
+})

@@ -68,6 +68,19 @@ export const ALL_ACHIEVEMENTS = [
   { id: 'ach_60', title: 'Trendsetter', description: 'Maintain streaks on all active habits for a week', target: 7, reward: 300, duration: 7, type: 'streak' }
 ];
 
+// Challenges live right now (both app and website). Add more IDs here to open them up.
+export const ACTIVE_CHALLENGE_IDS = [
+  'ach_1', 'ach_2', 'ach_3', 'ach_4', 'ach_5', 'ach_8',
+  'ach_21', 'ach_22', 'ach_23', 'ach_24', 'ach_25',
+  'ach_41', 'ach_42', 'ach_43', 'ach_44', 'ach_45', 'ach_46',
+  'ach_51', 'ach_52', 'ach_53',
+];
+
+export const ACTIVE_ACHIEVEMENTS = ACTIVE_CHALLENGE_IDS.map(
+  (id) => ALL_ACHIEVEMENTS.find((a) => a.id === id)!
+);
+
+
 export const ALL_BADGES = [
   // Getting Started (10)
   { id: 'first_habit', name: 'First Habit', icon: 'leaf', color: '#22c55e', description: 'Create your first habit', category: 'Getting Started' },

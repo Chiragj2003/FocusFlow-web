@@ -2,7 +2,8 @@ import { supabase } from './supabase'
 import { dbStreaks } from './db'
 
 type ChallengeRow = {
-  challenge_id: string
+  /** challenges.id (uuid) */
+  dbId: string
   type: 'streak' | 'completion' | 'focus' | 'quantity'
   target: number
   duration: number
@@ -71,7 +72,7 @@ export async function updateChallengeParticipantProgress(userId: string, challen
       completed_at: completedAt,
     })
     .eq('user_id', userId)
-    .eq('challenge_id', challenge.challenge_id)
+    .eq('challenge_id', challenge.dbId)
 
   return { ...result, completedAt }
 }

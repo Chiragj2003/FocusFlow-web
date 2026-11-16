@@ -209,7 +209,7 @@ export default function AchievementsPage() {
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import Image from 'next/image'
-import { ALL_ACHIEVEMENTS, ALL_BADGES } from '@/lib/constants'
+import { ACTIVE_ACHIEVEMENTS, ALL_BADGES } from '@/lib/constants'
 import {
   CheckCircle2,
   Lock,
@@ -431,7 +431,7 @@ export default function AchievementsPage() {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {ALL_ACHIEVEMENTS.map((ach) => {
+                {ACTIVE_ACHIEVEMENTS.map((ach) => {
                   const isJoined = joinedIds.has(ach.id)
                   const userRecord = challengeMap.get(ach.id)
                   const progressValue = userRecord ? Math.min(100, Math.round(userRecord.progress || 0)) : 0

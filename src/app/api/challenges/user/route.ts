@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { supabase } from '@/lib/supabase'
 import { updateChallengeParticipantProgress } from '@/lib/challenge-progress'
+import { getCatalog, toApiChallenge, toProgressInput } from '@/lib/challengeCatalog'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -12,37 +13,24 @@ export async function GET() {
     if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     const { data, error } = await supabase.from('challenge_participants').select('*').eq('user_id', userId)
     if (error) throw error
-    const challengeIds = [...new Set((data || []).map((p: any) => p.challenge_id))]
-    const { data: challenges } = challengeIds.length
-      ? await supabase.from('challenges').select('*').in('challenge_id', challengeIds)
-      : { data: [] }
-    const challengeById = new Map((challenges || []).map((c: any) => [c.challenge_id, c]))
 
-    const rows = await Promise.all((data || []).map(async (p: any) => {
-      const challenge = challengeById.get(p.challenge_id)
+    // challenges.id (uuid) -> catalog entry ("ach_1", type, target, ...)
+    const byDbId = new Map([...(await getCatalog()).values()].map((c) => [c.dbId, c]))
+
+    const rows = await Promise.all((data || []).map(async (p) => {
+      const challenge = byDbId.get(p.challenge_id)
       const progress = challenge
-        ? await updateChallengeParticipantProgress(userId, challenge as any)
+        ? await updateChallengeParticipantProgress(userId, toProgressInput(challenge))
         : { progress: p.progress, completed: !!p.completed_at, completedAt: p.completed_at }
       return {
         id: p.id,
-        challengeId: p.challenge_id,
+        challengeId: challenge ? challenge.key : p.challenge_id,
         userId: p.user_id,
         progress: progress.progress,
         completed: progress.completed,
-        joinedAt: p.joined_at,
+        joinedAt: p.started_at,
         completedAt: progress.completedAt,
-        challenge: challenge ? {
-          id: challenge.challenge_id,
-          dbId: challenge.id,
-          challengeId: challenge.challenge_id,
-          title: challenge.title,
-          description: challenge.description,
-          type: challenge.type,
-          target: challenge.target,
-          duration: challenge.duration,
-          reward: challenge.reward,
-          active: challenge.active,
-        } : null,
+        challenge: challenge ? toApiChallenge(challenge) : null,
       }
     }))
 

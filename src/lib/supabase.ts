@@ -17,7 +17,6 @@ const effectiveKey = supabaseServiceKey || supabaseAnonKey || ''
 if (supabaseUrl && effectiveKey) {
   console.log(`[Supabase] Initialized with URL: ${supabaseUrl}`)
   console.log(`[Supabase] Using key type: ${supabaseServiceKey ? 'service_role' : 'anon'}`)
-  console.log(`[Supabase] Key prefix: ${effectiveKey.substring(0, 20)}...`)
 }
 
 // Server-side Supabase client with service role (bypasses RLS)

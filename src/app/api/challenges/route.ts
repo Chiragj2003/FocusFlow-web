@@ -1,17 +1,13 @@
 import { NextResponse } from 'next/server'
-import { supabase, type DbChallenge } from '@/lib/supabase'
+import { getCatalog, toApiChallenge } from '@/lib/challengeCatalog'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 export async function GET() {
   try {
-    const { data, error } = await supabase.from('challenges').select('*').eq('active', true)
-    if (error) throw error
-    return NextResponse.json((data as DbChallenge[]).map((c) => ({
-      id: c.challenge_id, dbId: c.id, challengeId: c.challenge_id, title: c.title, description: c.description,
-      type: c.type, target: c.target, duration: c.duration, reward: c.reward, active: c.active,
-    })))
+    const catalog = await getCatalog()
+    return NextResponse.json([...catalog.values()].filter((c) => c.active).map(toApiChallenge))
   } catch (error) {
     console.error('Error fetching challenges:', error)
     return NextResponse.json({ error: 'Failed to fetch challenges' }, { status: 500 })
